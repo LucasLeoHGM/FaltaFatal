@@ -31,6 +31,6 @@ Responsável pelo armazenamento e leitura de dados, além da manipulação de ar
 
 ---
 
-### 📊 Desenvolvedor de Estatísticas
+### 📊 Desenvolvedor de Dados e Estatísticas
 - **[Micaella Cabral](https://github.com/micaellabcabral)**  
 Responsável pelos cálculos estatísticos e análise de desempenho do jogador.
