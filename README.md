@@ -7,7 +7,7 @@ Responsável pela definição de requisitos, priorização do backlog e validaç
 ---
 
 ### 📋 Scrum Master
-- **[Luis Fim](https://github.com/llwg-sudo)**  
+- **[Luis Fim](https://github.com/luisfim)**  
 Responsável pela organização do projeto, gerenciamento do quadro e remoção de impedimentos.
 
 ---
