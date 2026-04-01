@@ -12,9 +12,10 @@ Responsável pela organização do projeto, gerenciamento do quadro e remoção 
 
 ---
 
-### 🎨 Designer (UX/UI)
+### 🎨 Designer (UX/UI) & Sound Designer
 - **[Mariana Xavier](https://github.com/marixb)**  
-Responsável pelo protótipo, fluxo do usuário e experiência visual do sistema.
+Responsável pelo protótipo, fluxo do usuário, experiência visual do sistema e criação/definição de elementos sonoros (feedbacks, acertos, erros, etc.).
+
 
 ---
 
