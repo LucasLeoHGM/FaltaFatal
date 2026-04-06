@@ -3,7 +3,7 @@
 #include <time.h>
 
 int main() {
-    int MNumber, escolha, i, rodada = 0, min = 1, max = 100, MAttack, vidas = 7, qntOpcoes = 3, sala = 1;
+    int MNumber, escolha, i, rodada = 0, min = 1, max = 100, MAttack, vidas = 5, qntOpcoes = 3, sala = 1;
 
     srand(time(NULL));
     MNumber = (rand() % 100) + 1;
@@ -74,10 +74,10 @@ int main() {
         } else {
             MAttack--;
             if (numeroEscolhido < MNumber) {
-                printf("\nErrou! O numero secreto eh MAIOR que %d\n", numeroEscolhido);
+                printf("\n\n\n\n\n\n\n\n\n\n\n\nErrou! O numero secreto eh MAIOR que %d\n", numeroEscolhido);
                 min = numeroEscolhido + 1;
             } else {
-                printf("\nErrou! O numero secreto eh MENOR que %d\n", numeroEscolhido);
+                printf("\n\n\n\n\n\n\n\n\n\n\n\nErrou! O numero secreto eh MENOR que %d\n", numeroEscolhido);
                 max = numeroEscolhido - 1; 
             }
         }
