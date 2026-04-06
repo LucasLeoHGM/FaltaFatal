@@ -3,7 +3,7 @@
 #include <time.h>
 
 int main() {
-    int MNumber, escolha, i, rodada = 0, min = 1, max = 100, MAttack, vidas = 2, qntOpcoes = 3, sala = 1;
+    int MNumber, escolha, i, rodada = 0, min = 1, max = 100, MAttack, vidas = 7, qntOpcoes = 3, sala = 1;
 
     srand(time(NULL));
     MNumber = (rand() % 100) + 1;
@@ -31,8 +31,6 @@ int main() {
                 printf("\nVoce morreu!\n");
                 return 0; 
             }
-
-        MAttack--;
 
         printf("--- Vidas: %d ---\n", vidas);
         printf("Escolha um numero:\n");
@@ -65,18 +63,19 @@ int main() {
             min = 1;
             max = 100;
             MNumber = (rand() % 100) + 1;
+            qntOpcoes = 3;
             if (sala <= 2) MAttack = 3;
             else if (sala <= 4) MAttack = 2;
+            else MAttack = 1;
             if (sala == 6){
                 printf("\nParabens!!! Voce zerou o jogo!!!");
                 return 0;
             }
-
-            else MAttack = 1;
         } else {
+            MAttack--;
             if (numeroEscolhido < MNumber) {
                 printf("\nErrou! O numero secreto eh MAIOR que %d\n", numeroEscolhido);
-                min = numeroEscolhido + 1; 
+                min = numeroEscolhido + 1;
             } else {
                 printf("\nErrou! O numero secreto eh MENOR que %d\n", numeroEscolhido);
                 max = numeroEscolhido - 1; 
