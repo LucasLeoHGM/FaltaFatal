@@ -3,7 +3,7 @@
 #include <time.h>
 
 int main() {
-    int MNumber, opcoes[5], escolha, i, acertou = 0, rodada = 0, min = 1, max = 100, MAttack = 3, vidas = 2;
+    int MNumber, escolha, i, acertou = 0, rodada = 0, min = 1, max = 100, MAttack = 3, vidas = 2, qntOpcoes = 3;
 
     srand(time(NULL));
     MNumber = (rand() % 100) + 1;
@@ -18,6 +18,7 @@ int main() {
             printf("\nO MONSTRO ATACOU!\n");
             MAttack = 3;
             vidas--;
+            qntOpcoes++;
         }
 
         if (vidas <= 0) {
@@ -30,19 +31,21 @@ int main() {
         printf("--- Vidas: %d ---\n", vidas);
         printf("Escolha um numero:\n");
 
-        for (i = 0; i < 5; i++) {
+        int opcoes[qntOpcoes];       
+
+        for (i = 0; i < qntOpcoes; i++) {
             opcoes[i] = (rand() % (max - min + 1)) + min;
         }
         
 
-        for (i = 0; i < 5; i++) {
+        for (i = 0; i < qntOpcoes; i++) {
             printf("%d - %d\n", i + 1, opcoes[i]);
         }
 
-        printf("Digite a opcao (1 a 5): ");
+        printf("Digite a opcao (1 a %d): ", qntOpcoes);
         scanf("%d", &escolha);
 
-        if (escolha < 1 || escolha > 5) {
+        if (escolha < 1 || escolha > qntOpcoes) {
             printf("Opcao invalida!\n");
             continue;
         }
