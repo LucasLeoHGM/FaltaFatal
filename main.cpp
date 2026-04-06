@@ -9,7 +9,7 @@ int main() {
     MNumber = (rand() % 100) + 1;
 
     while (!acertou) {
-        printf("Mnumber: %d", MNumber); // !!!!!!!!!!!!!!!! TIRAR O PRINT DPS !!!!!!!!!!!!!!!!
+        printf("Mnumber: %d", MNumber); // !!!!!!!!!!!!!!! TIRAR O PRINT DPS !!!!!!!!!!!!!!!
         rodada++;
 
         printf("\n--- Rodada %d ---\n", rodada);
