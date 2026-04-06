@@ -74,10 +74,10 @@ int main() {
         } else {
             MAttack--;
             if (numeroEscolhido < MNumber) {
-                printf("\n\n\n\n\n\n\n\n\n\n\n\nErrou! O numero secreto eh MAIOR que %d\n", numeroEscolhido);
+                printf("\n\n\n\n\n\n\n\n\n\n\n\nErrou!!! O numero secreto eh MAIOR que %d\n", numeroEscolhido);
                 min = numeroEscolhido + 1;
             } else {
-                printf("\n\n\n\n\n\n\n\n\n\n\n\nErrou! O numero secreto eh MENOR que %d\n", numeroEscolhido);
+                printf("\n\n\n\n\n\n\n\n\n\n\n\nErrou!!! O numero secreto eh MENOR que %d\n", numeroEscolhido);
                 max = numeroEscolhido - 1; 
             }
         }
