@@ -1,0 +1,20 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Compilar Jogo",
+            "type": "shell",
+            "command": "gcc",
+            "args": [
+                "${workspaceFolder}/main.cpp",
+                "-o",
+                "${workspaceFolder}/output/main",
+                "-lwinmm"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        }
+    ]
+}

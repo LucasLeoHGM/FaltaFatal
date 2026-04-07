@@ -1,16 +1,19 @@
 #include <stdio.h>
-#include <stdlib.h>
-#include <time.h>
+#include <stdlib.h> //random
+#include <time.h> //random
+#include <windows.h>
+#include <mmsystem.h>
 
 int main() {
-    int MNumber, escolha, i, rodada = 0, min = 1, max = 100, MAttack = 5, vidas = 2, qntOpcoes = 3, sala = 1;
+    int MNumber, escolha, i, rodada = 0, min = 1, max = 100, MAttack = 5, vidas = 5, qntOpcoes = 5, sala = 1;
+    PlaySoundA("../assets/soundtrack.wav", NULL, SND_FILENAME | SND_ASYNC | SND_LOOP);
 
     srand(time(NULL));
     MNumber = (rand() % 100) + 1;
 
     while (1) {
         printf("\n=== SALA %d ===\n", sala);
-        //printf("Mnumber: %d", MNumber); // !!!!!!!!!!!!!! TIRAR O PRINT DPS !!!!!!!!!!!!!!
+        printf("Mnumber: %d", MNumber); // !!!!!!!!!!!!!! TIRAR O PRINT DPS !!!!!!!!!!!!!!
         rodada++;
 
         int atkSala;
@@ -67,7 +70,7 @@ int main() {
             else if (sala <= 4) MAttack = 3;
             else MAttack = 2;
             if (sala == 6){
-                printf("\nParabens!!! Voce zerou o jogo!!!");
+                printf("\nParabens!!! Voce zerou o jogo!!!\n\n\n");
                 return 0;
             }
         } else {
