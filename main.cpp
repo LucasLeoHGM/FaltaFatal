@@ -10,7 +10,7 @@ int main() {
 
     while (1) {
         printf("\n=== SALA %d ===\n", sala);
-        //printf("Mnumber: %d", MNumber); // !!!!!!!!!!!!!!! TIRAR O PRINT DPS !!!!!!!!!!!!!!!
+        //printf("Mnumber: %d", MNumber); // !!!!!!!!!!!!!! TIRAR O PRINT DPS !!!!!!!!!!!!!!
         rodada++;
 
         int atkSala;
