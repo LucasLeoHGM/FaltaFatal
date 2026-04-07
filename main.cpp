@@ -3,14 +3,14 @@
 #include <time.h>
 
 int main() {
-    int MNumber, escolha, i, rodada = 0, min = 1, max = 100, MAttack, vidas = 7, qntOpcoes = 3, sala = 1;
+    int MNumber, escolha, i, rodada = 0, min = 1, max = 100, MAttack = 5, vidas = 2, qntOpcoes = 3, sala = 1;
 
     srand(time(NULL));
     MNumber = (rand() % 100) + 1;
 
     while (1) {
         printf("\n=== SALA %d ===\n", sala);
-        printf("Mnumber: %d", MNumber); // !!!!!!!!!!!!!!! TIRAR O PRINT DPS !!!!!!!!!!!!!!!
+        //printf("Mnumber: %d", MNumber); // !!!!!!!!!!!!!! TIRAR O PRINT DPS !!!!!!!!!!!!!!
         rodada++;
 
         int atkSala;
@@ -63,10 +63,9 @@ int main() {
             min = 1;
             max = 100;
             MNumber = (rand() % 100) + 1;
-            qntOpcoes = 3;
-            if (sala <= 2) MAttack = 3;
-            else if (sala <= 4) MAttack = 2;
-            else MAttack = 1;
+            if (sala <= 2) MAttack = 4;
+            else if (sala <= 4) MAttack = 3;
+            else MAttack = 2;
             if (sala == 6){
                 printf("\nParabens!!! Voce zerou o jogo!!!");
                 return 0;
@@ -74,10 +73,10 @@ int main() {
         } else {
             MAttack--;
             if (numeroEscolhido < MNumber) {
-                printf("\nErrou! O numero secreto eh MAIOR que %d\n", numeroEscolhido);
-                min = numeroEscolhido + 1;
+                printf("\nErrou!!! O numero secreto eh MAIOR que %d\n", numeroEscolhido);
+                min = numeroEscolhido + 1; 
             } else {
-                printf("\nErrou! O numero secreto eh MENOR que %d\n", numeroEscolhido);
+                printf("\nErrou!!! O numero secreto eh MENOR que %d\n", numeroEscolhido);
                 max = numeroEscolhido - 1; 
             }
         }
