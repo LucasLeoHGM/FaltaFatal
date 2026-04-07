@@ -1,8 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h> //random
 #include <time.h> //random
-#include <windows.h>
-#include <mmsystem.h>
+#include <windows.h> //som
+#include <mmsystem.h> //som
 
 int main() {
     int MNumber, escolha, i, rodada = 0, min = 1, max = 100, MAttack = 5, vidas = 5, qntOpcoes = 5, sala = 1;
@@ -50,7 +50,7 @@ int main() {
         }
 
         printf("Digite a opcao (1 a %d): ", qntOpcoes);
-        scanf("%d", &escolha);
+        scanf("%d%*c", &escolha);
 
         if (escolha < 1 || escolha > qntOpcoes) {
             printf("Opcao invalida!\n");
