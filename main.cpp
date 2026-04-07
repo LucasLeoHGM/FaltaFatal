@@ -1,12 +1,12 @@
 #include <stdio.h>
 #include <stdlib.h> //random
 #include <time.h> //random
-#include <windows.h> //som
-#include <mmsystem.h> //som
+#include <windows.h>
+#include <mmsystem.h>
 
 int main() {
     int MNumber, escolha, i, rodada = 0, min = 1, max = 100, MAttack = 5, vidas = 5, qntOpcoes = 5, sala = 1;
-    PlaySoundA("../assets/soundtrack.wav", NULL, SND_FILENAME | SND_ASYNC | SND_LOOP);
+    PlaySoundA("assets/soundtrack.wav", NULL, SND_FILENAME | SND_ASYNC | SND_LOOP);
 
     srand(time(NULL));
     MNumber = (rand() % 100) + 1;
@@ -50,7 +50,7 @@ int main() {
         }
 
         printf("Digite a opcao (1 a %d): ", qntOpcoes);
-        scanf("%d%*c", &escolha);
+        scanf("%d", &escolha);
 
         if (escolha < 1 || escolha > qntOpcoes) {
             printf("Opcao invalida!\n");
