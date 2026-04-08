@@ -34,3 +34,13 @@ Responsável pelo armazenamento e leitura de dados, além da manipulação de ar
 ### 📊 Desenvolvedor de Dados e Estatísticas
 - **[Micaella Cabral](https://github.com/micaellabcabral)**  
 Responsável pelos cálculos estatísticos e análise de desempenho do jogador.
+
+---
+
+<h2 align="center">📋 Kanban do Projeto</h2>
+
+<p align="center">
+  <img src="output/assets/kanbam.jpg" width="700">
+</p>
+
+
