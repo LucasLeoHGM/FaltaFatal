@@ -2,13 +2,13 @@
     "version": "2.0.0",
     "tasks": [
         {
-            "label": "Compilar Jogo",
+            "label": "Build",
             "type": "shell",
             "command": "gcc",
             "args": [
-                "${workspaceFolder}/main.cpp",
+                "${workspaceFolder}/main.c",
                 "-o",
-                "${workspaceFolder}/output/main",
+                "${workspaceFolder}/main.exe",
                 "-lwinmm"
             ],
             "group": {
