@@ -1,4 +1,4 @@
-# 🎮 Projeto - C
+# 🎮 Dice Warrior
 
 ---
 
