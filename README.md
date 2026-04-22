@@ -124,11 +124,6 @@ Desenvolvimento baseado em Scrum/Kanban (backlog; histórias de usuário ; 3Cs)
 
 ---
 
-## 🖼️ Protótipo
-Link do Figma + prints
-
----
-
 ## 🎥 Screencast
 ???(link)
 
@@ -146,20 +141,35 @@ Para o desenvolvimento do projeto utilizamos
 - **Criar conta**
 - **Exibir desempenho do jogador**
 
-
 ---
 
+<h2 align="center">📋 Tasks do Projeto</h2>
 
-## 📋 Tela do quadro Kanban
 <p align="center">
   <img src="output/assets/tasks.jpg" width="700">
 </p>
 
-## 🔗 Diagrama de atividades do sistema
-??
-- **[Diagrama de Atividades](https://lucid.app/lucidchart/2e12c006-4500-40c9-ad95-7516c0d8b277/edit?viewport_loc=32%2C-11%2C2115%2C1165%2C0_0&invitationId=inv_b063a097-536c-4afd-b162-f3d4a51f0910)**
+---
 
+<h2 align="center">⚙️ Funcionalidades(MVP)</h2>
 
+<p align="center">
+  <img src="output/assets/funcionalidades.jpg" width="700">
+</p>
 
+---
 
+<h2 align="center">📚 Histórias de Usuário</h2>
+
+<p align="center">
+  <img src="output/assets/historiasdeusuario.jpg" width="700">
+</p>
+
+---
+
+<h2 align="center">📊 Diagramas</h2>
+
+<p align="center">
+  <img src="output/assets/diagrama.jpg" width="700">
+</p>
 
