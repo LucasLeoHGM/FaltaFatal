@@ -125,7 +125,8 @@ Desenvolvimento baseado em Scrum/Kanban (backlog; histórias de usuário ; 3Cs)
 ---
 
 ## 🎥 Screencast
-???(link)
+- **[Youtube](https://youtu.be/DD_T3tZea4c): Link do vídeo no Youtube das fases iniciais de desenvolvimento.**  
+
 
 ---
 
