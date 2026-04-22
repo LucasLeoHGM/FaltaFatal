@@ -152,7 +152,7 @@ Para o desenvolvimento do projeto utilizamos
 
 ## 📋 Tela do quadro Kanban
 <p align="center">
-  <img src="output/assets/kanbam.jpg" width="700">
+  <img src="output/assets/tasks.jpg" width="700">
 </p>
 
 ## 🔗 Diagrama de atividades do sistema
