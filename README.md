@@ -86,7 +86,41 @@ Desenvolvimento baseado em Scrum/Kanban (backlog; histórias de usuário ; 3Cs)
 ---
 
 ## ▶️ Como executar
-??? passo a passo
+<h2>Como executar o projeto</h2>
+
+<h3>1. Verificar ambiente</h3>
+<p>Antes de tudo, verifique se o <strong>GCC</strong> está instalado corretamente:</p>
+
+<pre><code>gcc --version</code></pre>
+
+<p>Se o comando não for reconhecido, instale e configure o <strong>MinGW</strong> e adicione o GCC ao <strong>PATH</strong> do sistema.</p>
+
+<hr>
+
+<h3>2. Acessar a pasta do projeto</h3>
+<pre><code>cd Projeto-C</code></pre>
+
+<hr>
+
+<h3>3. Compilar o projeto</h3>
+<p>Se o arquivo <strong>main.exe</strong> não existir, compile utilizando:</p>
+
+<pre><code>gcc main.c -o main.exe</code></pre>
+
+<hr>
+
+<h3>4. Executar o projeto</h3>
+
+<p><strong>PowerShell:</strong></p>
+<pre><code>.\main.exe</code></pre>
+
+<p><strong>CMD:</strong></p>
+<pre><code>main.exe</code></pre>
+
+<h3>Observação</h3>
+<p>Certifique-se de estar dentro da pasta do projeto antes de executar os comandos:</p>
+
+<pre><code>cd Projeto-C</code></pre>
 
 ---
 
