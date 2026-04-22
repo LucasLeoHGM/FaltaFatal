@@ -1,4 +1,8 @@
-# 🎮 Projeto - C
+<h1 align="center">📊 Diagramas</h1>
+
+<p align="center">
+  <img src="output/assets/dicewarrior.png" width="700">
+</p>
 
 ---
 
@@ -125,7 +129,8 @@ Desenvolvimento baseado em Scrum/Kanban (backlog; histórias de usuário ; 3Cs)
 ---
 
 ## 🎥 Screencast
-???(link)
+- **[Youtube](https://youtu.be/DD_T3tZea4c): Link do vídeo no Youtube das fases iniciais de desenvolvimento.**  
+
 
 ---
 
@@ -134,13 +139,6 @@ Para o desenvolvimento do projeto utilizamos
 - **[Notion](https://www.notion.so/Projeto-em-C-33014fb261ef8017acccc4b1c7c786c5): Utilizado para gestão do projeto**  
 - **[Figma](https://www.figma.com/design/pLpnOWmcZg4JNdBwoAstdp/Jogo-Adivinhação?node-id=0-1&t=VEnLR5CqD9WFcHSY-0): Utilizado para prototipação**
   
----
-## ⚙️ Funcionalidades
-??? Lista baseada nas histórias
-- **Escolha de nível de dificuldade**
-- **Criar conta**
-- **Exibir desempenho do jogador**
-
 ---
 
 <h2 align="center">📋 Tasks do Projeto</h2>
@@ -170,6 +168,6 @@ Para o desenvolvimento do projeto utilizamos
 <h2 align="center">📊 Diagramas</h2>
 
 <p align="center">
-  <img src="output/assets/diagrama.jpg" width="700">
+  <img src="output/assets/diagrama.jpeg" width="700">
 </p>
 
