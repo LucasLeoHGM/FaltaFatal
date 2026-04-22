@@ -135,13 +135,6 @@ Para o desenvolvimento do projeto utilizamos
 - **[Figma](https://www.figma.com/design/pLpnOWmcZg4JNdBwoAstdp/Jogo-Adivinhação?node-id=0-1&t=VEnLR5CqD9WFcHSY-0): Utilizado para prototipação**
   
 ---
-## ⚙️ Funcionalidades
-??? Lista baseada nas histórias
-- **Escolha de nível de dificuldade**
-- **Criar conta**
-- **Exibir desempenho do jogador**
-
----
 
 <h2 align="center">📋 Tasks do Projeto</h2>
 
