@@ -64,7 +64,7 @@ As funcionalidades presentes no nosso projeto são:
 ---
 
 ## 🔗 Diagrama de atividades do sistema
-- **[Diagrama de Atividades[(https://lucid.app/lucidchart/2e12c006-4500-40c9-ad95-7516c0d8b277/edit?viewport_loc=32%2C-11%2C2115%2C1165%2C0_0&invitationId=inv_b063a097-536c-4afd-b162-f3d4a51f0910)
+- **[Diagrama de Atividades](https://lucid.app/lucidchart/2e12c006-4500-40c9-ad95-7516c0d8b277/edit?viewport_loc=32%2C-11%2C2115%2C1165%2C0_0&invitationId=inv_b063a097-536c-4afd-b162-f3d4a51f0910)
 
 
 
