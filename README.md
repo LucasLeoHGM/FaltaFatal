@@ -170,6 +170,6 @@ Para o desenvolvimento do projeto utilizamos
 <h2 align="center">📊 Diagramas</h2>
 
 <p align="center">
-  <img src="output/assets/diagrama.jpg" width="700">
+  <img src="output/assets/diagrama.jpeg" width="700">
 </p>
 
