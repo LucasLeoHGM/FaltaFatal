@@ -21,7 +21,7 @@ Ao acertar o número, o jogador causa dano ao inimigo e avança no jogo. Durante
 
 ## 🧑‍💻 Equipe
 
-### 🧠 Product Owner
+### 🧠 Product Owner // Desenvolvedor Backend (Core)
 - **[Lucas Henrique](https://github.com/LucasLeoHGM)**  
 Responsável pela definição de requisitos, priorização do backlog e validação das entregas.
 
@@ -39,7 +39,7 @@ Responsável pelo protótipo, fluxo do usuário, experiência visual do sistema 
 
 ---
 
-### 💻 Desenvolvedor Backend (Core)
+### 💻 Desenvolvedor Backend
 - **[Victor Barros Roma](https://github.com/RomaNFS21)**  
 Responsável pela lógica principal do jogo, incluindo geração de números e interação com o usuário.
 
