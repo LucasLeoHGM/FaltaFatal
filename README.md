@@ -63,27 +63,27 @@ C - Utilizada para implementação da lógica do jogo, incluindo geração de n�
 
 ---
 
-##🖥️ Interface Visual
+## 🖥️ Interface Visual
 ???
 
 ---
 
-##🎨 Design e prototipação
+## 🎨 Design e prototipação
 Figma - Utilizado para criação do protótipo da interface do jogo e definição da experiência do usuário.
 
 ---
 
-##🗂️ Versionamento
+## 🗂️ Versionamento
 Git e GitHub - Utilizados para controle de versão, organização do projeto e colaboração em equipe.
 
 ---
 
-##🎥 Documentação e apresentação
+## 🎥 Documentação e apresentação
 OBS Studio - Para gravação do screencast do projeto.
 
 ---
 
-##🧠 Metodologia
+## 🧠 Metodologia
 Desenvolvimento baseado em Scrum/Kanban (backlog; histórias de usuário ; 3Cs)
 
 ---
