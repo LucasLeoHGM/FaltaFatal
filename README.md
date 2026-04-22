@@ -60,10 +60,7 @@ Responsável pelos cálculos estatísticos e análise de desempenho do jogador.
 ## 🧪 Tecnologias
 💻 Linguagem principal
 C - Utilizada para implementação da lógica do jogo, incluindo geração de números aleatórios, controle de fluxo, manipulação de arquivos e cálculos estatísticos.
-
----
-
-## 🖥️ Interface Visual
+🖥️ Interface Visual
 ???
 
 ---
