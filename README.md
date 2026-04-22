@@ -140,8 +140,7 @@ Para o desenvolvimento do projeto utilizamos
 - **[Figma](https://www.figma.com/design/pLpnOWmcZg4JNdBwoAstdp/Jogo-Adivinhação?node-id=0-1&t=VEnLR5CqD9WFcHSY-0): Utilizado para prototipação**
   
 ---
-
-<h2 align="center">📋 Tasks do Projeto</h2>
+## 📋 Tasks do Projeto
 
 <p align="center">
   <img src="output/assets/tasks.jpg" width="700">
@@ -149,7 +148,7 @@ Para o desenvolvimento do projeto utilizamos
 
 ---
 
-<h2 align="center">⚙️ Funcionalidades(MVP)</h2>
+## ⚙️ Funcionalidades(MVP)
 
 <p align="center">
   <img src="output/assets/funcionalidades.jpg" width="700">
@@ -157,7 +156,7 @@ Para o desenvolvimento do projeto utilizamos
 
 ---
 
-<h2 align="center">📚 Histórias de Usuário</h2>
+## 📚 Histórias de Usuário
 
 <p align="center">
   <img src="output/assets/historiasdeusuario.jpg" width="700">
@@ -165,7 +164,7 @@ Para o desenvolvimento do projeto utilizamos
 
 ---
 
-<h2 align="center">📊 Diagramas</h2>
+## 📊 Diagramas
 
 <p align="center">
   <img src="output/assets/diagrama.jpeg" width="700">
