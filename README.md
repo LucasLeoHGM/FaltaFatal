@@ -46,9 +46,9 @@ Para o desenvolvimento do projeto utilizamos
 
 ## 🔹 Funcionalidades
 As funcionalidades presentes no nosso projeto são:
--**Escolha de nível de dificuldade**
--**Criar conta**
--**Exibir desempenho do jogador**
+- **Escolha de nível de dificuldade**
+- **Criar conta**
+- **Exibir desempenho do jogador**
 
 <h2 align="center">📋 Kanban do Projeto</h2>
 
