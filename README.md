@@ -37,6 +37,19 @@ Responsável pelos cálculos estatísticos e análise de desempenho do jogador.
 
 ---
 
+### ⚙️ Ferramentas tecnológicas
+Para o desenvolvimento do projeto utilizamos
+- **[Notion](https://www.notion.so/Projeto-em-C-33014fb261ef8017acccc4b1c7c786c5): Utilizado para gestão do projeto**  
+- **[Figma](https://www.figma.com/design/pLpnOWmcZg4JNdBwoAstdp/Jogo-Adivinhação?node-id=0-1&t=VEnLR5CqD9WFcHSY-0): Utilizado para prototipação**
+  
+---
+
+## 🔹 Funcionalidades
+As funcionalidades presentes no nosso projeto são:
+-**Escolha de nível de dificuldade**
+-**Criar conta**
+-**Exibir desempenho do jogador**
+
 <h2 align="center">📋 Kanban do Projeto</h2>
 
 <p align="center">
