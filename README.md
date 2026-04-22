@@ -128,11 +128,6 @@ Desenvolvimento baseado em Scrum/Kanban (backlog; histórias de usuário ; 3Cs)
 
 ---
 
-## 🖼️ Protótipo
-Link do Figma + prints
-
----
-
 ## 🎥 Screencast
 - **[Youtube](https://youtu.be/DD_T3tZea4c): Link do vídeo no Youtube das fases iniciais de desenvolvimento.**  
 
@@ -146,8 +141,8 @@ Para o desenvolvimento do projeto utilizamos
   
 ---
 
+<h2 align="center">📋 Tasks do Projeto</h2>
 
-## 📋 Tela do quadro Kanban
 <p align="center">
   <img src="output/assets/tasks.jpg" width="700">
 </p>
