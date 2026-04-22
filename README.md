@@ -1,4 +1,8 @@
-# 🎮 Dice Warrior
+<h1 align="center">📊 Diagramas</h1>
+
+<p align="center">
+  <img src="output/assets/dicewarrior.png" width="750">
+</p>
 
 ---
 
