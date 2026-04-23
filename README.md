@@ -6,6 +6,11 @@
 
 ---
 
+Video
+
+https://github.com/user-attachments/assets/9d174c95-ddf4-4402-9696-1552f0e9d751
+
+
 ## 📌 Descrição
 O projeto consiste em um jogo de adivinhação de números desenvolvido em linguagem C. O objetivo do jogador é descobrir um número aleatório gerado pelo sistema dentro de um intervalo definido, recebendo dicas a cada tentativa que indicam se o valor correto é maior ou menor.
 
