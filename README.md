@@ -94,44 +94,57 @@ Desenvolvimento baseado em Scrum/Kanban (backlog; histórias de usuário ; 3Cs)
 
 ---
 
-## ▶️ Como executar
-<h2>Como executar o projeto</h2>
+<h2>▶️ Como executar o projeto</h2>
 
-<h3>1. Verificar ambiente</h3>
-<p>Antes de tudo, verifique se o <strong>GCC</strong> está instalado corretamente:</p>
+<h3>1. Clonar o repositório</h3>
 
-<pre><code>gcc --version</code></pre>
-
-<p>Se o comando não for reconhecido, instale e configure o <strong>MinGW</strong> e adicione o GCC ao <strong>PATH</strong> do sistema.</p>
+<pre><code>git clone https://github.com/LucasLeoHGM/Projeto-C.git
+cd Projeto-C</code></pre>
 
 <hr>
 
-<h3>2. Acessar a pasta do projeto</h3>
-<pre><code>cd Projeto-C</code></pre>
+<h3>2. Verificar ambiente</h3>
+
+<p>Este projeto utiliza <strong>Raylib</strong> com o <strong>GCC do MSYS2</strong>.</p>
+
+<p>Abra o terminal <strong>MSYS2 MinGW64</strong> e verifique:</p>
+
+<pre><code>gcc --version</code></pre>
+
+<p>Se não funcionar, instale:</p>
+
+<pre><code>pacman -S mingw-w64-x86_64-gcc
+pacman -S mingw-w64-x86_64-raylib</code></pre>
 
 <hr>
 
 <h3>3. Compilar o projeto</h3>
-<p>Se o arquivo <strong>main.exe</strong> não existir, compile utilizando:</p>
 
-<pre><code>gcc main.c -o main.exe</code></pre>
+<pre><code>gcc main.c -o game.exe -lraylib -lopengl32 -lgdi32 -lwinmm</code></pre>
 
 <hr>
 
 <h3>4. Executar o projeto</h3>
 
-<p><strong>PowerShell:</strong></p>
-<pre><code>.\main.exe</code></pre>
+<pre><code>./game.exe</code></pre>
 
-<p><strong>CMD:</strong></p>
-<pre><code>main.exe</code></pre>
+<hr>
 
-<h3>Observação</h3>
-<p>Certifique-se de estar dentro da pasta do projeto antes de executar os comandos:</p>
+<h3>💡 Usando o VS Code (recomendado)</h3>
 
-<pre><code>cd Projeto-C</code></pre>
+<p>Se o projeto estiver configurado com <code>tasks.json</code>, basta:</p>
 
----
+<pre><code>Ctrl + Shift + B</code></pre>
+
+<hr>
+
+<h3>⚠️ Observações importantes</h3>
+
+<ul>
+    <li>Use sempre o terminal <strong>MSYS2 MinGW64</strong></li>
+    <li>Certifique-se de que o Raylib está instalado</li>
+    <li>Execute o <code>.exe</code> dentro da pasta do projeto</li>
+</ul>
 
 ## 🎥 Screencast
 - **[Youtube](https://youtu.be/DD_T3tZea4c): Link do vídeo no Youtube das fases iniciais de desenvolvimento.**  
