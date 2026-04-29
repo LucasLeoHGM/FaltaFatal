@@ -2,13 +2,16 @@
     "version": "2.0.0",
     "tasks": [
         {
-            "label": "Build",
+            "label": "Build Raylib",
             "type": "shell",
-            "command": "gcc",
+            "command": "C:\\msys64\\mingw64\\bin\\gcc.exe",
             "args": [
-                "${workspaceFolder}/main.c",
+                "${workspaceFolder}\\main.c",
                 "-o",
-                "${workspaceFolder}/main.exe",
+                "${workspaceFolder}\\game.exe",
+                "-lraylib",
+                "-lopengl32",
+                "-lgdi32",
                 "-lwinmm"
             ],
             "group": {
