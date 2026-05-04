@@ -161,7 +161,7 @@ Para o desenvolvimento do projeto utilizamos
 ## 📋 Tasks do Projeto
 
 <p align="center">
-  <img src="output/assets/tasks.jpg" width="700">
+  <img src="assets/tasks.jpg" width="700">
 </p>
 
 ---
@@ -169,7 +169,7 @@ Para o desenvolvimento do projeto utilizamos
 ## ⚙️ Funcionalidades(MVP)
 
 <p align="center">
-  <img src="output/assets/funcionalidades.jpg" width="700">
+  <img src="assets/funcionalidades.jpg" width="700">
 </p>
 
 ---
@@ -177,7 +177,7 @@ Para o desenvolvimento do projeto utilizamos
 ## 📚 Histórias de Usuário
 
 <p align="center">
-  <img src="output/assets/historiasdeusuario.jpg" width="700">
+  <img src="assets/historiasdeusuario.jpg" width="700">
 </p>
 
 ---
@@ -185,6 +185,6 @@ Para o desenvolvimento do projeto utilizamos
 ## 📊 Diagramas
 
 <p align="center">
-  <img src="output/assets/diagrama.jpeg" width="700">
+  <img src="assets/diagrama.jpeg" width="700">
 </p>
 
