@@ -6,9 +6,9 @@
             "type": "shell",
             "command": "C:\\msys64\\mingw64\\bin\\gcc.exe",
             "args": [
-                "${workspaceFolder}\\main.c",
+                "${workspaceFolder}\\src\\main.c",
                 "-o",
-                "${workspaceFolder}\\game.exe",
+                "${workspaceFolder}\\output\\DiceWarrior.exe",
                 "-lraylib",
                 "-lopengl32",
                 "-lgdi32",
