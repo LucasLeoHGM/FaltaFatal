@@ -153,25 +153,35 @@ int main() {
             bool hNao = CheckCollisionPointRec(mouse, btnNao);
 
             if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
+            if (hSim || hNao) {
 
-                if (hSim) PlaySound(openSound);
-                if (hNao) PlaySound(closeSound);
+                if (hSim)
+                    PlaySound(openSound);
 
-                rodada=0; min=1; max=100;
+                if (hNao)
+                    PlaySound(closeSound);
+
+                rodada = 0;
+                min = 1;
+                max = 100;
+
                 MNumber = (rand()%100)+1;
                 printf("DEBUG: %d\n", MNumber);
 
-                if (sala<=2) MAttack=4;
-                else if (sala<=4) MAttack=3;
-                else MAttack=2;
+                if (sala <= 2) MAttack = 4;
+                else if (sala <= 4) MAttack = 3;
+                else MAttack = 2;
 
-                qntOpcoes=5;
+                qntOpcoes = 5;
 
-                if (sala==6) state=WIN;
-                else state=GAMEPLAY;
+                if (sala == 6)
+                    state = WIN;
+                else
+                    state = GAMEPLAY;
 
-                novaRodada=1;
+                novaRodada = 1;
             }
+        }
 
             BeginDrawing();
             ClearBackground(RAYWHITE);
