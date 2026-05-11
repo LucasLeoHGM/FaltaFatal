@@ -41,7 +41,7 @@ int main() {
     Texture2D gameBg = LoadTexture("../assets/forest.jpg");
 
     Music menuMusic = LoadMusicStream("../assets/menu.wav");
-    Music gameMusic = LoadMusicStream("../assets/music.mp3");
+    Music gameMusic = LoadMusicStream("../assets/soundtrack.wav");
 
     Sound openSound = LoadSound("../assets/open.wav");
     Sound closeSound = LoadSound("../assets/close.wav");
