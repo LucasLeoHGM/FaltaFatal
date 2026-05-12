@@ -391,7 +391,7 @@ int main()
 
                     printf("DEBUG: %d\n", MNumber);
 
-                    monsterHP = 50 + (sala * 10);
+                    monsterHP = 50 + (sala * 25);
 
                     qntOpcoes = 5;
 
