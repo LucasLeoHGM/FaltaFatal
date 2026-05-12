@@ -1,6 +1,7 @@
 #include <raylib.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <time.h>
 
 typedef enum {
@@ -43,7 +44,14 @@ void SalvarHistorico(const char *resultado, int sala, int modoDificil)
         f = fopen("../historico_facil.txt", "a");
 
     if (f) {
-        fprintf(f, "%s - Sala %d\n", resultado, sala);
+
+        // Se venceu, não mostra sala
+        if (strcmp(resultado, "VENCEU") == 0)
+            fprintf(f, "VENCEU\n");
+
+        else
+            fprintf(f, "%s - Sala %d\n", resultado, sala);
+
         fclose(f);
     }
 }
@@ -75,8 +83,13 @@ int main()
 
     srand(time(NULL));
 
-    Texture2D menuBg = LoadTexture("../assets/menu.jpg");
+    Texture2D menuBg = LoadTexture("../assets/telademenu.png");
     Texture2D gameBg = LoadTexture("../assets/forest.jpg");
+    Texture2D btnNovoJogo = LoadTexture("../assets/novojogobotao.png");
+    Texture2D btnFacil = LoadTexture("../assets/facilbotao.png");
+    Texture2D btnDificil = LoadTexture("../assets/dificilbotao.png");
+    Texture2D btnStats = LoadTexture("../assets/estatisticasbotao.png");
+    Texture2D btnSair = LoadTexture("../assets/saairbotao.png");
 
     Music menuMusic = LoadMusicStream("../assets/menu.wav");
     Music gameMusic = LoadMusicStream("../assets/soundtrack.wav");
@@ -127,15 +140,15 @@ int main()
         // ===== MENU =====
         if (state == MENU) {
 
-            Rectangle btnJogar = {350,200,200,50};
-            Rectangle btnStats = {350,270,200,50};
-            Rectangle btnSair  = {350,340,200,50};
+            Rectangle btnJogarRec = {300,140,300,110};
+            Rectangle btnStatsRec = {300,280,300,110};
+            Rectangle btnSairRec  = {300,420,300,110};
 
             Vector2 mouse = GetMousePosition();
 
-            bool hJ = CheckCollisionPointRec(mouse, btnJogar);
-            bool hS = CheckCollisionPointRec(mouse, btnStats);
-            bool hX = CheckCollisionPointRec(mouse, btnSair);
+            bool hJ = CheckCollisionPointRec(mouse, btnJogarRec);
+            bool hS = CheckCollisionPointRec(mouse, btnStatsRec);
+            bool hX = CheckCollisionPointRec(mouse, btnSairRec);
 
             if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
 
@@ -176,15 +189,32 @@ int main()
                 WHITE
             );
 
-            DrawText("DICE WARRIOR",260,100,40,BLACK);
+            DrawTexturePro(
+                btnNovoJogo,
+                (Rectangle){0,0,btnNovoJogo.width,btnNovoJogo.height},
+                btnJogarRec,
+                (Vector2){0,0},
+                0,
+                hJ ? LIGHTGRAY : WHITE
+            );
 
-            DrawRectangleRec(btnJogar,hJ?RED:DARKGRAY);
-            DrawRectangleRec(btnStats,hS?RED:DARKGRAY);
-            DrawRectangleRec(btnSair,hX?RED:DARKGRAY);
+            DrawTexturePro(
+                btnStats,
+                (Rectangle){0,0,btnStats.width,btnStats.height},
+                btnStatsRec,
+                (Vector2){0,0},
+                0,
+                hS ? LIGHTGRAY : WHITE
+            );
 
-            DrawText("JOGAR",410,215,20,WHITE);
-            DrawText("ESTATISTICAS",370,285,20,WHITE);
-            DrawText("SAIR",430,355,20,WHITE);
+            DrawTexturePro(
+                btnSair,
+                (Rectangle){0,0,btnSair.width,btnSair.height},
+                btnSairRec,
+                (Vector2){0,0},
+                0,
+                hX ? LIGHTGRAY : WHITE
+            );
 
             EndDrawing();
 
@@ -194,13 +224,13 @@ int main()
         // ===== SELECT MODE =====
         if (state == MODE_SELECT) {
 
-            Rectangle btnFacil = {300,220,300,60};
-            Rectangle btnDificil = {300,320,300,60};
+            Rectangle btnFacilRec   = {300,190,270,100};
+            Rectangle btnDificilRec = {300,350,270,100};
 
             Vector2 mouse = GetMousePosition();
 
-            bool hF = CheckCollisionPointRec(mouse, btnFacil);
-            bool hD = CheckCollisionPointRec(mouse, btnDificil);
+            bool hF = CheckCollisionPointRec(mouse, btnFacilRec);
+            bool hD = CheckCollisionPointRec(mouse, btnDificilRec);
 
             if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
 
@@ -248,11 +278,23 @@ int main()
 
             DrawText("ESCOLHA O MODO",230,120,40,BLACK);
 
-            DrawRectangleRec(btnFacil,hF?GREEN:DARKGRAY);
-            DrawRectangleRec(btnDificil,hD?RED:DARKGRAY);
+            DrawTexturePro(
+                btnFacil,
+                (Rectangle){0,0,btnFacil.width,btnFacil.height},
+                btnFacilRec,
+                (Vector2){0,0},
+                0,
+                hF ? LIGHTGRAY : WHITE
+            );
 
-            DrawText("FACIL",410,240,30,WHITE);
-            DrawText("DIFICIL",390,340,30,WHITE);
+            DrawTexturePro(
+                btnDificil,
+                (Rectangle){0,0,btnDificil.width,btnDificil.height},
+                btnDificilRec,
+                (Vector2){0,0},
+                0,
+                hD ? LIGHTGRAY : WHITE
+            );
 
             EndDrawing();
 
@@ -507,7 +549,10 @@ int main()
 
                     sala++;
 
-                    state = CHEST;
+                    if (sala >= 6)
+                        state = WIN;
+                    else
+                        state = CHEST;
                 }
 
                 novaRodada = 1;
@@ -683,6 +728,11 @@ int main()
 
     UnloadTexture(menuBg);
     UnloadTexture(gameBg);
+    UnloadTexture(btnNovoJogo);
+    UnloadTexture(btnFacil);
+    UnloadTexture(btnDificil);
+    UnloadTexture(btnStats);
+    UnloadTexture(btnSair);
 
     UnloadMusicStream(menuMusic);
     UnloadMusicStream(gameMusic);
