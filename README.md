@@ -148,6 +148,7 @@ pacman -S mingw-w64-x86_64-raylib</code></pre>
 
 ## 🎥 Screencast
 - **[Youtube](https://youtu.be/DD_T3tZea4c): Link do vídeo no Youtube das fases iniciais de desenvolvimento.**  
+- **[Youtube](https://youtu.be/gWsgtCcy6-g): Link do vídeo no Youtube da primeira versão de desenvolvimento.**  
 
 
 ---
