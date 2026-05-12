@@ -5,6 +5,7 @@
 
 typedef enum {
     MENU,
+    MODE_SELECT,
     GAMEPLAY,
     GAMEOVER,
     WIN,
@@ -12,29 +13,66 @@ typedef enum {
     CHEST
 } GameState;
 
+// ===== SISTEMA DE DANO =====
+int calcularDano(int dado, int alvo)
+{
+    int d = abs(dado - alvo);
+
+    if (d == 0)
+        return 40;
+    else if (d <= 2)
+        return 25;
+    else if (d <= 10)
+        return 15;
+    else if (d <= 20)
+        return 10;
+    else if (d <= 30)
+        return 5;
+    else
+        return 0;
+}
+
 // ===== HISTORICO =====
-void SalvarHistorico(const char *resultado, int sala) {
-    FILE *f = fopen("../historico.txt", "a");
+void SalvarHistorico(const char *resultado, int sala, int modoDificil)
+{
+    FILE *f;
+
+    if (modoDificil)
+        f = fopen("../historico_dificil.txt", "a");
+    else
+        f = fopen("../historico_facil.txt", "a");
+
     if (f) {
         fprintf(f, "%s - Sala %d\n", resultado, sala);
         fclose(f);
     }
 }
 
-int LerHistorico(char linhas[][100], int max) {
-    FILE *f = fopen("../historico.txt", "r");
-    if (!f) return 0;
+int LerHistorico(const char *arquivo, char linhas[][100], int max)
+{
+    FILE *f = fopen(arquivo, "r");
+
+    if (!f)
+        return 0;
 
     int i = 0;
-    while (fgets(linhas[i], 100, f) && i < max - 1) i++;
+
+    while (fgets(linhas[i], 100, f) && i < max - 1)
+        i++;
+
     fclose(f);
+
     return i;
 }
 
-int main() {
-    InitWindow(900, 600, "Dice Warrior");
+int main()
+{
+    InitWindow(900, 650, "Dice Warrior");
+
     InitAudioDevice();
+
     SetTargetFPS(60);
+
     srand(time(NULL));
 
     Texture2D menuBg = LoadTexture("../assets/menu.jpg");
@@ -48,20 +86,40 @@ int main() {
 
     PlayMusicStream(menuMusic);
 
-    int MNumber, rodada, min, max, novaRodada;
-    int MAttack, vidas, qntOpcoes, sala;
-    int opcoes[20];
+    int MNumber;
+    int rodada;
+    int min;
+    int max;
+    int novaRodada;
+
+    int monsterHP;
+    int vidas;
+    int qntOpcoes;
+    int sala;
+
+    int resultadoSalvo = 0;
+    int modoDificil = 0;
+
+    int opcoesP1[10];
+    int opcoesP2[10];
+
+    int escolhaP1 = -1;
+    int escolhaP2 = -1;
 
     GameState state = MENU;
+
     char mensagem[200];
 
-    char historico[50][100];
-    int totalLinhas = 0;
+    char historicoFacil[50][100];
+    char historicoDificil[50][100];
+
+    int totalFacil = 0;
+    int totalDificil = 0;
 
     while (!WindowShouldClose()) {
 
         // ===== MUSICA =====
-        if (state == MENU || state == STATS)
+        if (state == MENU || state == STATS || state == MODE_SELECT)
             UpdateMusicStream(menuMusic);
         else
             UpdateMusicStream(gameMusic);
@@ -80,31 +138,43 @@ int main() {
             bool hX = CheckCollisionPointRec(mouse, btnSair);
 
             if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
-                if (hJ) {
-                    StopMusicStream(menuMusic);
-                    PlayMusicStream(gameMusic);
 
-                    MNumber = (rand()%100)+1;
-                    printf("DEBUG: %d\n", MNumber);
+                if (hJ)
+                    state = MODE_SELECT;
 
-                    rodada=0; min=1; max=100; novaRodada=1;
-                    MAttack=5; vidas=5; qntOpcoes=5; sala=1;
-
-                    snprintf(mensagem,200,"Escolha um numero");
-                    state = GAMEPLAY;
-                }
                 if (hS) {
-                    totalLinhas = LerHistorico(historico,50);
+
+                    totalFacil = LerHistorico(
+                        "../historico_facil.txt",
+                        historicoFacil,
+                        50
+                    );
+
+                    totalDificil = LerHistorico(
+                        "../historico_dificil.txt",
+                        historicoDificil,
+                        50
+                    );
+
                     state = STATS;
                 }
-                if (hX) break;
+
+                if (hX)
+                    break;
             }
 
             BeginDrawing();
+
             ClearBackground(RAYWHITE);
 
-            DrawTexturePro(menuBg,(Rectangle){0,0,menuBg.width,menuBg.height},
-                (Rectangle){0,0,900,600},(Vector2){0,0},0,WHITE);
+            DrawTexturePro(
+                menuBg,
+                (Rectangle){0,0,menuBg.width,menuBg.height},
+                (Rectangle){0,0,900,650},
+                (Vector2){0,0},
+                0,
+                WHITE
+            );
 
             DrawText("DICE WARRIOR",260,100,40,BLACK);
 
@@ -117,27 +187,136 @@ int main() {
             DrawText("SAIR",430,355,20,WHITE);
 
             EndDrawing();
+
+            continue;
+        }
+
+        // ===== SELECT MODE =====
+        if (state == MODE_SELECT) {
+
+            Rectangle btnFacil = {300,220,300,60};
+            Rectangle btnDificil = {300,320,300,60};
+
+            Vector2 mouse = GetMousePosition();
+
+            bool hF = CheckCollisionPointRec(mouse, btnFacil);
+            bool hD = CheckCollisionPointRec(mouse, btnDificil);
+
+            if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
+
+                if (hF || hD) {
+
+                    modoDificil = hD;
+
+                    StopMusicStream(menuMusic);
+                    PlayMusicStream(gameMusic);
+
+                    MNumber = (rand()%100)+1;
+
+                    printf("DEBUG: %d\n", MNumber);
+
+                    rodada = 0;
+                    min = 1;
+                    max = 100;
+                    novaRodada = 1;
+
+                    monsterHP = 50;
+
+                    vidas = 5;
+                    qntOpcoes = 5;
+                    sala = 1;
+                    resultadoSalvo = 0;
+
+                    snprintf(mensagem,200,"Escolham um numero");
+
+                    state = GAMEPLAY;
+                }
+            }
+
+            BeginDrawing();
+
+            ClearBackground(RAYWHITE);
+
+            DrawTexturePro(
+                menuBg,
+                (Rectangle){0,0,menuBg.width,menuBg.height},
+                (Rectangle){0,0,900,650},
+                (Vector2){0,0},
+                0,
+                WHITE
+            );
+
+            DrawText("ESCOLHA O MODO",230,120,40,BLACK);
+
+            DrawRectangleRec(btnFacil,hF?GREEN:DARKGRAY);
+            DrawRectangleRec(btnDificil,hD?RED:DARKGRAY);
+
+            DrawText("FACIL",410,240,30,WHITE);
+            DrawText("DIFICIL",390,340,30,WHITE);
+
+            EndDrawing();
+
             continue;
         }
 
         // ===== STATS =====
         if (state == STATS) {
-            if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) state = MENU;
+
+            if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON))
+                state = MENU;
 
             BeginDrawing();
+
             ClearBackground(RAYWHITE);
 
-            DrawTexturePro(menuBg,(Rectangle){0,0,menuBg.width,menuBg.height},
-                (Rectangle){0,0,900,600},(Vector2){0,0},0,WHITE);
+            DrawTexturePro(
+                menuBg,
+                (Rectangle){0,0,menuBg.width,menuBg.height},
+                (Rectangle){0,0,900,650},
+                (Vector2){0,0},
+                0,
+                WHITE
+            );
 
-            DrawText("HISTORICO:",50,50,30,BLACK);
+            DrawText("ESTATISTICAS",300,30,40,BLACK);
 
-            for (int i=0;i<totalLinhas;i++)
-                DrawText(historico[i],50,100+i*20,20,DARKGRAY);
+            DrawLine(450,80,450,600,BLACK);
 
-            DrawText("Clique para voltar",300,550,20,BLACK);
+            DrawText("FACIL",170,90,30,DARKGREEN);
+            DrawText("DIFICIL",590,90,30,MAROON);
+
+            for (int i = 0; i < totalFacil; i++) {
+
+                DrawText(
+                    historicoFacil[i],
+                    50,
+                    140 + (i * 22),
+                    20,
+                    DARKGREEN
+                );
+            }
+
+            for (int i = 0; i < totalDificil; i++) {
+
+                DrawText(
+                    historicoDificil[i],
+                    500,
+                    140 + (i * 22),
+                    20,
+                    MAROON
+                );
+            }
+
+            DrawText(
+                "Clique para voltar",
+                300,
+                610,
+                20,
+                BLACK
+            );
 
             EndDrawing();
+
             continue;
         }
 
@@ -153,41 +332,49 @@ int main() {
             bool hNao = CheckCollisionPointRec(mouse, btnNao);
 
             if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
-            if (hSim || hNao) {
 
-                if (hSim)
-                    PlaySound(openSound);
+                if (hSim || hNao) {
 
-                if (hNao)
-                    PlaySound(closeSound);
+                    if (hSim)
+                        PlaySound(openSound);
 
-                rodada = 0;
-                min = 1;
-                max = 100;
+                    if (hNao)
+                        PlaySound(closeSound);
 
-                MNumber = (rand()%100)+1;
-                printf("DEBUG: %d\n", MNumber);
+                    rodada = 0;
+                    min = 1;
+                    max = 100;
 
-                if (sala <= 2) MAttack = 4;
-                else if (sala <= 4) MAttack = 3;
-                else MAttack = 2;
+                    MNumber = (rand()%100)+1;
 
-                qntOpcoes = 5;
+                    printf("DEBUG: %d\n", MNumber);
 
-                if (sala == 6)
-                    state = WIN;
-                else
-                    state = GAMEPLAY;
+                    monsterHP = 50 + (sala * 10);
 
-                novaRodada = 1;
+                    qntOpcoes = 5;
+
+                    if (sala == 6)
+                        state = WIN;
+                    else
+                        state = GAMEPLAY;
+
+                    novaRodada = 1;
+                }
             }
-        }
 
             BeginDrawing();
+
             ClearBackground(RAYWHITE);
 
             DrawText("VOCE DERROTOU O MONSTRO!",180,150,30,BLACK);
-            DrawText("Abrir seu bau de tesouros?",200,200,25,DARKGRAY);
+
+            DrawText(
+                "Abrir seu bau de tesouros?",
+                200,
+                200,
+                25,
+                DARKGRAY
+            );
 
             DrawRectangleRec(btnSim,hSim?GREEN:DARKGRAY);
             DrawRectangleRec(btnNao,hNao?RED:DARKGRAY);
@@ -196,6 +383,7 @@ int main() {
             DrawText("NAO",btnNao.x+30,btnNao.y+15,20,WHITE);
 
             EndDrawing();
+
             continue;
         }
 
@@ -203,89 +391,266 @@ int main() {
         if (state == GAMEPLAY) {
 
             if (novaRodada) {
+
                 rodada++;
-                for (int i=0;i<qntOpcoes;i++)
-                    opcoes[i]=(rand()%(max-min+1))+min;
-                novaRodada=0;
+
+                for (int i = 0; i < qntOpcoes; i++) {
+
+                    opcoesP1[i] = (rand() % (max - min + 1)) + min;
+                    opcoesP2[i] = (rand() % (max - min + 1)) + min;
+                }
+
+                escolhaP1 = -1;
+                escolhaP2 = -1;
+
+                novaRodada = 0;
             }
 
             Vector2 mouse = GetMousePosition();
 
-            for (int i=0;i<qntOpcoes;i++) {
+            // ===== PLAYER 1 =====
+            for (int i = 0; i < qntOpcoes; i++) {
 
-                Rectangle btn = {100+i*120,400,100,50};
-                bool hover = CheckCollisionPointRec(mouse,btn);
+                Rectangle btnP1 = {80 + i * 120, 350, 100, 50};
 
-                if ((hover && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) || IsKeyPressed(KEY_ONE+i)) {
+                bool hover = CheckCollisionPointRec(mouse, btnP1);
 
-                    int num = opcoes[i];
+                if ((hover && IsMouseButtonPressed(MOUSE_LEFT_BUTTON))
+                    || IsKeyPressed(KEY_ONE + i)) {
 
-                    if (num==MNumber) {
-                        sala++;
-                        state = CHEST;
-                    } else {
-                        MAttack--;
-                        if (num<MNumber) {
-                            min=num+1;
-                            snprintf(mensagem,200,"Maior que %d",num);
-                        } else {
-                            max=num-1;
-                            snprintf(mensagem,200,"Menor que %d",num);
-                        }
-                    }
-
-                    novaRodada=1;
+                    escolhaP1 = opcoesP1[i];
                 }
             }
 
-            if (MAttack<=0) {
-                vidas--;
-                MAttack=3;
-                qntOpcoes++;
+            // ===== PLAYER 2 =====
+            for (int i = 0; i < qntOpcoes; i++) {
+
+                Rectangle btnP2 = {80 + i * 120, 470, 100, 50};
+
+                bool hover = CheckCollisionPointRec(mouse, btnP2);
+
+                if ((hover && IsMouseButtonPressed(MOUSE_RIGHT_BUTTON))
+                    || IsKeyPressed(KEY_Q + i)) {
+
+                    escolhaP2 = opcoesP2[i];
+                }
             }
 
-            if (vidas<=0) {
-                SalvarHistorico("MORREU",sala);
-                state=GAMEOVER;
+            // ===== RESOLVE TURNO =====
+            if (escolhaP1 != -1 && escolhaP2 != -1) {
+
+                int danoP1 = calcularDano(escolhaP1, MNumber);
+                int danoP2 = calcularDano(escolhaP2, MNumber);
+
+                int danoTotal = danoP1 + danoP2;
+
+                monsterHP -= danoTotal;
+
+                if (monsterHP < 0)
+                    monsterHP = 0;
+
+                char dica[100] = "";
+
+                if (!modoDificil) {
+
+                    int media = (escolhaP1 + escolhaP2) / 2;
+
+                    if (media < MNumber) {
+
+                        min = media + 1;
+
+                        snprintf(
+                            dica,
+                            100,
+                            "Numero maior que %d",
+                            media
+                        );
+                    }
+                    else if (media > MNumber) {
+
+                        max = media - 1;
+
+                        snprintf(
+                            dica,
+                            100,
+                            "Numero menor que %d",
+                            media
+                        );
+                    }
+                }
+
+                if (modoDificil) {
+
+                    snprintf(
+                        mensagem,
+                        200,
+                        "P1:%d dano | P2:%d dano | Total:%d",
+                        danoP1,
+                        danoP2,
+                        danoTotal
+                    );
+                }
+                else {
+
+                    snprintf(
+                        mensagem,
+                        200,
+                        "P1:%d | P2:%d | Total:%d | %s",
+                        danoP1,
+                        danoP2,
+                        danoTotal,
+                        dica
+                    );
+                }
+
+                if (monsterHP <= 0) {
+
+                    sala++;
+
+                    state = CHEST;
+                }
+
+                novaRodada = 1;
+            }
+
+            if (rodada % 5 == 0 && novaRodada == 0) {
+
+                vidas--;
+
+                rodada++;
+
+                snprintf(
+                    mensagem,
+                    200,
+                    "O monstro atacou! Voce perdeu 1 vida!"
+                );
+            }
+
+            if (vidas <= 0) {
+
+                if (!resultadoSalvo) {
+
+                    SalvarHistorico("MORREU", sala, modoDificil);
+
+                    resultadoSalvo = 1;
+                }
+
+                state = GAMEOVER;
             }
         }
 
         // ===== DRAW =====
         BeginDrawing();
+
         ClearBackground(RAYWHITE);
 
-        DrawTexturePro(gameBg,(Rectangle){0,0,gameBg.width,gameBg.height},
-            (Rectangle){0,0,900,600},(Vector2){0,0},0,WHITE);
+        DrawTexturePro(
+            gameBg,
+            (Rectangle){0,0,gameBg.width,gameBg.height},
+            (Rectangle){0,0,900,650},
+            (Vector2){0,0},
+            0,
+            WHITE
+        );
 
+        // ===== GAMEPLAY DRAW =====
         if (state == GAMEPLAY) {
-            DrawText(TextFormat("SALA: %d",sala),50,20,30,BLACK);
-            DrawText(TextFormat("VIDAS: %d",vidas),50,60,30,RED);
-            DrawText(mensagem,50,120,25,BLUE);
+
+            DrawText(
+                TextFormat("SALA: %d", sala),
+                50,
+                20,
+                30,
+                BLACK
+            );
+
+            DrawText(
+                modoDificil ? "MODO: DIFICIL" : "MODO: FACIL",
+                650,
+                20,
+                25,
+                modoDificil ? RED : DARKGREEN
+            );
+
+            DrawText(
+                TextFormat("VIDAS: %d", vidas),
+                50,
+                60,
+                30,
+                RED
+            );
+
+            DrawText(
+                TextFormat("MONSTRO HP: %d", monsterHP),
+                50,
+                100,
+                30,
+                DARKGREEN
+            );
+
+            DrawText(mensagem,50,150,25,BLUE);
 
             Vector2 mouse = GetMousePosition();
 
-            for (int i=0;i<qntOpcoes;i++) {
-                Rectangle btn={100+i*120,400,100,50};
-                bool h=CheckCollisionPointRec(mouse,btn);
+            DrawText("PLAYER 1", 50, 310, 25, BLUE);
+            DrawText("Clique esquerdo ou teclas 1-5", 220, 315, 20, DARKBLUE);
 
-                DrawRectangleRec(btn,h?ORANGE:LIGHTGRAY);
-                DrawText(TextFormat("%d",opcoes[i]),btn.x+30,btn.y+15,20,BLACK);
+            for (int i = 0; i < qntOpcoes; i++) {
+
+                Rectangle btn = {80 + i * 120, 350, 100, 50};
+
+                bool h = CheckCollisionPointRec(mouse, btn);
+
+                DrawRectangleRec(btn, h ? ORANGE : LIGHTGRAY);
+
+                DrawText(
+                    TextFormat("%d", opcoesP1[i]),
+                    btn.x + 30,
+                    btn.y + 15,
+                    20,
+                    BLACK
+                );
+            }
+
+            DrawText("PLAYER 2", 50, 430, 25, RED);
+            DrawText("Clique direito ou teclas Q-T", 220, 435, 20, MAROON);
+
+            for (int i = 0; i < qntOpcoes; i++) {
+
+                Rectangle btn = {80 + i * 120, 470, 100, 50};
+
+                bool h = CheckCollisionPointRec(mouse, btn);
+
+                DrawRectangleRec(btn, h ? PINK : LIGHTGRAY);
+
+                DrawText(
+                    TextFormat("%d", opcoesP2[i]),
+                    btn.x + 30,
+                    btn.y + 15,
+                    20,
+                    BLACK
+                );
             }
         }
 
+        // ===== GAME OVER =====
         else if (state == GAMEOVER) {
 
-            Rectangle r={350,300,200,50};
-            Rectangle e={350,370,200,50};
+            Rectangle r = {350,300,200,50};
+            Rectangle e = {350,370,200,50};
 
-            Vector2 mouse=GetMousePosition();
+            Vector2 mouse = GetMousePosition();
 
-            bool hr=CheckCollisionPointRec(mouse,r);
-            bool he=CheckCollisionPointRec(mouse,e);
+            bool hr = CheckCollisionPointRec(mouse,r);
+            bool he = CheckCollisionPointRec(mouse,e);
 
             if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
-                if (hr) state=MENU;
-                if (he) break;
+
+                if (hr)
+                    state = MENU;
+
+                if (he)
+                    break;
             }
 
             DrawText("VOCE MORREU!",280,200,40,RED);
@@ -297,8 +662,15 @@ int main() {
             DrawText("SAIR",430,385,20,WHITE);
         }
 
+        // ===== WIN =====
         else if (state == WIN) {
-            SalvarHistorico("VENCEU",sala);
+
+            if (!resultadoSalvo) {
+
+                SalvarHistorico("VENCEU", sala, modoDificil);
+
+                resultadoSalvo = 1;
+            }
 
             DrawText("VOCE VENCEU!",300,250,40,GREEN);
 
@@ -311,11 +683,15 @@ int main() {
 
     UnloadTexture(menuBg);
     UnloadTexture(gameBg);
+
     UnloadMusicStream(menuMusic);
     UnloadMusicStream(gameMusic);
+
     UnloadSound(openSound);
     UnloadSound(closeSound);
 
     CloseAudioDevice();
     CloseWindow();
+
+    return 0;
 }
