@@ -306,6 +306,8 @@ int main(void)
     // Indice do botao selecionado (-1 = nenhum ainda)
     int idxEscolhaP1 = -1;
     int idxEscolhaP2 = -1;
+    int escolhaPathP1 = -1;
+    int escolhaPathP2 = -1;
 
     // Linha 1: resultado do turno / dica de range
     char mensagem[200]       = "Escolham um numero";
@@ -319,6 +321,8 @@ int main(void)
     int penalVidas       = 0;
     int penalMonsterHP   = 0;
     char pathResultMsg[200] = "";
+    int pathEscolhaP1 = -1;
+    int pathEscolhaP2 = -1;
     int  pathResultTimer    = 0;
 
     // --- Historico ---
@@ -453,6 +457,8 @@ int main(void)
                         pathEventIndex   = rand() % NUM_PATH_EVENTS;
                         pathResultTimer  = 0;
                         pathResultMsg[0] = '\0';
+                        escolhaPathP1 = -1;
+                        escolhaPathP2 = -1;
                         state = PATH_CHOICE;
                     }
                 }
@@ -471,90 +477,155 @@ int main(void)
 
                 if (pathResultTimer == 0)
                 {
-                    vidas     += bonusVidas;
-                    vidas     -= penalVidas;
-                    if (vidas < 1) vidas = 1;
+                    vidas += bonusVidas;
+                    vidas -= penalVidas;
 
-                    rodada    = 0;
-                    minN      = 1;
-                    maxN      = 100;
-                    MNumber   = (rand() % 100) + 1;
+                    if (vidas < 1)
+                        vidas = 1;
+
+                    rodada = 0;
+                    minN = 1;
+                    maxN = 100;
+
+                    MNumber = (rand() % 100) + 1;
                     printf("DEBUG: %d\n", MNumber);
 
-                    monsterHP  = 50 + (sala * 25);
+                    monsterHP = 50 + (sala * 25);
                     monsterHP -= bonusMonsterHP;
                     monsterHP += penalMonsterHP;
-                    if (monsterHP < 10) monsterHP = 10;
 
-                    bonusMonsterHP     = 0;
-                    bonusVidas         = 0;
-                    penalVidas         = 0;
-                    penalMonsterHP     = 0;
-                    qntOpcoes          = 5;
-                    novaRodada         = 1;
-                    idxEscolhaP1       = -1;
-                    idxEscolhaP2       = -1;
+                    if (monsterHP < 10)
+                        monsterHP = 10;
+
+                    bonusMonsterHP = 0;
+                    bonusVidas = 0;
+                    penalVidas = 0;
+                    penalMonsterHP = 0;
+
+                    qntOpcoes = 5;
+                    novaRodada = 1;
+
+                    idxEscolhaP1 = -1;
+                    idxEscolhaP2 = -1;
+
+                    pathEscolhaP1 = -1;
+                    pathEscolhaP2 = -1;
+
                     mensagemMonstro[0] = '\0';
 
                     snprintf(mensagem, 200, "Escolham um numero");
+
                     state = GAMEPLAY;
                 }
             }
-            else if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON))
+            else
             {
-                int escolhido = -1;
-                if (CheckCollisionPointRec(mouse, pathRed))   escolhido = 0;
-                if (CheckCollisionPointRec(mouse, pathGreen)) escolhido = 1;
-                if (CheckCollisionPointRec(mouse, pathBlue))  escolhido = 2;
+                PathEvent *ev = &pathEvents[pathEventIndex];
 
-                if (escolhido != -1)
+                // =========================================
+                // PLAYER 1 -> 1 2 3
+                // =========================================
+
+                if (IsKeyPressed(KEY_ONE))
+                    pathEscolhaP1 = 0;
+
+                if (IsKeyPressed(KEY_TWO))
+                    pathEscolhaP1 = 1;
+
+                if (IsKeyPressed(KEY_THREE))
+                    pathEscolhaP1 = 2;
+
+                // =========================================
+                // PLAYER 2 -> Q W E
+                // =========================================
+
+                if (IsKeyPressed(KEY_Q))
+                    pathEscolhaP2 = 0;
+
+                if (IsKeyPressed(KEY_W))
+                    pathEscolhaP2 = 1;
+
+                if (IsKeyPressed(KEY_E))
+                    pathEscolhaP2 = 2;
+
+                // =========================================
+                // Só confirma se os DOIS escolherem igual
+                // =========================================
+
+                if (pathEscolhaP1 != -1 &&
+                    pathEscolhaP2 != -1)
                 {
-                    PathEvent *ev = &pathEvents[pathEventIndex];
-
-                    if (escolhido == ev->caminhoCerto)
+                    if (pathEscolhaP1 == pathEscolhaP2)
                     {
-                        snprintf(pathResultMsg, 200, "CAMINHO CERTO! %s", ev->bonusDesc);
+                        int escolhido = pathEscolhaP1;
 
-                        if (strstr(ev->bonusDesc, "vida"))
+                        if (escolhido == ev->caminhoCerto)
                         {
-                            int n = 2;
-                            sscanf(ev->bonusDesc, "Bonus: +%d vida", &n);
-                            bonusVidas     = n;
-                            bonusMonsterHP = 0;
-                        }
-                        else
-                        {
-                            int hp = 0;
-                            sscanf(ev->bonusDesc, "Bonus: Monstro inicia com -%d HP!", &hp);
-                            bonusMonsterHP = hp;
-                            bonusVidas     = 0;
-                        }
-                        penalVidas     = 0;
-                        penalMonsterHP = 0;
-                    }
-                    else
-                    {
-                        snprintf(pathResultMsg, 200, "CAMINHO ERRADO! %s", ev->penalDesc);
+                            snprintf(pathResultMsg, 200,
+                                "CAMINHO CERTO! %s",
+                                ev->bonusDesc);
 
-                        if (strstr(ev->penalDesc, "vida"))
-                        {
-                            int n = 1;
-                            sscanf(ev->penalDesc, "Penalidade: Perde %d vida", &n);
-                            penalVidas     = n;
+                            if (strstr(ev->bonusDesc, "vida"))
+                            {
+                                int n = 2;
+
+                                sscanf(ev->bonusDesc,
+                                    "Bonus: +%d vida",
+                                    &n);
+
+                                bonusVidas = n;
+                                bonusMonsterHP = 0;
+                            }
+                            else
+                            {
+                                int hp = 0;
+
+                                sscanf(ev->bonusDesc,
+                                    "Bonus: Monstro inicia com -%d HP!",
+                                    &hp);
+
+                                bonusMonsterHP = hp;
+                                bonusVidas = 0;
+                            }
+
+                            penalVidas = 0;
                             penalMonsterHP = 0;
                         }
                         else
                         {
-                            int hp = 0;
-                            sscanf(ev->penalDesc, "Penalidade: Monstro ganha +%d HP!", &hp);
-                            penalMonsterHP = hp;
-                            penalVidas     = 0;
-                        }
-                        bonusMonsterHP = 0;
-                        bonusVidas     = 0;
-                    }
+                            snprintf(pathResultMsg, 200,
+                                "CAMINHO ERRADO! %s",
+                                ev->penalDesc);
 
-                    pathResultTimer = 180; // 3 segundos
+                            if (strstr(ev->penalDesc, "vida"))
+                            {
+                                int n = 1;
+
+                                sscanf(ev->penalDesc,
+                                    "Penalidade: Perde %d vida",
+                                    &n);
+
+                                penalVidas = n;
+                                penalMonsterHP = 0;
+                            }
+                            else
+                            {
+                                int hp = 0;
+
+                                sscanf(ev->penalDesc,
+                                    "Penalidade: Monstro ganha +%d HP!",
+                                    &hp);
+
+                                penalMonsterHP = hp;
+                                penalVidas = 0;
+                            }
+
+                            bonusMonsterHP = 0;
+                            bonusVidas = 0;
+                        }
+
+                        pathResultTimer = 180;
+                    }
                 }
             }
         }
@@ -580,7 +651,16 @@ int main(void)
                 Rectangle btn = {80.0f + i*120.0f, 370.0f, 100.0f, 50.0f};
                 bool hover    = CheckCollisionPointRec(mouse, btn);
 
-                if (IsKeyPressed(KEY_ONE + i) ||
+                int teclasP1[5] =
+                {
+                    KEY_ONE,
+                    KEY_TWO,
+                    KEY_THREE,
+                    KEY_FOUR,
+                    KEY_FIVE
+                };
+
+                if (IsKeyPressed(teclasP1[i]) ||
                     (hover && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)))
                 {
                     idxEscolhaP1 = i;
@@ -588,7 +668,12 @@ int main(void)
             }
 
             // ---- Entrada P2: teclas Q-T ou clique direito ----
-            int teclasP2[5] = { KEY_Q, KEY_W, KEY_E, KEY_R, KEY_T };
+            int teclasP2[5] = {
+                KEY_Q, 
+                KEY_W, 
+                KEY_E, 
+                KEY_R, 
+                KEY_T };
 
             for (int i = 0; i < qntOpcoes; i++)
             {
