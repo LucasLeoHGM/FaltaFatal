@@ -163,7 +163,7 @@ int main(void)
     RenderTexture2D canvas = LoadRenderTexture(VIRT_W, VIRT_H);
 
     Texture2D menuBg      = LoadTexture("../assets/telademenu.png");
-    Texture2D gameBg      = LoadTexture("../assets/forest.jpg");
+    Texture2D gameBg      = LoadTexture("../assets/forest.png");
     Texture2D circuitBg   = LoadTexture("../assets/circuit.jpg");
     Texture2D btnNovoJogo = LoadTexture("../assets/novojogobotao.png");
     Texture2D btnFacil    = LoadTexture("../assets/facilbotao.png");
@@ -189,6 +189,7 @@ int main(void)
     Texture2D lore3 = LoadTexture("../assets/lore3.png");
     Texture2D lore4 = LoadTexture("../assets/lore4.png");
     Texture2D lore5 = LoadTexture("../assets/lore5.png");
+    Texture2D dropBg = LoadTexture("../assets/drop.png");
 
     Music menuMusic = LoadMusicStream("../assets/menu.wav");
     Music gameMusic = LoadMusicStream("../assets/soundtrack.wav");
@@ -277,8 +278,8 @@ int main(void)
     const Rectangle spr_enemy = { 860, 130, 380, 430 };
 
     // CHEST
-    const Rectangle chestSim = { (VIRT_W*0.5f) - 160, 340, 130, 55 };
-    const Rectangle chestNao = { (VIRT_W*0.5f) +  30, 340, 130, 55 };
+    const Rectangle chestSim = { (VIRT_W*0.5f) - 160, 430, 130, 55 };
+    const Rectangle chestNao = { (VIRT_W*0.5f) +  30, 430, 130, 55 };
 
     // GAME OVER
     const Rectangle goRec = { (VIRT_W - 260)*0.5f, 380, 260, 55 };
@@ -704,12 +705,68 @@ int main(void)
             bool hSim = CheckCollisionPointRec(mouse, chestSim);
             bool hNao = CheckCollisionPointRec(mouse, chestNao);
 
-            ClearBackground(RAYWHITE);
+            DrawTexturePro(
+                dropBg,
+                (Rectangle){0,0,(float)dropBg.width,(float)dropBg.height},
+                (Rectangle){0,0,VIRT_W,VIRT_H},
+                (Vector2){0,0},
+                0,
+                WHITE
+            );
 
-            const char *t1 = "VOCE DERROTOU O MONSTRO!";
-            const char *t2 = "Abrir seu bau de tesouros?";
-            DrawText(t1, (VIRT_W - MeasureText(t1, 36))/2, 210, 36, BLACK);
-            DrawText(t2, (VIRT_W - MeasureText(t2, 26))/2, 270, 26, DARKGRAY);
+            const char *t1 = "Voce derrotou o monstro";
+            const char *t2 = "e ele deixou cair seus dados";
+            const char *t3 = "Deseja tocar os dados?";
+
+            // SOMBRA
+            DrawText(
+                t1,
+                ((VIRT_W - MeasureText(t1, 38))/2) + 3,
+                183,
+                38,
+                BLACK
+            );
+
+            DrawText(
+                t2,
+                ((VIRT_W - MeasureText(t2, 32))/2) + 3,
+                243,
+                32,
+                BLACK
+            );
+
+            DrawText(
+                t3,
+                ((VIRT_W - MeasureText(t3, 28))/2) + 3,
+                323,
+                28,
+                BLACK
+            );
+
+            // TEXTO PRINCIPAL
+            DrawText(
+                t1,
+                (VIRT_W - MeasureText(t1, 38))/2,
+                180,
+                38,
+                WHITE
+            );
+
+            DrawText(
+                t2,
+                (VIRT_W - MeasureText(t2, 32))/2,
+                240,
+                32,
+                WHITE
+            );
+
+            DrawText(
+                t3,
+                (VIRT_W - MeasureText(t3, 28))/2,
+                320,
+                28,
+                WHITE
+            );
 
             DrawRectangleRec(chestSim, hSim ? GREEN   : DARKGRAY);
             DrawRectangleRec(chestNao, hNao ? RED     : DARKGRAY);
@@ -809,10 +866,13 @@ int main(void)
                 DrawText(lbl,
                     (int)(pathRed.x + (pathRed.width - MeasureText(lbl,22))*0.5f),
                     (int)(pathRed.y + pathRed.height*0.5f - 10), 22, WHITE);
-                if (pathEscolhaP1 == 0 || pathEscolhaP2 == 0)
-                    DrawText("[SELECIONADO]",
-                        (int)(pathRed.x+(pathRed.width-MeasureText("[SELECIONADO]",15))*0.5f),
-                        (int)(pathRed.y+pathRed.height-28), 15, (Color){255,220,220,255});
+                if (!modoDificil)
+                {
+                    if (pathEscolhaP1 == 0 || pathEscolhaP2 == 0)
+                        DrawText("[SELECIONADO]",
+                            (int)(pathRed.x+(pathRed.width-MeasureText("[SELECIONADO]",15))*0.5f),
+                            (int)(pathRed.y+pathRed.height-28), 15, (Color){255,220,220,255});
+                }
             }
             // Painel VERDE
             {
@@ -826,10 +886,13 @@ int main(void)
                 DrawText(lbl,
                     (int)(pathGreen.x + (pathGreen.width - MeasureText(lbl,22))*0.5f),
                     (int)(pathGreen.y + pathGreen.height*0.5f - 10), 22, WHITE);
-                if (pathEscolhaP1 == 1 || pathEscolhaP2 == 1)
-                    DrawText("[SELECIONADO]",
-                        (int)(pathGreen.x+(pathGreen.width-MeasureText("[SELECIONADO]",15))*0.5f),
-                        (int)(pathGreen.y+pathGreen.height-28), 15, (Color){220,255,220,255});
+                if (!modoDificil)
+                {
+                    if (pathEscolhaP1 == 1 || pathEscolhaP2 == 1)
+                        DrawText("[SELECIONADO]",
+                            (int)(pathGreen.x+(pathGreen.width-MeasureText("[SELECIONADO]",15))*0.5f),
+                            (int)(pathGreen.y+pathGreen.height-28), 15, (Color){220,255,220,255});
+                }
             }
             // Painel AZUL
             {
@@ -843,10 +906,13 @@ int main(void)
                 DrawText(lbl,
                     (int)(pathBlue.x + (pathBlue.width - MeasureText(lbl,22))*0.5f),
                     (int)(pathBlue.y + pathBlue.height*0.5f - 10), 22, WHITE);
-                if (pathEscolhaP1 == 2 || pathEscolhaP2 == 2)
-                    DrawText("[SELECIONADO]",
-                        (int)(pathBlue.x+(pathBlue.width-MeasureText("[SELECIONADO]",15))*0.5f),
-                        (int)(pathBlue.y+pathBlue.height-28), 15, (Color){200,210,255,255});
+                if (!modoDificil)
+                {
+                    if (pathEscolhaP1 == 2 || pathEscolhaP2 == 2)
+                        DrawText("[SELECIONADO]",
+                            (int)(pathBlue.x+(pathBlue.width-MeasureText("[SELECIONADO]",15))*0.5f),
+                            (int)(pathBlue.y+pathBlue.height-28), 15, (Color){200,210,255,255});
+                }
             }
 
             // Barra de resultado
@@ -1082,6 +1148,7 @@ int main(void)
     UnloadTexture(micaTex); UnloadTexture(ruanTex); UnloadTexture(lucasTex);
     UnloadTexture(lucas2Tex);
     UnloadTexture(lore1); UnloadTexture(lore2); UnloadTexture(lore3); UnloadTexture(lore4); UnloadTexture(lore5);
+    UnloadTexture(dropBg);
     UnloadMusicStream(menuMusic); UnloadMusicStream(gameMusic);
     UnloadSound(openSound); UnloadSound(closeSound);
     CloseAudioDevice();
