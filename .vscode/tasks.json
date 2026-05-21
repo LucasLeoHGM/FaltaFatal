@@ -8,7 +8,7 @@
             "args": [
                 "${workspaceFolder}\\src\\main.c",
                 "-o",
-                "${workspaceFolder}\\output\\DiceWarrior.exe",
+                "${workspaceFolder}\\output\\FaltaFatal.exe",
                 "-lraylib",
                 "-lopengl32",
                 "-lgdi32",
