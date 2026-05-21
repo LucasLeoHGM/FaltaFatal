@@ -270,7 +270,7 @@ static void DrawTexVirt(Texture2D t, Rectangle dst, Color tint)
 // ===========================================================
 int main(void)
 {
-    InitWindow(VIRT_W, VIRT_H, "Dice Warrior");
+    InitWindow(VIRT_W, VIRT_H, "Falta Fatal");
     InitAudioDevice();
     SetTargetFPS(60);
     srand((unsigned)time(NULL));
@@ -281,6 +281,7 @@ int main(void)
     // --- Assets ---
     Texture2D menuBg      = LoadTexture("../assets/telademenu.png");
     Texture2D gameBg      = LoadTexture("../assets/forest.jpg");
+    Texture2D circuitBg   = LoadTexture("../assets/circuit.jpg");
     Texture2D btnNovoJogo = LoadTexture("../assets/novojogobotao.png");
     Texture2D btnFacil    = LoadTexture("../assets/facilbotao.png");
     Texture2D btnDificil  = LoadTexture("../assets/dificilbotao.png");
@@ -872,11 +873,28 @@ int main(void)
             bool hB = canClick && CheckCollisionPointRec(mouse, pathBlue);
 
             // Fundo estilo terminal
-            for (int y = 0; y < VIRT_H; y++)
-            {
-                unsigned char g = (unsigned char)(10 + (y * 25) / VIRT_H);
-                DrawLine(0, y, VIRT_W, y, (Color){5, g, 8, 255});
-            }
+            DrawTexturePro(
+                circuitBg,
+                (Rectangle){
+                    0,
+                    0,
+                    (float)circuitBg.width,
+                    (float)circuitBg.height
+                },
+                (Rectangle){0,0,VIRT_W,VIRT_H},
+                (Vector2){0,0},
+                0.0f,
+                WHITE
+            );
+
+            // Escurece o fundo para melhorar leitura
+            DrawRectangle(
+                0,
+                0,
+                VIRT_W,
+                VIRT_H,
+                (Color){0,0,0,120}
+            );
 
             // Titulo
             const char *titulo = ">> ENCRUZILHADA DO SISTEMA <<";
@@ -1141,6 +1159,7 @@ int main(void)
     UnloadRenderTexture(canvas);
     UnloadTexture(menuBg);
     UnloadTexture(gameBg);
+    UnloadTexture(circuitBg);
     UnloadTexture(btnNovoJogo);
     UnloadTexture(btnFacil);
     UnloadTexture(btnDificil);
