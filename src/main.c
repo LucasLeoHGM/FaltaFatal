@@ -456,6 +456,9 @@ int main(void)
                     else
                     {
                         pathEventIndex   = rand() % NUM_PATH_EVENTS;
+                        printf("DEBUG PATH EVENT: %d | Caminho correto: %d\n",
+                            pathEventIndex,
+                            pathEvents[pathEventIndex].caminhoCerto);
                         pathResultTimer  = 0;
                         pathResultMsg[0] = '\0';
                         escolhaPathP1 = -1;
@@ -1116,7 +1119,22 @@ int main(void)
             bool hr = CheckCollisionPointRec(mouse, r);
             bool he = CheckCollisionPointRec(mouse, e);
 
-            DrawText("VOCE MORREU!", 280, 200, 40, RED);
+            DrawText("O LYCEUM TE DERROTOU", 180, 180, 42, RED);
+            DrawText(
+                "Lucas bloqueou sua invasao.",
+                240,
+                240,
+                26,
+                WHITE
+            );
+
+            DrawText(
+                "Voce foi reprovado por falta.",
+                230,
+                280,
+                26,
+                WHITE
+            );
 
             DrawRectangleRec(r, hr ? ORANGE : DARKGRAY);
             DrawRectangleRec(e, he ? ORANGE : DARKGRAY);
@@ -1128,7 +1146,46 @@ int main(void)
         else if (state == WIN)
         {
             DrawTexVirt(gameBg, (Rectangle){0,0,VIRT_W,VIRT_H}, WHITE);
-            DrawText("VOCE VENCEU!", 300, 250, 40, GREEN);
+            DrawRectangle(0,0,VIRT_W,VIRT_H,(Color){0,0,0,150});
+            DrawText(
+                "ACESSO AO LYCEUM CONCEDIDO",
+                150,
+                170,
+                42,
+                GREEN
+            );
+
+            DrawText(
+                "A falta foi removida.",
+                270,
+                260,
+                30,
+                WHITE
+            );
+
+            DrawText(
+                "STATUS: APROVADO",
+                270,
+                320,
+                36,
+                YELLOW
+            );
+
+            DrawText(
+                "Lucas observava tudo em silencio...",
+                180,
+                420,
+                24,
+                LIGHTGRAY
+            );
+
+            DrawText(
+                "Clique para voltar ao menu",
+                250,
+                560,
+                22,
+                GRAY
+            );
         }
 
         EndTextureMode();
