@@ -163,7 +163,7 @@ int main(void)
     RenderTexture2D canvas = LoadRenderTexture(VIRT_W, VIRT_H);
 
     Texture2D menuBg      = LoadTexture("../assets/telademenu.png");
-    Texture2D gameBg      = LoadTexture("../assets/forest.jpg");
+    Texture2D gameBg      = LoadTexture("../assets/forest.png");
     Texture2D circuitBg   = LoadTexture("../assets/circuit.jpg");
     Texture2D btnNovoJogo = LoadTexture("../assets/novojogobotao.png");
     Texture2D btnFacil    = LoadTexture("../assets/facilbotao.png");
