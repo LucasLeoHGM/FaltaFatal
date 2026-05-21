@@ -25,6 +25,41 @@ typedef enum {
     PATH_CHOICE
 } GameState;
 
+// ===========================================================
+//  LORE / CHEFES
+// ===========================================================
+
+static const char *bossNames[] =
+{
+    "Mari Rata",
+    "Roma, o Seguranca",
+    "Luis, o Ninja",
+    "Mica, a Advogata",
+    "Ruan, o Galo Assassino",
+    "Lucas, o Hacker"
+};
+
+static const char *bossDescriptions[] =
+{
+    "As chuvas inundaram Recife e os ratos dominaram a rua.",
+    "O seguranca do CESAR detectou movimentacao suspeita.",
+    "Outro aluno tentando hackear o Lyceum apareceu.",
+    "Ela ameaca processar qualquer invasor do sistema.",
+    "Uma aberracao protege o servidor principal.",
+    "O hacker responsavel pelo sistema finalmente apareceu."
+};
+
+static const char *introLore[] =
+{
+    "NOME usou todas as faltas da cadeira de sexta-feira.",
+    "No ultimo dia, o professor marcou falta por engano.",
+    "Depois de discutir no Slack sem sucesso...",
+    "ele decidiu invadir o sistema do Lyceum.",
+    "A chuva deixou o CESAR vazio.",
+    "Essa era a chance perfeita.",
+    NULL
+};
+
 // -----------------------------------------------------------
 //  Retorna escala e offset para o letterbox
 // -----------------------------------------------------------
@@ -266,6 +301,25 @@ static void DrawTexVirt(Texture2D t, Rectangle dst, Color tint)
 }
 
 // ===========================================================
+//  RETORNA A TEXTURA DO INIMIGO (MODO FACIL)
+// ===========================================================
+
+static Texture2D* GetEasyEnemyTexture(
+    int sala,
+    Texture2D *slimeTex,
+    Texture2D *ogroTex,
+    Texture2D *bossOgroTex)
+{
+    if (sala >= 6)
+        return bossOgroTex;
+
+    if (sala % 2 == 0)
+        return ogroTex;
+
+    return slimeTex;
+}
+
+// ===========================================================
 //  MAIN
 // ===========================================================
 int main(void)
@@ -281,6 +335,9 @@ int main(void)
     // --- Assets ---
     Texture2D menuBg      = LoadTexture("../assets/telademenu.png");
     Texture2D gameBg      = LoadTexture("../assets/forest.jpg");
+    Texture2D slimeTex    = LoadTexture("../assets/slime.jpg");
+    Texture2D ogroTex     = LoadTexture("../assets/ogro.jpg");
+    Texture2D bossOgroTex = LoadTexture("../assets/boss ogro.jpg");
     Texture2D circuitBg   = LoadTexture("../assets/circuit.jpg");
     Texture2D btnNovoJogo = LoadTexture("../assets/novojogobotao.png");
     Texture2D btnFacil    = LoadTexture("../assets/facilbotao.png");
@@ -829,6 +886,22 @@ int main(void)
         else if (state == STATS)
         {
             DrawTexVirt(menuBg, (Rectangle){0,0,VIRT_W,VIRT_H}, WHITE);
+            DrawRectangle(0,0,VIRT_W,VIRT_H,(Color){0,0,0,120});
+
+            int loreY = 40;
+
+            for (int i = 0; introLore[i] != NULL; i++)
+            {
+                DrawText(
+                    introLore[i],
+                    40,
+                    loreY,
+                    20,
+                    WHITE
+                );
+
+                loreY += 28;
+            }
             DrawText("ESTATISTICAS", 300, 30, 40, BLACK);
             DrawLine(450, 80, 450, 600, BLACK);
             DrawText("FACIL",   170, 90, 30, DARKGREEN);
@@ -1023,89 +1096,331 @@ int main(void)
         {
             DrawTexVirt(gameBg, (Rectangle){0,0,VIRT_W,VIRT_H}, WHITE);
 
-            // HUD topo
-            DrawText(TextFormat("SALA: %d", sala), 50, 18, 28, BLACK);
-            DrawText(modoDificil ? "MODO: DIFICIL" : "MODO: FACIL",
-                640, 18, 23, modoDificil ? RED : DARKGREEN);
-            DrawText(TextFormat("VIDAS: %d", vidas), 50, 52, 28, RED);
-            DrawText(TextFormat("MONSTRO HP: %d", monsterHP), 50, 86, 28, DARKGREEN);
+            // ======================================================
+            // INIMIGO VISUAL (FACIL)
+            // ======================================================
 
-            // Linha 1: dano do turno / dica de range
-            DrawText(mensagem, 50, 125, 21, BLUE);
+            if (!modoDificil)
+            {
+                Texture2D *enemyTex =
+                    GetEasyEnemyTexture(
+                        sala,
+                        &slimeTex,
+                        &ogroTex,
+                        &bossOgroTex
+                    );
 
-            // Linha 2: aviso de ataque do monstro (cor vermelha, separada)
+                DrawTexturePro(
+                    *enemyTex,
+                    (Rectangle){
+                        0,
+                        0,
+                        (float)enemyTex->width,
+                        (float)enemyTex->height
+                    },
+                    (Rectangle){
+                        580,
+                        180,
+                        240,
+                        240
+                    },
+                    (Vector2){0,0},
+                    0.0f,
+                    WHITE
+                );
+            }
+            // Overlay escuro cinematografico
+            DrawRectangle(0,0,VIRT_W,VIRT_H,(Color){0,0,0,110});
+
+            // ======================================================
+            // TITULO DA MISSAO / BOSS
+            // ======================================================
+
+            DrawRectangle(0,0,VIRT_W,90,(Color){0,0,0,180});
+
+            DrawText(
+                TextFormat("MISSAO %d", sala),
+                40,
+                15,
+                34,
+                (Color){0,255,120,255}
+            );
+
+            if (modoDificil)
+            {
+                DrawText(
+                    bossNames[sala-1],
+                    40,
+                    48,
+                    24,
+                    WHITE
+                );
+
+                DrawText(
+                    bossDescriptions[sala-1],
+                    320,
+                    50,
+                    18,
+                    (Color){200,200,200,255}
+                );
+            }
+            else
+            {
+                const char *easyBossName;
+
+                if (sala >= 6)
+                    easyBossName = "Boss Ogro";
+                else if (sala % 2 == 0)
+                    easyBossName = "Ogro";
+                else
+                    easyBossName = "Slime";
+
+                DrawText(
+                    easyBossName,
+                    40,
+                    48,
+                    28,
+                    WHITE
+                );
+
+                DrawText(
+                    "Uma criatura bloqueia o caminho.",
+                    320,
+                    50,
+                    18,
+                    LIGHTGRAY
+                );
+            }
+
+            // ======================================================
+            // HUD
+            // ======================================================
+
+            DrawRectangle(20,100,250,120,(Color){0,0,0,150});
+
+            DrawText(
+                TextFormat("VIDAS: %d", vidas),
+                40,
+                115,
+                28,
+                RED
+            );
+
+            DrawText(
+                TextFormat("HP DO CHEFE: %d", monsterHP),
+                40,
+                150,
+                24,
+                GREEN
+            );
+
+            DrawText(
+                modoDificil ? "MODO DIFICIL" : "MODO FACIL",
+                40,
+                182,
+                20,
+                modoDificil ? RED : GREEN
+            );
+
+            // ======================================================
+            // LORE DINAMICA
+            // ======================================================
+
+            DrawRectangle(520,100,340,120,(Color){0,0,0,170});
+
+            DrawText(
+                "OBJETIVO:",
+                540,
+                115,
+                24,
+                YELLOW
+            );
+
+            DrawText(
+                "Hackear o Lyceum",
+                540,
+                150,
+                22,
+                WHITE
+            );
+
+            DrawText(
+                "e remover a falta.",
+                540,
+                178,
+                22,
+                WHITE
+            );
+
+            // ======================================================
+            // MENSAGENS
+            // ======================================================
+
+            DrawRectangle(50,240,800,70,(Color){0,0,0,180});
+
+            DrawText(
+                mensagem,
+                70,
+                255,
+                22,
+                SKYBLUE
+            );
+
             if (mensagemMonstro[0] != '\0')
-                DrawText(mensagemMonstro, 50, 152, 20, RED);
+            {
+                DrawText(
+                    mensagemMonstro,
+                    70,
+                    282,
+                    20,
+                    RED
+                );
+            }
 
-            // ---- PLAYER 1 ----
-            DrawText("PLAYER 1", 50, 310, 24, BLUE);
-            DrawText("Teclas 1-5 | clique esquerdo", 215, 315, 17, DARKBLUE);
+            // ======================================================
+            // PLAYER 1
+            // ======================================================
+
+            DrawText(
+                "PLAYER 1",
+                50,
+                340,
+                24,
+                BLUE
+            );
+
+            DrawText(
+                "Teclas 1-5",
+                190,
+                343,
+                18,
+                LIGHTGRAY
+            );
 
             for (int i = 0; i < qntOpcoes; i++)
             {
-                Rectangle btn = {80.0f + i*120.0f, 345.0f, 100.0f, 50.0f};
+                Rectangle btn =
+                {
+                    80.0f + i*120.0f,
+                    380.0f,
+                    100.0f,
+                    55.0f
+                };
+
                 bool hover    = CheckCollisionPointRec(mouse, btn);
                 bool selected = (idxEscolhaP1 == i);
 
-                // Cor: selecionado > hover > normal
                 Color bg;
-                if      (selected) bg = (Color){255,140,0,255};   // laranja vivo
-                else if (hover)    bg = (Color){255,200,100,255};  // laranja claro
-                else               bg = LIGHTGRAY;
+
+                if (selected)
+                    bg = ORANGE;
+                else if (hover)
+                    bg = GOLD;
+                else
+                    bg = LIGHTGRAY;
 
                 DrawRectangleRec(btn, bg);
 
-                // Borda grossa quando selecionado
                 if (selected)
-                    DrawRectangleLinesEx(btn, 4, (Color){180,80,0,255});
+                    DrawRectangleLinesEx(btn, 4, WHITE);
 
-                // Numero centralizado
                 const char *numStr = TextFormat("%d", opcoesP1[i]);
-                DrawText(numStr,
+
+                DrawText(
+                    numStr,
                     (int)(btn.x + 50 - MeasureText(numStr,20)/2),
-                    (int)(btn.y + 15), 20, BLACK);
+                    (int)(btn.y + 16),
+                    20,
+                    BLACK
+                );
             }
 
-            // Aviso enquanto P1 escolheu mas P2 ainda nao
-            if (idxEscolhaP1 != -1 && idxEscolhaP2 == -1)
-                DrawText("P1 pronto!  Aguardando P2...",
-                    50, 405, 17, (Color){200,100,0,255});
+            // ======================================================
+            // PLAYER 2
+            // ======================================================
 
-            // ---- PLAYER 2 ----
-            DrawText("PLAYER 2", 50, 435, 24, RED);
-            DrawText("Teclas Q-T | clique direito", 215, 440, 17, MAROON);
+            DrawText(
+                "PLAYER 2",
+                50,
+                470,
+                24,
+                RED
+            );
+
+            DrawText(
+                "Teclas Q-T",
+                190,
+                473,
+                18,
+                LIGHTGRAY
+            );
 
             for (int i = 0; i < qntOpcoes; i++)
             {
-                Rectangle btn = {80.0f + i*120.0f, 468.0f, 100.0f, 50.0f};
+                Rectangle btn =
+                {
+                    80.0f + i*120.0f,
+                    510.0f,
+                    100.0f,
+                    55.0f
+                };
+
                 bool hover    = CheckCollisionPointRec(mouse, btn);
                 bool selected = (idxEscolhaP2 == i);
 
                 Color bg;
-                if      (selected) bg = (Color){210,50,110,255};   // rosa forte
-                else if (hover)    bg = (Color){255,150,190,255};   // rosa claro
-                else               bg = LIGHTGRAY;
+
+                if (selected)
+                    bg = MAGENTA;
+                else if (hover)
+                    bg = PINK;
+                else
+                    bg = LIGHTGRAY;
 
                 DrawRectangleRec(btn, bg);
 
                 if (selected)
-                    DrawRectangleLinesEx(btn, 4, (Color){140,0,70,255});
+                    DrawRectangleLinesEx(btn, 4, WHITE);
 
                 const char *numStr = TextFormat("%d", opcoesP2[i]);
-                DrawText(numStr,
+
+                DrawText(
+                    numStr,
                     (int)(btn.x + 50 - MeasureText(numStr,20)/2),
-                    (int)(btn.y + 15), 20, BLACK);
+                    (int)(btn.y + 16),
+                    20,
+                    BLACK
+                );
             }
 
-            // Aviso enquanto P2 escolheu mas P1 ainda nao
-            if (idxEscolhaP2 != -1 && idxEscolhaP1 == -1)
-                DrawText("P2 pronto!  Aguardando P1...",
-                    50, 528, 17, (Color){160,0,80,255});
+            // ======================================================
+            // ALERTA DE INVASAO
+            // ======================================================
 
-            // Dica F11
-            DrawText("[F11] Fullscreen",
+            if (rodada >= 10)
+            {
+                DrawRectangle(580,580,260,35,(Color){120,0,0,220});
+
+                DrawText(
+                    "ALERTA: SISTEMA DETECTANDO INVASAO",
+                    590,
+                    590,
+                    14,
+                    RED
+                );
+            }
+
+            // ======================================================
+            // DICA
+            // ======================================================
+
+            DrawText(
+                "[F11] Fullscreen",
                 VIRT_W - MeasureText("[F11] Fullscreen",15) - 8,
-                VIRT_H - 22, 15, (Color){80,80,80,180});
+                VIRT_H - 22,
+                15,
+                LIGHTGRAY
+            );
         }
 
         // ---- GAME OVER ----
@@ -1222,6 +1537,9 @@ int main(void)
     UnloadTexture(btnDificil);
     UnloadTexture(btnStats);
     UnloadTexture(btnSair);
+    UnloadTexture(slimeTex);
+    UnloadTexture(ogroTex);
+    UnloadTexture(bossOgroTex);
     UnloadMusicStream(menuMusic);
     UnloadMusicStream(gameMusic);
     UnloadSound(openSound);
