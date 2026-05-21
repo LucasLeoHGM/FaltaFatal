@@ -152,6 +152,31 @@ static Rectangle CenteredRect(float y, float w, float h)
     return (Rectangle){ (VIRT_W - w) * 0.5f, y, w, h };
 }
 
+int b1 = 0, b2 = 0, b3 = 0, b4 = 0, b5 = 0, b6 = 0, menor = 0, maior = 0, fights = 0;
+float media = 0;
+
+
+//work in progress
+void report(void)
+{
+    media = (b1 + b2 + b3 + b4 + b5 + b6)/fights;
+    int bosses [6] = {b1, b2, b3, b4, b5, b6};
+    for (int i = 1; i < 6; i++) {
+        if (numeros[i] < menor) {
+            menor = numeros[i];
+        }
+    }
+    for (int i = 1; i < 6; i++) {
+        if (numeros[i] > maior) {
+            maior = numeros[i];
+        }
+    }
+
+    printf("A sua média foi: %d\n", media);
+    printf("O menor numero é: %d\n", menor);
+
+}
+
 int main(void)
 {
     InitWindow(VIRT_W, VIRT_H, "Falta Fatal");
