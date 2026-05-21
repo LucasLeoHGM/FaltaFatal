@@ -10,6 +10,7 @@
 typedef enum {
     MENU,
     MODE_SELECT,
+    LORE,
     GAMEPLAY,
     GAMEOVER,
     WIN,
@@ -183,6 +184,12 @@ int main(void)
     Texture2D lucasTex  = LoadTexture("../assets/lucas.png");
     Texture2D lucas2Tex = LoadTexture("../assets/lucas2.png");
 
+    Texture2D lore1 = LoadTexture("../assets/lore1.png");
+    Texture2D lore2 = LoadTexture("../assets/lore2.png");
+    Texture2D lore3 = LoadTexture("../assets/lore3.png");
+    Texture2D lore4 = LoadTexture("../assets/lore4.png");
+    Texture2D lore5 = LoadTexture("../assets/lore5.png");
+
     Music menuMusic = LoadMusicStream("../assets/menu.wav");
     Music gameMusic = LoadMusicStream("../assets/soundtrack.wav");
     Sound openSound  = LoadSound("../assets/open.wav");
@@ -193,7 +200,7 @@ int main(void)
     GameState state = MENU;
 
     int MNumber = 0, rodada = 0, minN = 1, maxN = 100, novaRodada = 0;
-    int monsterHP = 50, vidas = 5, qntOpcoes = 5, sala = 1;
+    int monsterHP = 50, vidas = 5, qntOpcoes = 6, sala = 1;
     int resultadoSalvo = 0, modoDificil = 0;
     int opcoesP1[10], opcoesP2[10];
     int idxEscolhaP1 = -1, idxEscolhaP2 = -1;
@@ -205,6 +212,28 @@ int main(void)
     int pathEventIndex  = 0;
     int bonusMonsterHP  = 0, bonusVidas = 0, penalVidas = 0, penalMonsterHP = 0;
     char pathResultMsg[200] = "";
+    // =======================
+    // LORE
+    // =======================
+    int loreScene = 0;
+    int loreCharIndex = 0;
+    int loreTimer = 0;
+
+    const char *loreTexts[] = {
+        "Voce usou todas as faltas da cadeira de sexta-feira.",
+        "No ultimo dia, o professor marcou falta por engano.",
+        "Depois de discutir no Slack sem sucesso...",
+        "Voce decidiu invadir o sistema do Lyceum.",
+        "A chuva deixou o CESAR vazio...\nEssa era a chance perfeita."
+    };
+
+    Texture2D *loreTextures[] = {
+        &lore1,
+        &lore2,
+        &lore3,
+        &lore4,
+        &lore5
+    };
     int pathEscolhaP1 = -1, pathEscolhaP2 = -1;
     int pathResultTimer = 0;
     // Timer da tela de caminho (frames a 60fps): facil=25s=1500 | dificil=15s=900
@@ -256,10 +285,36 @@ int main(void)
     const Rectangle goExi = { (VIRT_W - 260)*0.5f, 460, 260, 55 };
 
     // PATH CHOICE — 3 painéis igualmente espaçados
-    // Cada painel: 280x230. Gap: ~40. Total = 3*280+2*40 = 920. StartX=(1280-920)/2=180
     const Rectangle pathRed   = { 180, 310, 270, 220 };
     const Rectangle pathGreen = { 500, 310, 270, 220 };
     const Rectangle pathBlue  = { 820, 310, 270, 220 };
+
+    // =========================================================
+    //  GAMEPLAY — layout 3 colunas  (1280 x 720)
+    //
+    //  Col esq  [  0.. 310]: botões P1 + sprite P1
+    //  Col mid  [310.. 970]: sprites (P1, inimigo, P2) + mensagens
+    //  Col dir  [970..1280]: botões P2 + sprite P2
+    //
+    //  Botões: grid 3x2 por jogador
+    //    BTN6_W=80  BTN6_H=52  BTN6_GAP=8
+    //    Bloco total: 3*80+2*8 = 256 wide, 2*52+8 = 112 tall
+    // =========================================================
+    const int BTN6_W   = 80;
+    const int BTN6_H   = 52;
+    const int BTN6_GAP = 8;
+    // Coluna esquerda: bloco de botões centralizado em x=[10..300]
+    const float P1_BTN_X     = 27;          // margem esq da grade P1
+    const float P1_BTN_TOP_Y = 340;         // linha superior da grade P1
+    // Coluna direita: bloco de botões alinhado à direita em x=[970..1270]
+    const float P2_BTN_X     = VIRT_W - 27 - (3*BTN6_W + 2*BTN6_GAP);
+    const float P2_BTN_TOP_Y = 340;         // mesma altura que P1
+    // Sprites centrais
+    // P1 e P2 ocupam faixa vertical 95-720, centralizado no terço do meio
+    // Inimigo: centro-dir do palco
+    const Rectangle spr2_p1    = { 330,  230, 160, 310 };
+    const Rectangle spr2_p2    = { 530,  230, 160, 310 };
+    const Rectangle spr2_enemy = { 790,  130, 380, 440 };
 
     while (!WindowShouldClose())
     {
@@ -301,17 +356,54 @@ int main(void)
                     MNumber = (rand() % 100) + 1;
                     printf("DEBUG: %d\n", MNumber);
                     rodada = 0; minN = 1; maxN = 100; novaRodada = 1;
-                    monsterHP = 50; vidas = 5; qntOpcoes = 5; sala = 1;
+                    monsterHP = 50; vidas = 5; qntOpcoes = 6; sala = 1;
                     resultadoSalvo = 0; bonusMonsterHP = 0; bonusVidas = 0;
                     penalVidas = 0; penalMonsterHP = 0;
                     idxEscolhaP1 = -1; idxEscolhaP2 = -1;
                     salaComPath = 1; pathTimeLeft = 0;
                     mensagemMonstro[0] = '\0';
                     snprintf(mensagem, 200, "Escolham um numero");
-                    state = GAMEPLAY;
+                    loreScene = 0;
+                    loreCharIndex = 0;
+                    loreTimer = 0;
+                    state = LORE;
                 }
             }
         }
+        else if (state == LORE)
+        {
+            loreTimer++;
+
+            // efeito digitando
+            if (loreTimer % 2 == 0) {
+                int tamanho = strlen(loreTexts[loreScene]);
+                if (loreCharIndex < tamanho)
+                    loreCharIndex++;
+            }
+
+            // avançar cena
+            if (IsKeyPressed(KEY_ENTER) || IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
+
+                int tamanho = strlen(loreTexts[loreScene]);
+
+                // termina texto instantaneamente
+                if (loreCharIndex < tamanho) {
+                    loreCharIndex = tamanho;
+                }
+                else {
+                    loreScene++;
+
+                    if (loreScene >= 5) {
+                        state = GAMEPLAY;
+                    }
+                    else {
+                        loreCharIndex = 0;
+                        loreTimer = 0;
+                    }
+                }
+            }
+        }
+        
         else if (state == STATS)
         {
             if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) state = MENU;
@@ -329,7 +421,7 @@ int main(void)
                         salaComPath = !salaComPath;
                         if (salaComPath) {
                             pathEventIndex  = rand() % NUM_PATH_EVENTS;
-                            printf("DEBUG PATH EVENT: %d | Caminho correto: %d\n", pathEventIndex, pathEvents[pathEventIndex].caminhoCerto+1);
+                            printf("DEBUG PATH EVENT: %d | Caminho correto: %d\n", pathEventIndex, pathEvents[pathEventIndex].caminhoCerto);
                             pathResultTimer = 0; pathResultMsg[0] = '\0';
                             pathEscolhaP1 = -1; pathEscolhaP2 = -1;
                             pathTimeLeft = modoDificil ? 900 : 1500;
@@ -340,7 +432,7 @@ int main(void)
                             printf("DEBUG: %d\n", MNumber);
                             monsterHP = 50 + (sala * 25);
                             if (monsterHP < 10) monsterHP = 10;
-                            qntOpcoes = 5; novaRodada = 1;
+                            qntOpcoes = 6; novaRodada = 1;
                             idxEscolhaP1 = -1; idxEscolhaP2 = -1;
                             mensagemMonstro[0] = '\0';
                             snprintf(mensagem, 200, "Escolham um numero");
@@ -362,7 +454,7 @@ int main(void)
                 monsterHP = 50 + (sala * 25) - bonusMonsterHP + penalMonsterHP; \
                 if (monsterHP < 10) monsterHP = 10; \
                 bonusMonsterHP = 0; bonusVidas = 0; penalVidas = 0; penalMonsterHP = 0; \
-                qntOpcoes = 5; novaRodada = 1; \
+                qntOpcoes = 6; novaRodada = 1; \
                 idxEscolhaP1 = -1; idxEscolhaP2 = -1; \
                 pathEscolhaP1 = -1; pathEscolhaP2 = -1; \
                 mensagemMonstro[0] = '\0'; \
@@ -424,15 +516,28 @@ int main(void)
                 }
                 idxEscolhaP1 = -1; idxEscolhaP2 = -1; novaRodada = 0;
             }
-            int teclasP1[5] = { KEY_ONE, KEY_TWO, KEY_THREE, KEY_FOUR, KEY_FIVE };
+            // P1: 1 2 3 4 5 6   P2: Q W E R T Y
+            // Botoes P1: col esq, 2 linhas de 3
+            //   btn 0,1,2 = linha de cima  |  btn 3,4,5 = linha de baixo
+            int teclasP1[6] = { KEY_ONE, KEY_TWO, KEY_THREE, KEY_FOUR, KEY_FIVE, KEY_SIX };
             for (int i = 0; i < qntOpcoes; i++) {
-                Rectangle btn = { BTN_NUM_STARTX + i*(BTN_NUM_W+BTN_NUM_GAP), BTN_P1_Y, BTN_NUM_W, BTN_NUM_H };
+                int col = i % 3, row = i / 3;
+                Rectangle btn = {
+                    P1_BTN_X + col * (BTN6_W + BTN6_GAP),
+                    P1_BTN_TOP_Y + row * (BTN6_H + BTN6_GAP),
+                    BTN6_W, BTN6_H
+                };
                 if (IsKeyPressed(teclasP1[i]) || (CheckCollisionPointRec(mouse, btn) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)))
                     idxEscolhaP1 = i;
             }
-            int teclasP2[5] = { KEY_Q, KEY_W, KEY_E, KEY_R, KEY_T };
+            int teclasP2[6] = { KEY_Q, KEY_W, KEY_E, KEY_R, KEY_T, KEY_Y };
             for (int i = 0; i < qntOpcoes; i++) {
-                Rectangle btn = { BTN_NUM_STARTX + i*(BTN_NUM_W+BTN_NUM_GAP), BTN_P2_Y, BTN_NUM_W, BTN_NUM_H };
+                int col = i % 3, row = i / 3;
+                Rectangle btn = {
+                    P2_BTN_X + col * (BTN6_W + BTN6_GAP),
+                    P2_BTN_TOP_Y + row * (BTN6_H + BTN6_GAP),
+                    BTN6_W, BTN6_H
+                };
                 if (IsKeyPressed(teclasP2[i]) || (CheckCollisionPointRec(mouse, btn) && IsMouseButtonPressed(MOUSE_RIGHT_BUTTON)))
                     idxEscolhaP2 = i;
             }
@@ -504,6 +609,66 @@ int main(void)
 
             DrawTexVirt(btnFacil,   btnFacilRec,   hF ? LIGHTGRAY : WHITE);
             DrawTexVirt(btnDificil, btnDificilRec, hD ? LIGHTGRAY : WHITE);
+        }
+        else if (state == LORE)
+        {
+            Texture2D *bg = loreTextures[loreScene];
+
+            // fundo da cena
+            DrawTexturePro(
+                *bg,
+                (Rectangle){0, 0, (float)bg->width, (float)bg->height},
+                (Rectangle){0, 0, VIRT_W, VIRT_H},
+                (Vector2){0, 0},
+                0,
+                WHITE
+            );
+
+            // sombra inferior
+            DrawRectangle(
+                0,
+                VIRT_H - 170,
+                VIRT_W,
+                170,
+                (Color){0,0,0,180}
+            );
+
+            // texto aparecendo aos poucos
+            char visibleText[512] = {0};
+
+            strncpy(
+                visibleText,
+                loreTexts[loreScene],
+                loreCharIndex
+            );
+
+            visibleText[loreCharIndex] = '\0';
+
+            // sombra do texto
+            DrawText(
+                visibleText,
+                63,
+                VIRT_H - 127,
+                30,
+                BLACK
+            );
+
+            // texto principal branco
+            DrawText(
+                visibleText,
+                60,
+                VIRT_H - 130,
+                30,
+                WHITE
+            );
+
+            DrawText(
+                "ENTER ou clique para continuar",
+                VIRT_W - 420,
+                VIRT_H - 40,
+                22,
+                LIGHTGRAY
+            );
         }
         else if (state == STATS)
         {
@@ -703,97 +868,153 @@ int main(void)
         }
         else if (state == GAMEPLAY)
         {
+            // ======================================================
+            // ORDEM DE DRAW: fundo -> sprites -> HUD (sem overlay geral)
+            // Nada tapa os sprites!
+            // ======================================================
+
+            // 1) Fundo
             DrawTexVirt(gameBg, (Rectangle){0,0,VIRT_W,VIRT_H}, WHITE);
 
+            // 2) Sprites — desenhados ANTES de qualquer painel HUD
             Texture2D *enemyTex = GetEnemyTexture(sala, modoDificil,
                 &slimeTex,&ogroTex,&bossTex,
                 &mariTex,&romaTex,&luisTex,&micaTex,&ruanTex,&lucasTex,&lucas2Tex);
 
-            // Sprites
             DrawTexturePro(player1Tex,
                 (Rectangle){0,0,(float)player1Tex.width,(float)player1Tex.height},
-                spr_p1, (Vector2){0,0}, 0, WHITE);
+                spr2_p1, (Vector2){0,0}, 0, WHITE);
             DrawTexturePro(player2Tex,
                 (Rectangle){0,0,(float)player2Tex.width,(float)player2Tex.height},
-                spr_p2, (Vector2){0,0}, 0, WHITE);
+                spr2_p2, (Vector2){0,0}, 0, WHITE);
             DrawTexturePro(*enemyTex,
                 (Rectangle){0,0,(float)enemyTex->width,(float)enemyTex->height},
-                spr_enemy, (Vector2){0,0}, 0, WHITE);
+                spr2_enemy, (Vector2){0,0}, 0, WHITE);
 
-            // Overlay
-            DrawRectangle(0,0,VIRT_W,VIRT_H,(Color){0,0,0,100});
+            // 3) HUD superior (barra preta no topo — cobre só os primeiros 95px)
+            DrawRectangle(0, 0, VIRT_W, 95, (Color){0,0,0,210});
 
-            // --- HUD superior ---
-            DrawRectangle(0,0,VIRT_W,95,(Color){0,0,0,190});
+            // Missão
+            DrawText(TextFormat("MISSAO %d", sala), 20, 10, 32, (Color){0,255,120,255});
 
-            // Missão (esq)
-            DrawText(TextFormat("MISSAO %d", sala), 30, 12, 34, (Color){0,255,120,255});
-
-            // Nome do boss (esq, abaixo)
+            // Nome do boss / descrição
             if (modoDificil) {
-                DrawText(bossNames[sala-1], 30, 50, 24, WHITE);
-                DrawText(bossDescriptions[sala-1], 320, 54, 17, (Color){200,200,200,255});
+                DrawText(bossNames[sala-1], 20, 48, 22, WHITE);
+                int descX = 20 + MeasureText(bossNames[sala-1], 22) + 20;
+                DrawText(bossDescriptions[sala-1], descX, 52, 16, (Color){190,190,190,255});
             } else {
-                const char *easyBossName;
-                if ((!modoDificil&&sala>=6)||(modoDificil&&sala>=8)) easyBossName="Boss Ogro";
-                else if (sala%2==0) easyBossName="Ogro";
-                else easyBossName="Slime";
-                DrawText(easyBossName, 30, 50, 26, WHITE);
-                DrawText("Uma criatura bloqueia o caminho.", 320, 54, 17, LIGHTGRAY);
+                const char *ebn;
+                if ((!modoDificil&&sala>=6)||(modoDificil&&sala>=8)) ebn="Boss Ogro";
+                else if (sala%2==0) ebn="Ogro";
+                else ebn="Slime";
+                DrawText(ebn, 20, 48, 24, WHITE);
+                DrawText("Uma criatura bloqueia o caminho.", 200, 52, 16, LIGHTGRAY);
             }
 
-            // Modo (dir)
+            // Modo (canto dir do HUD superior)
             const char *modoTxt = modoDificil ? "MODO DIFICIL" : "MODO FACIL";
-            DrawText(modoTxt, VIRT_W - MeasureText(modoTxt,20) - 20, 12, 20, modoDificil?RED:GREEN);
+            DrawText(modoTxt, VIRT_W - MeasureText(modoTxt,18) - 14, 10, 18, modoDificil?RED:(Color){0,220,80,255});
 
-            // --- HUD lateral esq (vidas / HP) ---
-            DrawRectangle(18, 105, 270, 110, (Color){0,0,0,160});
-            DrawText(TextFormat("VIDAS: %d", vidas), 35, 118, 28, RED);
-            DrawText(TextFormat("HP CHEFE: %d", monsterHP), 35, 158, 22, GREEN);
+            // Vidas + HP (canto dir, segunda linha do HUD)
+            DrawText(TextFormat("VIDAS: %d", vidas),
+                VIRT_W - MeasureText(TextFormat("VIDAS: %d",vidas),18) - 14, 36, 18, RED);
+            DrawText(TextFormat("HP: %d", monsterHP),
+                VIRT_W - MeasureText(TextFormat("HP: %d",monsterHP),18) - 14, 58, 18, GREEN);
 
-            // --- HUD lateral dir (objetivo) ---
-            DrawRectangle(VIRT_W-290, 105, 270, 110, (Color){0,0,0,170});
-            DrawText("OBJETIVO:", VIRT_W-275, 118, 22, YELLOW);
-            DrawText("Hackear o Lyceum", VIRT_W-275, 148, 20, WHITE);
-            DrawText("e remover a falta.", VIRT_W-275, 172, 20, WHITE);
-
-            // --- Mensagem central ---
-            DrawRectangle(60, 245, VIRT_W-120, 68, (Color){0,0,0,185});
-            DrawText(mensagem, (VIRT_W - MeasureText(mensagem,22))/2, 259, 22, SKYBLUE);
+            // 4) Mensagem de resultado (faixa estreita, entre HUD e sprites)
+            DrawRectangle(300, 100, 680, 118, (Color){0,0,0,170});
+            DrawText(mensagem,
+                300 + (680 - MeasureText(mensagem,20))/2, 115, 20, SKYBLUE);
             if (mensagemMonstro[0] != '\0')
-                DrawText(mensagemMonstro, (VIRT_W - MeasureText(mensagemMonstro,20))/2, 288, 20, RED);
+                DrawText(mensagemMonstro,
+                    300 + (680 - MeasureText(mensagemMonstro,18))/2, 150, 18, RED);
 
-            // --- Rótulo P1 e botões P1 (fila de cima) ---
-            DrawText("PLAYER 1 (1-5)", (VIRT_W - MeasureText("PLAYER 1 (1-5)",22))/2, (int)(BTN_P1_Y - 28), 22, BLUE);
+            // 5) Colunas laterais (painéis semitransparentes para botões)
+            //    Esquerda: x=0..310  |  Direita: x=970..1280
+            DrawRectangle(0,   95, 310, VIRT_H-95, (Color){0,0,0,140});
+            DrawRectangle(970, 95, 310, VIRT_H-95, (Color){0,0,0,140});
+
+            // Linha divisória suave
+            DrawLine(310, 95, 310, VIRT_H, (Color){80,80,80,180});
+            DrawLine(970, 95, 970, VIRT_H, (Color){80,80,80,180});
+
+            // ── PLAYER 1 (coluna esquerda) ────────────────────────
+            DrawText("PLAYER 1",
+                (310 - MeasureText("PLAYER 1",20))/2, 100, 20, (Color){100,180,255,255});
+            DrawText("1 2 3 / 4 5 6",
+                (310 - MeasureText("1 2 3 / 4 5 6",15))/2, 124, 15, (Color){160,160,160,200});
+
+            // Sprite P1 (pequeno, dentro da coluna esq)
+            // Já desenhado acima em spr2_p1 — apenas label abaixo
+            DrawText("[ P1 ]",
+                (int)(spr2_p1.x + (spr2_p1.width - MeasureText("[ P1 ]",15))*0.5f),
+                (int)(spr2_p1.y + spr2_p1.height + 4), 15, (Color){100,180,255,200});
+
+            // Botões P1: grid 3x2 na coluna esquerda
+            // Grade: Y topo=340, Y baixo=400+gap
             for (int i = 0; i < qntOpcoes; i++) {
-                Rectangle btn = { BTN_NUM_STARTX + i*(BTN_NUM_W+BTN_NUM_GAP), BTN_P1_Y, BTN_NUM_W, BTN_NUM_H };
-                bool hover = CheckCollisionPointRec(mouse, btn);
+                int col = i % 3, row = i / 3;
+                Rectangle btn = {
+                    P1_BTN_X + col * (BTN6_W + BTN6_GAP),
+                    P1_BTN_TOP_Y + row * (BTN6_H + BTN6_GAP),
+                    BTN6_W, BTN6_H
+                };
+                bool hover    = CheckCollisionPointRec(mouse, btn);
                 bool selected = (idxEscolhaP1 == i);
-                Color bg = selected ? ORANGE : (hover ? GOLD : LIGHTGRAY);
+                Color bg = selected?(Color){255,140,0,255}:(hover?(Color){255,200,50,255}:(Color){50,50,80,220});
+                Color border = selected?WHITE:(hover?(Color){255,220,100,255}:(Color){100,100,140,200});
                 DrawRectangleRec(btn, bg);
-                if (selected) DrawRectangleLinesEx(btn, 4, WHITE);
+                DrawRectangleLinesEx(btn, selected?3:1, border);
+                // Tecla label (canto sup esq do botão)
+                const char *keyLabel[] = {"1","2","3","4","5","6"};
+                DrawText(keyLabel[i], (int)(btn.x+4), (int)(btn.y+3), 11, selected?BLACK:(Color){180,180,180,180});
+                // Número
                 const char *ns = TextFormat("%d", opcoesP1[i]);
-                DrawText(ns, (int)(btn.x + (BTN_NUM_W - MeasureText(ns,22))*0.5f), (int)(btn.y+16), 22, BLACK);
+                DrawText(ns,
+                    (int)(btn.x + (BTN6_W - MeasureText(ns,20))*0.5f),
+                    (int)(btn.y + (BTN6_H - 20)*0.5f), 20,
+                    selected?BLACK:WHITE);
             }
 
-            // --- Rótulo P2 e botões P2 (fila de baixo) ---
-            DrawText("PLAYER 2 (Q-T)", (VIRT_W - MeasureText("PLAYER 2 (Q-T)",22))/2, (int)(BTN_P2_Y - 28), 22, RED);
+            // ── PLAYER 2 (coluna direita) ─────────────────────────
+            DrawText("PLAYER 2",
+                970 + (310 - MeasureText("PLAYER 2",20))/2, 100, 20, (Color){255,120,120,255});
+            DrawText("Q W E / R T Y",
+                970 + (310 - MeasureText("Q W E / R T Y",15))/2, 124, 15, (Color){160,160,160,200});
+
+            DrawText("[ P2 ]",
+                (int)(spr2_p2.x + (spr2_p2.width - MeasureText("[ P2 ]",15))*0.5f),
+                (int)(spr2_p2.y + spr2_p2.height + 4), 15, (Color){255,120,120,200});
+
+            // Botões P2: mesma grade, coluna direita
             for (int i = 0; i < qntOpcoes; i++) {
-                Rectangle btn = { BTN_NUM_STARTX + i*(BTN_NUM_W+BTN_NUM_GAP), BTN_P2_Y, BTN_NUM_W, BTN_NUM_H };
-                bool hover = CheckCollisionPointRec(mouse, btn);
+                int col = i % 3, row = i / 3;
+                Rectangle btn = {
+                    P2_BTN_X + col * (BTN6_W + BTN6_GAP),
+                    P2_BTN_TOP_Y + row * (BTN6_H + BTN6_GAP),
+                    BTN6_W, BTN6_H
+                };
+                bool hover    = CheckCollisionPointRec(mouse, btn);
                 bool selected = (idxEscolhaP2 == i);
-                Color bg = selected ? MAGENTA : (hover ? PINK : LIGHTGRAY);
+                Color bg = selected?(Color){220,0,180,255}:(hover?(Color){255,100,200,255}:(Color){80,20,50,220});
+                Color border = selected?WHITE:(hover?(Color){255,150,220,255}:(Color){140,60,100,200});
                 DrawRectangleRec(btn, bg);
-                if (selected) DrawRectangleLinesEx(btn, 4, WHITE);
+                DrawRectangleLinesEx(btn, selected?3:1, border);
+                const char *keyLabel[] = {"Q","W","E","R","T","Y"};
+                DrawText(keyLabel[i], (int)(btn.x+4), (int)(btn.y+3), 11, selected?BLACK:(Color){180,180,180,180});
                 const char *ns = TextFormat("%d", opcoesP2[i]);
-                DrawText(ns, (int)(btn.x + (BTN_NUM_W - MeasureText(ns,22))*0.5f), (int)(btn.y+16), 22, BLACK);
+                DrawText(ns,
+                    (int)(btn.x + (BTN6_W - MeasureText(ns,20))*0.5f),
+                    (int)(btn.y + (BTN6_H - 20)*0.5f), 20,
+                    selected?BLACK:WHITE);
             }
 
-            // Alerta
+            // 6) Alerta de invasão (rodapé, só no centro para não cobrir botões)
             if (rodada >= 10) {
                 const char *alerta = "ALERTA: SISTEMA DETECTANDO INVASAO";
-                DrawRectangle((VIRT_W-360)/2, VIRT_H-50, 360, 38, (Color){120,0,0,220});
-                DrawText(alerta, (VIRT_W - MeasureText(alerta,16))/2, VIRT_H-40, 16, RED);
+                int aw = MeasureText(alerta,16) + 24;
+                DrawRectangle((VIRT_W-aw)/2, VIRT_H-46, aw, 34, (Color){120,0,0,230});
+                DrawText(alerta, (VIRT_W - MeasureText(alerta,16))/2, VIRT_H-38, 16, RED);
             }
         }
         else if (state == GAMEOVER)
@@ -860,6 +1081,7 @@ int main(void)
     UnloadTexture(mariTex); UnloadTexture(romaTex); UnloadTexture(luisTex);
     UnloadTexture(micaTex); UnloadTexture(ruanTex); UnloadTexture(lucasTex);
     UnloadTexture(lucas2Tex);
+    UnloadTexture(lore1); UnloadTexture(lore2); UnloadTexture(lore3); UnloadTexture(lore4); UnloadTexture(lore5);
     UnloadMusicStream(menuMusic); UnloadMusicStream(gameMusic);
     UnloadSound(openSound); UnloadSound(closeSound);
     CloseAudioDevice();
