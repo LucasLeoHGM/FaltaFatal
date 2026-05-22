@@ -163,13 +163,13 @@ int main(void)
     RenderTexture2D canvas = LoadRenderTexture(VIRT_W, VIRT_H);
 
     Texture2D menuBg      = LoadTexture("../assets/telademenu.png");
-    Texture2D gameBg      = LoadTexture("../assets/forest.png");
-    Texture2D circuitBg   = LoadTexture("../assets/circuit.jpg");
+    Texture2D gameBg      = LoadTexture("../assets/gamebg.png");
+    Texture2D circuitBg   = LoadTexture("../assets/circuit.png");
     Texture2D btnNovoJogo = LoadTexture("../assets/novojogobotao.png");
     Texture2D btnFacil    = LoadTexture("../assets/facilbotao.png");
     Texture2D btnDificil  = LoadTexture("../assets/dificilbotao.png");
     Texture2D btnStats    = LoadTexture("../assets/estatisticasbotao.png");
-    Texture2D btnSair     = LoadTexture("../assets/saairbotao.png");
+    Texture2D btnSair     = LoadTexture("../assets/sairbotao.png");
     Texture2D player1Tex  = LoadTexture("../assets/player1.png");
     Texture2D player2Tex  = LoadTexture("../assets/player2.png");
 
@@ -427,7 +427,7 @@ int main(void)
                             printf("DEBUG PATH EVENT: %d | Caminho correto: %d\n", pathEventIndex, pathEvents[pathEventIndex].caminhoCerto);
                             pathResultTimer = 0; pathResultMsg[0] = '\0';
                             pathEscolhaP1 = -1; pathEscolhaP2 = -1;
-                            pathTimeLeft = modoDificil ? 900 : 1500;
+                            pathTimeLeft = modoDificil ? 1500 : 4000;
                             state = PATH_CHOICE;
                         } else {
                             rodada = 0; minN = 1; maxN = 100;
