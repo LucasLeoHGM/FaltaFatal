@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
+#include <math.h>
 
 #define VIRT_W 1280
 #define VIRT_H 720
@@ -152,29 +153,85 @@ static Rectangle CenteredRect(float y, float w, float h)
     return (Rectangle){ (VIRT_W - w) * 0.5f, y, w, h };
 }
 
-int b1 = 0, b2 = 0, b3 = 0, b4 = 0, b5 = 0, b6 = 0, menor = 0, maior = 0, fights = 0;
-float media = 0;
-
 
 //work in progress
+int b1 = ;
+int b2 = ;
+int b3 = ;
+int b4 = ;
+int b5 = ;
+int b6 = ;
+
+int fights = ;
+
 void report(void)
 {
-    media = (b1 + b2 + b3 + b4 + b5 + b6)/fights;
-    int bosses [6] = {b1, b2, b3, b4, b5, b6};
-    for (int i = 1; i < 6; i++) {
-        if (numeros[i] < menor) {
-            menor = numeros[i];
+    int bosses[6] = {b1, b2, b3, b4, b5, b6};
+    float media = (b1+b2+b3+b4+b5+b6)/fights;
+    int menor = bosses[0];
+    int maior = bosses[0];
+    int melhorFase = 1;
+    int piorFase = 1;
+
+    for(int i = 1; i < 6; i++)
+    {
+        if(bosses[i] < menor)
+        {
+            menor = bosses[i];
+
+            melhorFase = i + 1;
         }
-    }
-    for (int i = 1; i < 6; i++) {
-        if (numeros[i] > maior) {
-            maior = numeros[i];
+
+        if(bosses[i] > maior)
+        {
+            maior = bosses[i];
+
+            piorFase = i + 1;
         }
     }
 
-    printf("A sua média foi: %d\n", media);
-    printf("O menor numero é: %d\n", menor);
+    float somaQuadrados = 0;
 
+    for(int i = 0; i < 6; i++)
+    {
+        somaQuadrados += pow(bosses[i] - media, 2);
+    }
+
+    float variancia = somaQuadrados / fights;
+
+    float desvio = sqrt(variancia);
+
+    printf("Media: %.2f\n", media);
+    printf("Melhor fase: %d\n", melhorFase);
+    printf("Tentativas: %d\n", menor);
+    printf("Pior fase: %d\n", piorFase);
+    printf("Tentativas: %d\n", maior);
+    printf("Desvio padrao: %.2f\n", desvio);
+
+    if(media <= 3)
+    {
+        printf("Jogador eficiente.\n");
+    }
+    else if(media <= 6)
+    {
+        printf("Jogador mediano.\n");
+    }
+    else
+    {
+        printf("Demorou para achar o número.\n");
+    }
+    if(desvio < 2)
+    {
+        printf("Desempenho consistente.\n");
+    }
+    else
+    {
+        printf("Desempenho inconsistente.\n");
+    }
+    if(menor <= 2)
+    {
+        printf("Excelente intuicao em combate.\n");
+    }
 }
 
 int main(void)
