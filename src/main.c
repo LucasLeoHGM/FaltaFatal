@@ -290,32 +290,34 @@ int main(void)
     const Rectangle pathGreen = { 500, 310, 270, 220 };
     const Rectangle pathBlue  = { 820, 310, 270, 220 };
 
+   // =========================================================
+    //  NOVO GAMEPLAY LAYOUT — CANTONS INFERIORES (1280 x 720)
     // =========================================================
-    //  GAMEPLAY — layout 3 colunas  (1280 x 720)
-    //
-    //  Col esq  [  0.. 310]: botões P1 + sprite P1
-    //  Col mid  [310.. 970]: sprites (P1, inimigo, P2) + mensagens
-    //  Col dir  [970..1280]: botões P2 + sprite P2
-    //
-    //  Botões: grid 3x2 por jogador
-    //    BTN6_W=80  BTN6_H=52  BTN6_GAP=8
-    //    Bloco total: 3*80+2*8 = 256 wide, 2*52+8 = 112 tall
-    // =========================================================
-    const int BTN6_W   = 80;
-    const int BTN6_H   = 52;
-    const int BTN6_GAP = 8;
-    // Coluna esquerda: bloco de botões centralizado em x=[10..300]
-    const float P1_BTN_X     = 27;          // margem esq da grade P1
-    const float P1_BTN_TOP_Y = 340;         // linha superior da grade P1
-    // Coluna direita: bloco de botões alinhado à direita em x=[970..1270]
-    const float P2_BTN_X     = VIRT_W - 27 - (3*BTN6_W + 2*BTN6_GAP);
-    const float P2_BTN_TOP_Y = 340;         // mesma altura que P1
-    // Sprites centrais
-    // P1 e P2 ocupam faixa vertical 95-720, centralizado no terço do meio
-    // Inimigo: centro-dir do palco
-    const Rectangle spr2_p1    = { 330,  230, 160, 310 };
-    const Rectangle spr2_p2    = { 530,  230, 160, 310 };
-    const Rectangle spr2_enemy = { 790,  130, 380, 440 };
+    const int BTN6_W   = 85;
+    const int BTN6_H   = 55;
+    const int BTN6_GAP = 10;
+    
+    // Largura total do mini-painel: 3*85 + 2*10 = 275px
+    // Altura total do bloco de botões: 2*55 + 1*10 = 120px
+    const float PANEL_W = 300;
+    const float PANEL_H = 190;
+    
+    // Player 1: Canto inferior esquerdo (colado no rodapé)
+    const float P1_PANEL_X   = 20;
+    const float P1_PANEL_Y   = VIRT_H - PANEL_H - 20; // 720 - 190 - 20 = 510
+    const float P1_BTN_X     = P1_PANEL_X + 12;      // Margem interna de 12px
+    const float P1_BTN_TOP_Y = P1_PANEL_Y + 55;      // Abre espaço para o texto do Player no topo
+    
+    // Player 2: Canto inferior direito (colado no rodapé)
+    const float P2_PANEL_X   = VIRT_W - PANEL_W - 20; // 1280 - 300 - 20 = 960
+    const float P2_PANEL_Y   = VIRT_H - PANEL_H - 20; // 510
+    const float P2_BTN_X     = P2_PANEL_X + 12;
+    const float P2_BTN_TOP_Y = P2_PANEL_Y + 55;
+
+    // Ajuste dos Sprites Centrais para aproveitar o novo espaço livre
+    const Rectangle spr2_p1    = { 340,  260, 170, 330 };
+    const Rectangle spr2_p2    = { 540,  260, 170, 330 };
+    const Rectangle spr2_enemy = { 800,  130, 400, 460 };
 
     while (!WindowShouldClose())
     {
@@ -716,7 +718,7 @@ int main(void)
 
             const char *t1 = "Voce derrotou o monstro";
             const char *t2 = "e ele deixou cair seus dados";
-            const char *t3 = "Deseja tocar os dados?";
+            const char *t3 = "Deseja baixar os dados?";
 
             // SOMBRA
             DrawText(
@@ -934,15 +936,10 @@ int main(void)
         }
         else if (state == GAMEPLAY)
         {
-            // ======================================================
-            // ORDEM DE DRAW: fundo -> sprites -> HUD (sem overlay geral)
-            // Nada tapa os sprites!
-            // ======================================================
-
             // 1) Fundo
             DrawTexVirt(gameBg, (Rectangle){0,0,VIRT_W,VIRT_H}, WHITE);
 
-            // 2) Sprites — desenhados ANTES de qualquer painel HUD
+            // 2) Sprites — Agora com muito mais espaço no centro da tela
             Texture2D *enemyTex = GetEnemyTexture(sala, modoDificil,
                 &slimeTex,&ogroTex,&bossTex,
                 &mariTex,&romaTex,&luisTex,&micaTex,&ruanTex,&lucasTex,&lucas2Tex);
@@ -957,13 +954,14 @@ int main(void)
                 (Rectangle){0,0,(float)enemyTex->width,(float)enemyTex->height},
                 spr2_enemy, (Vector2){0,0}, 0, WHITE);
 
-            // 3) HUD superior (barra preta no topo — cobre só os primeiros 95px)
-            DrawRectangle(0, 0, VIRT_W, 95, (Color){0,0,0,210});
+            // Labels dos jogadores abaixo de seus respectivos sprites centrais
+            DrawText("[ P1 ]", (int)(spr2_p1.x + (spr2_p1.width - MeasureText("[ P1 ]",15))*0.5f), (int)(spr2_p1.y + spr2_p1.height + 4), 15, (Color){100,180,255,200});
+            DrawText("[ P2 ]", (int)(spr2_p2.x + (spr2_p2.width - MeasureText("[ P2 ]",15))*0.5f), (int)(spr2_p2.y + spr2_p2.height + 4), 15, (Color){255,120,120,200});
 
-            // Missão
+            // 3) HUD superior (inalterado, protege o topo)
+            DrawRectangle(0, 0, VIRT_W, 95, (Color){0,0,0,210});
             DrawText(TextFormat("MISSAO %d", sala), 20, 10, 32, (Color){0,255,120,255});
 
-            // Nome do boss / descrição
             if (modoDificil) {
                 DrawText(bossNames[sala-1], 20, 48, 22, WHITE);
                 int descX = 20 + MeasureText(bossNames[sala-1], 22) + 20;
@@ -977,47 +975,29 @@ int main(void)
                 DrawText("Uma criatura bloqueia o caminho.", 200, 52, 16, LIGHTGRAY);
             }
 
-            // Modo (canto dir do HUD superior)
             const char *modoTxt = modoDificil ? "MODO DIFICIL" : "MODO FACIL";
             DrawText(modoTxt, VIRT_W - MeasureText(modoTxt,18) - 14, 10, 18, modoDificil?RED:(Color){0,220,80,255});
+            DrawText(TextFormat("VIDAS: %d", vidas), VIRT_W - MeasureText(TextFormat("VIDAS: %d",vidas),18) - 14, 36, 18, RED);
+            DrawText(TextFormat("HP: %d", monsterHP), VIRT_W - MeasureText(TextFormat("HP: %d",monsterHP),18) - 14, 58, 18, GREEN);
 
-            // Vidas + HP (canto dir, segunda linha do HUD)
-            DrawText(TextFormat("VIDAS: %d", vidas),
-                VIRT_W - MeasureText(TextFormat("VIDAS: %d",vidas),18) - 14, 36, 18, RED);
-            DrawText(TextFormat("HP: %d", monsterHP),
-                VIRT_W - MeasureText(TextFormat("HP: %d",monsterHP),18) - 14, 58, 18, GREEN);
-
-            // 4) Mensagem de resultado (faixa estreita, entre HUD e sprites)
+            // 4) Mensagem de resultado centralizada
             DrawRectangle(300, 100, 680, 118, (Color){0,0,0,170});
-            DrawText(mensagem,
-                300 + (680 - MeasureText(mensagem,20))/2, 115, 20, SKYBLUE);
+            DrawText(mensagem, 300 + (680 - MeasureText(mensagem,20))/2, 115, 20, SKYBLUE);
             if (mensagemMonstro[0] != '\0')
-                DrawText(mensagemMonstro,
-                    300 + (680 - MeasureText(mensagemMonstro,18))/2, 150, 18, RED);
+                DrawText(mensagemMonstro, 300 + (680 - MeasureText(mensagemMonstro,18))/2, 150, 18, RED);
 
-            // 5) Colunas laterais (painéis semitransparentes para botões)
-            //    Esquerda: x=0..310  |  Direita: x=970..1280
-            DrawRectangle(0,   95, 310, VIRT_H-95, (Color){0,0,0,140});
-            DrawRectangle(970, 95, 310, VIRT_H-95, (Color){0,0,0,140});
+            // 5) MINI-PAINÉIS NOS CANTOS INFERIORES (Substituindo as colunas completas estáticas)
+            DrawRectangleRec((Rectangle){P1_PANEL_X, P1_PANEL_Y, PANEL_W, PANEL_H}, (Color){0,0,0,180});
+            DrawRectangleRec((Rectangle){P2_PANEL_X, P2_PANEL_Y, PANEL_W, PANEL_H}, (Color){0,0,0,180});
+            
+            // Bordas decorativas para os painéis
+            DrawRectangleLinesEx((Rectangle){P1_PANEL_X, P1_PANEL_Y, PANEL_W, PANEL_H}, 2, (Color){100,180,255,120});
+            DrawRectangleLinesEx((Rectangle){P2_PANEL_X, P2_PANEL_Y, PANEL_W, PANEL_H}, 2, (Color){255,120,120,120});
 
-            // Linha divisória suave
-            DrawLine(310, 95, 310, VIRT_H, (Color){80,80,80,180});
-            DrawLine(970, 95, 970, VIRT_H, (Color){80,80,80,180});
+            // ── INTERFACE DO PLAYER 1 (Canto Inferior Esquerdo) ────────────────────────
+            DrawText("PLAYER 1", P1_PANEL_X + (PANEL_W - MeasureText("PLAYER 1",18))*0.5f, P1_PANEL_Y + 10, 18, (Color){100,180,255,255});
+            DrawText("Teclas: 1 a 6", P1_PANEL_X + (PANEL_W - MeasureText("Teclas: 1 a 6",12))*0.5f, P1_PANEL_Y + 32, 12, (Color){160,160,160,200});
 
-            // ── PLAYER 1 (coluna esquerda) ────────────────────────
-            DrawText("PLAYER 1",
-                (310 - MeasureText("PLAYER 1",20))/2, 100, 20, (Color){100,180,255,255});
-            DrawText("1 2 3 / 4 5 6",
-                (310 - MeasureText("1 2 3 / 4 5 6",15))/2, 124, 15, (Color){160,160,160,200});
-
-            // Sprite P1 (pequeno, dentro da coluna esq)
-            // Já desenhado acima em spr2_p1 — apenas label abaixo
-            DrawText("[ P1 ]",
-                (int)(spr2_p1.x + (spr2_p1.width - MeasureText("[ P1 ]",15))*0.5f),
-                (int)(spr2_p1.y + spr2_p1.height + 4), 15, (Color){100,180,255,200});
-
-            // Botões P1: grid 3x2 na coluna esquerda
-            // Grade: Y topo=340, Y baixo=400+gap
             for (int i = 0; i < qntOpcoes; i++) {
                 int col = i % 3, row = i / 3;
                 Rectangle btn = {
@@ -1029,30 +1009,21 @@ int main(void)
                 bool selected = (idxEscolhaP1 == i);
                 Color bg = selected?(Color){255,140,0,255}:(hover?(Color){255,200,50,255}:(Color){50,50,80,220});
                 Color border = selected?WHITE:(hover?(Color){255,220,100,255}:(Color){100,100,140,200});
+                
                 DrawRectangleRec(btn, bg);
                 DrawRectangleLinesEx(btn, selected?3:1, border);
-                // Tecla label (canto sup esq do botão)
+                
                 const char *keyLabel[] = {"1","2","3","4","5","6"};
-                DrawText(keyLabel[i], (int)(btn.x+4), (int)(btn.y+3), 11, selected?BLACK:(Color){180,180,180,180});
-                // Número
+                DrawText(keyLabel[i], (int)(btn.x+5), (int)(btn.y+4), 11, selected?BLACK:(Color){180,180,180,180});
+                
                 const char *ns = TextFormat("%d", opcoesP1[i]);
-                DrawText(ns,
-                    (int)(btn.x + (BTN6_W - MeasureText(ns,20))*0.5f),
-                    (int)(btn.y + (BTN6_H - 20)*0.5f), 20,
-                    selected?BLACK:WHITE);
+                DrawText(ns, (int)(btn.x + (BTN6_W - MeasureText(ns,20))*0.5f), (int)(btn.y + (BTN6_H - 20)*0.5f), 20, selected?BLACK:WHITE);
             }
 
-            // ── PLAYER 2 (coluna direita) ─────────────────────────
-            DrawText("PLAYER 2",
-                970 + (310 - MeasureText("PLAYER 2",20))/2, 100, 20, (Color){255,120,120,255});
-            DrawText("Q W E / R T Y",
-                970 + (310 - MeasureText("Q W E / R T Y",15))/2, 124, 15, (Color){160,160,160,200});
+            // ── INTERFACE DO PLAYER 2 (Canto Inferior Direito) ─────────────────────────
+            DrawText("PLAYER 2", P2_PANEL_X + (PANEL_W - MeasureText("PLAYER 2",18))*0.5f, P2_PANEL_Y + 10, 18, (Color){255,120,120,255});
+            DrawText("Teclas: Q a Y", P2_PANEL_X + (PANEL_W - MeasureText("Teclas: Q a Y",12))*0.5f, P2_PANEL_Y + 32, 12, (Color){160,160,160,200});
 
-            DrawText("[ P2 ]",
-                (int)(spr2_p2.x + (spr2_p2.width - MeasureText("[ P2 ]",15))*0.5f),
-                (int)(spr2_p2.y + spr2_p2.height + 4), 15, (Color){255,120,120,200});
-
-            // Botões P2: mesma grade, coluna direita
             for (int i = 0; i < qntOpcoes; i++) {
                 int col = i % 3, row = i / 3;
                 Rectangle btn = {
@@ -1064,18 +1035,18 @@ int main(void)
                 bool selected = (idxEscolhaP2 == i);
                 Color bg = selected?(Color){220,0,180,255}:(hover?(Color){255,100,200,255}:(Color){80,20,50,220});
                 Color border = selected?WHITE:(hover?(Color){255,150,220,255}:(Color){140,60,100,200});
+                
                 DrawRectangleRec(btn, bg);
                 DrawRectangleLinesEx(btn, selected?3:1, border);
+                
                 const char *keyLabel[] = {"Q","W","E","R","T","Y"};
-                DrawText(keyLabel[i], (int)(btn.x+4), (int)(btn.y+3), 11, selected?BLACK:(Color){180,180,180,180});
+                DrawText(keyLabel[i], (int)(btn.x+5), (int)(btn.y+4), 11, selected?BLACK:(Color){180,180,180,180});
+                
                 const char *ns = TextFormat("%d", opcoesP2[i]);
-                DrawText(ns,
-                    (int)(btn.x + (BTN6_W - MeasureText(ns,20))*0.5f),
-                    (int)(btn.y + (BTN6_H - 20)*0.5f), 20,
-                    selected?BLACK:WHITE);
+                DrawText(ns, (int)(btn.x + (BTN6_W - MeasureText(ns,20))*0.5f), (int)(btn.y + (BTN6_H - 20)*0.5f), 20, selected?BLACK:WHITE);
             }
 
-            // 6) Alerta de invasão (rodapé, só no centro para não cobrir botões)
+            // 6) Alerta de invasão (rodapé central)
             if (rodada >= 10) {
                 const char *alerta = "ALERTA: SISTEMA DETECTANDO INVASAO";
                 int aw = MeasureText(alerta,16) + 24;
