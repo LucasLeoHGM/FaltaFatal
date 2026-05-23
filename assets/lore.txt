@@ -1,0 +1,548 @@
+# =========================================================
+
+# INTRO LORE
+
+# =========================================================
+
+[INTRO]
+
+Voce usou todas as faltas da cadeira de sexta-feira.
+No ultimo dia, o professor marcou falta por engano.
+Depois de discutir no Slack sem sucesso...
+Voce decidiu invadir o sistema do Lyceum.
+A chuva deixou o CESAR vazio...
+Essa era a chance perfeita.
+
+# =========================================================
+
+# BOSSES - MODO DIFICIL
+
+# =========================================================
+
+# =========================================================
+
+# MARI RATA
+
+# =========================================================
+
+[BOSS_NAME_1]
+Mari Rata
+
+[BOSS_DESC_1]
+As chuvas inundaram Recife e os ratos dominaram a rua.
+
+[BOSS_1_ENTRY]
+Essa ilha e minha agora, calouro.
+Passar daqui sem leptospirose? Boa sorte.
+Os bueiros abriram... e eu tambem.
+A chuva trouxe fome... e voce parece delicioso.
+Bem-vindo a ilha dos ratos, calouro.
+Se entrar no CESAR, sai com leptospirose!
+
+[BOSS_1_IDLE]
+Escuta isso? Sao os ratos chegando.
+A chuva trouxe fome.
+Voce devia ter ficado em casa.
+Cheiro de aluno desesperado...
+Sinto cheiro de estudante desesperado.
+Corre nao... eu adoro perseguicoes.
+Os bueiros sao meu dominio.
+Voce devia ter aceitado a reprovacao.
+
+[BOSS_1_HIT]
+Tsc!
+Isso foi nojento!
+Voce me acertou?!
+Chiado infeliz...
+Isso nao foi nada!
+Rata nenhuma cai tao facil!
+
+[BOSS_1_CRITICAL]
+AAAAH! Pisou no rabo errado!
+Maldito...!
+Meus ratos vao te devorar!
+AAAARGH! Minha cauda!
+Isso foi nojento ate pra mim!
+Voce bate mais forte que a chuva!
+
+[BOSS_1_DEATH]
+Droga... volta pros bueiros...
+Essa chuva... me abandonou...
+Voce teve sorte, hacker...
+Malditas enchentes...
+O CESAR... e seu...
+Vou voltar pros bueiros...
+
+[BOSS_1_PLAYER_DEATH]
+HAHA! Mais um pros bueiros.
+A chuva sempre escolhe meu lado.
+Leptospirose confirmada, calouro.
+Os ratos vao terminar o servico.
+Volta pra casa... se conseguir.
+O CESAR pertence aos ratos agora.
+
+# =========================================================
+
+# ROMA
+
+# =========================================================
+
+[BOSS_NAME_2]
+Roma, o Seguranca
+
+[BOSS_DESC_2]
+O seguranca do CESAR detectou movimentacao suspeita.
+
+[BOSS_2_ENTRY]
+Identificacao. Agora.
+A faculdade fechou faz horas.
+Nenhum aluno passa daqui.
+A faculdade esta fechada, garoto.
+Ninguem invade o CESAR no meu turno.
+
+[BOSS_2_IDLE]
+Voce acha que eu nasci ontem?
+Ja vi muito aluno tentando coisa pior.
+O sistema sempre pega voces.
+Vai embora enquanto pode.
+Voce acha que e o primeiro?
+Volta pra casa enquanto da tempo.
+O Lyceum nao vai cair hoje.
+Estou treinado pra isso.
+
+[BOSS_2_HIT]
+Hm.
+Ta querendo problema.
+Ainda to de pe.
+Ainda consigo lutar.
+So isso?
+Voce vai precisar de mais.
+
+[BOSS_2_CRITICAL]
+UGH! Isso foi ilegal!
+Voce vai responder por isso!
+Argh... moleque miseravel!
+GH... isso foi pesado!
+Voce realmente quer entrar...
+Meu radio...!
+
+[BOSS_2_DEATH]
+Droga... chama o turno da manha...
+Voce nao vai longe...
+Esse lugar ta ficando perigoso...
+Droga... passe logo...
+Espero que saiba o que esta fazendo.
+Voce nao deveria continuar...
+
+[BOSS_2_PLAYER_DEATH]
+Eu avisei pra ir embora.
+Movimentacao suspeita neutralizada.
+Fim da invasao, garoto.
+Seguranca do CESAR mantida.
+Nao era pro seu tipo chegar tao longe.
+Vou registrar isso no relatorio.
+
+# =========================================================
+
+# LUIS
+
+# =========================================================
+
+[BOSS_NAME_3]
+Luis, o Ninja
+
+[BOSS_DESC_3]
+Outro aluno tentando hackear o Lyceum apareceu.
+
+[BOSS_3_ENTRY]
+Voce tambem quer hackear o sistema?
+So um de nos vai conseguir.
+Nao confio em ninguem aqui.
+Esse servidor e meu alvo.
+Dois hackers. Um sistema.
+Voce escolheu o pior corredor possivel.
+
+[BOSS_3_IDLE]
+Rapido demais pra voce.
+Voce faz muito barulho.
+O Lyceum vai cair hoje.
+Desvia disso.
+Datebayo!
+Nem viu de onde veio.
+Hackear exige foco.
+Seu plano e amador.
+
+[BOSS_3_HIT]
+Hm.
+Boa tentativa.
+Quase.
+Bom golpe.
+Interessante...
+
+[BOSS_3_CRITICAL]
+Como voce me acertou?!
+Tch... impossivel!
+Voce e melhor do que parece!
+Impossivel... voce me acertou?
+Tsc... rapido demais.
+Minha guarda falhou!
+
+[BOSS_3_DEATH]
+Entao... voce conseguiu...
+Termina isso por nos...
+Nao deixa o sistema vencer...
+Entao... voce e melhor...
+O Lyceum e mais fundo do que parece...
+Nao confie em ninguem...
+
+[BOSS_3_PLAYER_DEATH]
+Hack fraco.
+Voce perdeu o foco.
+O servidor ficou comigo.
+Nem conseguiu acompanhar meus movimentos.
+Outro iniciante derrotado.
+Datebayo... facil demais.
+
+# =========================================================
+
+# MICA
+
+# =========================================================
+
+[BOSS_NAME_4]
+Mica, a Advogata
+
+[BOSS_DESC_4]
+Ela ameaca processar qualquer invasor do sistema.
+
+[BOSS_4_ENTRY]
+Voce esta oficialmente processado.
+Invadir sistemas e crime.
+Tenho 17 artigos contra voce.
+Voce esta oficialmente sendo processado.
+Invadir sistemas e crime, sabia?
+Tenho 17 acusacoes prontas pra voce.
+
+[BOSS_4_IDLE]
+Isso vai pro tribunal.
+Voce leu os termos de uso?
+Tenho provas suficientes.
+Sua defesa e patetica.
+Isso sera anexado ao processo.
+Seu advogado vai ouvir de mim.
+
+[BOSS_4_HIT]
+Inaceitavel.
+Voce vai pagar por isso.
+Anotado.
+Isso vai custar caro.
+Violencia em ambiente academico?
+
+[BOSS_4_CRITICAL]
+OBJECAO!
+Isso foi agressao!
+Meu processo vai ser gigantesco!
+Isso foi abuso processual!
+Meu codigo civil!
+
+[BOSS_4_DEATH]
+Meu cliente... perdeu...
+Isso ainda nao acabou...
+Vou recorrer...
+Voce venceu... temporariamente.
+Nos veremos no tribunal...
+Essa causa... esta perdida...
+
+[BOSS_4_PLAYER_DEATH]
+Processo encerrado com sucesso.
+O tribunal decidiu contra voce.
+Voce acaba de perder todos os recursos.
+Crime digital nao compensa.
+Sua defesa foi ridicula.
+Caso encerrado.
+
+# =========================================================
+
+# RUAN
+
+# =========================================================
+
+[BOSS_NAME_5]
+Ruan, o Galo Assassino
+
+[BOSS_DESC_5]
+Uma aberracao protege o servidor principal.
+
+[BOSS_5_ENTRY]
+COCORICO DA MORTE!
+O sistema me alimenta.
+Cuidado com o bicao.
+A primeira defesa do sistema desperta.
+Voce jamais passara pelo galo.
+
+[BOSS_5_IDLE]
+COCO!
+Voce tem cara de milho.
+Cocorico.
+O servidor e meu poleiro.
+COC!
+Seu fim chegou, humano!
+CAAACAAARA!
+
+[BOSS_5_HIT]
+Co!
+Grro.
+Coco?!
+Coc.
+Voce ousa?
+Isso foi uma bicada fraca.
+
+[BOSS_5_CRITICAL]
+COOOOCOOOO!
+QUEM OUSOU?!
+Meu bico!!!
+COCORICOOOO!
+MINHAS PENAS!
+
+[BOSS_5_DEATH]
+Cocorico...
+O galo... caiu...
+Sistema... comprometido...
+Coc... co...
+O sistema... falhou...
+Meu reinado... acabou...
+
+[BOSS_5_PLAYER_DEATH]
+COCORICO DA VITORIA!
+Humano derrotado.
+O servidor continua protegido.
+COCOCOCO!
+Voce virou racao do sistema!
+Ninguem vence o galo.
+
+# =========================================================
+
+# LUCAS - FASE 1
+
+# =========================================================
+
+[BOSS_NAME_6]
+Lucas, o Hacker
+
+[BOSS_DESC_6]
+O hacker responsavel pelo sistema finalmente apareceu.
+
+[BOSS_6_ENTRY]
+Achei voce.
+Eu ja fiz exatamente o que voce esta tentando fazer.
+O Lyceum aprendeu comigo.
+Desconecte-se imediatamente.
+Voce nao faz ideia do que esta tentando invadir.
+Sou responsavel pela seguranca do Lyceum.
+
+[BOSS_6_IDLE]
+Voce ainda e iniciante.
+Toda invasao deixa rastros.
+Eu conheco cada falha desse sistema.
+Voce nao e o primeiro desesperado.
+Cada movimento seu esta sendo rastreado.
+Seu codigo e previsivel.
+Pare agora e talvez eu esqueca isso.
+
+[BOSS_6_HIT]
+Hm.
+Nada mal.
+Continue tentando.
+
+[BOSS_6_CRITICAL]
+Interessante...
+Entao voce realmente consegue lutar.
+Faz tempo que ninguem me acerta assim.
+Voce passou da primeira camada?
+Entao voce realmente sabe hackear...
+
+[BOSS_6_DEATH]
+Entao... chegou sua vez.
+Parabens. Voce entrou pro ciclo.
+So nao deixe eles te contratarem tambem...
+Chega... vou parar de fingir.
+Voce merece saber da verdade.
+Eu ja estive no seu lugar.
+
+[BOSS_6_PLAYER_DEATH]
+Eu tentei te avisar.
+Voce ainda nao estava pronto.
+Toda invasao deixa rastros.
+Desconectando invasor...
+O sistema venceu mais uma vez.
+Volte quando entender o que esta fazendo.
+
+# =========================================================
+
+# LUCAS FINAL
+
+# =========================================================
+
+[BOSS_NAME_7]
+Lucas, o Primeiro Invasor
+
+[BOSS_DESC_7]
+O sistema inteiro agora responde a Lucas.
+
+[BOSS_7_ENTRY]
+Eu tambem invadi o Lyceum por uma falta.
+O CESAR nao me puniu... me contratou.
+Agora eu sou a ultima barreira entre voce e o sistema.
+
+[BOSS_7_IDLE]
+Eu conheco todos os caminhos do servidor.
+Voce esta repetindo meus erros.
+O sistema mudou por minha causa.
+Nenhum invasor passa por mim.
+
+[BOSS_7_HIT]
+Boa tentativa.
+Ainda nao acabou.
+Voce aprende rapido.
+
+[BOSS_7_CRITICAL]
+Impossivel...
+Voce superou minhas defesas?
+Entao existe alguem melhor...
+
+[BOSS_7_DEATH]
+Heh... talvez voce mereca passar.
+O Lyceum... e seu agora.
+So nao deixe descobrirem.
+
+[BOSS_7_PLAYER_DEATH]
+Entao foi aqui que voce caiu.
+Na minha vez, eu não precisei me enfrentar.
+Voce nao conseguiu quebrar o ciclo.
+Fim da conexao.
+Talvez em outra tentativa...
+
+# =========================================================
+
+# INIMIGOS - MODO FACIL
+
+# =========================================================
+
+[EASY_SLIME_ENTRY]
+blorp...
+Erro... erro...
+Dados corrompidos detectados.
+Blob...
+Slorp!
+O slime apareceu!
+
+[EASY_SLIME_IDLE]
+glub.
+010101...
+Sistema... falhando...
+Blub blub.
+Slorp.
+Gluuu.
+
+[EASY_SLIME_HIT]
+blip!
+glorp!
+Blob.
+Slime triste.
+Glup.
+
+[EASY_SLIME_CRITICAL]
+BLLRROOOOP!
+ERRO FATAL!
+BLORP?!
+SPLASH!
+GLOOOOP!
+
+[EASY_SLIME_DEATH]
+dados... perdidos...
+desfragmentando...
+ploc...
+O slime dissolveu.
+blub...
+
+[EASY_SLIME_PLAYER_DEATH]
+blorp venceu...
+dados consumidos...
+glub glub...
+usuario eliminado...
+slorp...
+
+# =========================================================
+
+[EASY_OGRE_ENTRY]
+Usuario nao autorizado.
+Firewall ativado.
+Bloqueando invasor.
+
+[EASY_OGRE_IDLE]
+Acesso negado.
+Escaneando ameacas.
+Intruso detectado.
+
+[EASY_OGRE_HIT]
+Impacto detectado.
+Defesa reduzida.
+
+[EASY_OGRE_CRITICAL]
+SISTEMA COMPROMETIDO!
+Erro... de protecao...
+
+[EASY_OGRE_DEATH]
+Firewall... desativado...
+Encerrando protocolo...
+
+[EASY_OGRE_PLAYER_DEATH]
+Invasor eliminado.
+Sistema protegido.
+Acesso permanentemente negado.
+Firewall restaurado.
+Encerrando usuario.
+
+# =========================================================
+
+[EASY_BOSS_ENTRY]
+VOCE ENCONTROU O REI DOS OGROS!
+NINGUEM PASSA POR MIM!
+EU SOU A MURALHA FINAL!
+
+[EASY_BOSS_IDLE]
+ESMAGAR!
+VOCE E PEQUENO DEMAIS!
+OGROS NUNCA PERDEM!
+
+[EASY_BOSS_HIT]
+GRRRR!
+Isso so me irrita!
+Fraco!
+
+[EASY_BOSS_CRITICAL]
+COMO ASSIM?!
+IMPOSSIVEL!
+VOCE ME ACERTOU?!
+
+[EASY_BOSS_DEATH]
+O REI... CAIU...
+VOCE... E FORTE...
+OGROS... VINGARAO...
+
+[EASY_BOSS_PLAYER_DEATH]
+OGRO E INVENCIVEL!
+EU DISSE QUE NINGUEM PASSA!
+HAHAHAHA!
+VOLTE QUANDO FOR MAIS FORTE!
+OGROS DOMINAM O SERVIDOR!
+
+[FINAL_WIN]
+O Lyceum finalmente foi invadido.
+As faltas desapareceram da chamada.
+Mas algo estranho apareceu na tela...
+"Parabens pelo teste."
+"Seu perfil foi aprovado."
+No dia seguinte...
+Voce recebeu um email do CESAR.
+"Tem interesse em trabalhar conosco?"
