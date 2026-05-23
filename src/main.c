@@ -163,15 +163,13 @@ int main(void)
     RenderTexture2D canvas = LoadRenderTexture(VIRT_W, VIRT_H);
 
     Texture2D menuBg      = LoadTexture("../assets/telademenu.png");
-    Texture2D gameBg      = LoadTexture("../assets/forest.png");
-    Texture2D circuitBg   = LoadTexture("../assets/circuit.jpg");
+    Texture2D gameBg      = LoadTexture("../assets/gamebg.png");
+    Texture2D circuitBg   = LoadTexture("../assets/circuit.png");
     Texture2D btnNovoJogo = LoadTexture("../assets/novojogobotao.png");
     Texture2D btnFacil    = LoadTexture("../assets/facilbotao.png");
     Texture2D btnDificil  = LoadTexture("../assets/dificilbotao.png");
     Texture2D btnStats    = LoadTexture("../assets/estatisticasbotao.png");
-    Texture2D btnSair     = LoadTexture("../assets/saairbotao.png");
-    Texture2D player1Tex  = LoadTexture("../assets/player1.png");
-    Texture2D player2Tex  = LoadTexture("../assets/player2.png");
+    Texture2D btnSair     = LoadTexture("../assets/sairbotao.png");
 
     Texture2D slimeTex  = LoadTexture("../assets/slime.png");
     Texture2D ogroTex   = LoadTexture("../assets/ogro.png");
@@ -317,7 +315,12 @@ int main(void)
     // Ajuste dos Sprites Centrais para aproveitar o novo espaço livre
     const Rectangle spr2_p1    = { 340,  260, 170, 330 };
     const Rectangle spr2_p2    = { 540,  260, 170, 330 };
-    const Rectangle spr2_enemy = { 800,  130, 400, 460 };
+    const Rectangle spr2_enemy = {
+        (VIRT_W - 420) * 0.5f,
+        150,
+        420,
+        480
+    };
 
     while (!WindowShouldClose())
     {
@@ -427,7 +430,7 @@ int main(void)
                             printf("DEBUG PATH EVENT: %d | Caminho correto: %d\n", pathEventIndex, pathEvents[pathEventIndex].caminhoCerto);
                             pathResultTimer = 0; pathResultMsg[0] = '\0';
                             pathEscolhaP1 = -1; pathEscolhaP2 = -1;
-                            pathTimeLeft = modoDificil ? 900 : 1500;
+                            pathTimeLeft = modoDificil ? 1500 : 4000;
                             state = PATH_CHOICE;
                         } else {
                             rodada = 0; minN = 1; maxN = 100;
@@ -943,20 +946,11 @@ int main(void)
             Texture2D *enemyTex = GetEnemyTexture(sala, modoDificil,
                 &slimeTex,&ogroTex,&bossTex,
                 &mariTex,&romaTex,&luisTex,&micaTex,&ruanTex,&lucasTex,&lucas2Tex);
-
-            DrawTexturePro(player1Tex,
-                (Rectangle){0,0,(float)player1Tex.width,(float)player1Tex.height},
-                spr2_p1, (Vector2){0,0}, 0, WHITE);
-            DrawTexturePro(player2Tex,
-                (Rectangle){0,0,(float)player2Tex.width,(float)player2Tex.height},
-                spr2_p2, (Vector2){0,0}, 0, WHITE);
+            
             DrawTexturePro(*enemyTex,
                 (Rectangle){0,0,(float)enemyTex->width,(float)enemyTex->height},
                 spr2_enemy, (Vector2){0,0}, 0, WHITE);
 
-            // Labels dos jogadores abaixo de seus respectivos sprites centrais
-            DrawText("[ P1 ]", (int)(spr2_p1.x + (spr2_p1.width - MeasureText("[ P1 ]",15))*0.5f), (int)(spr2_p1.y + spr2_p1.height + 4), 15, (Color){100,180,255,200});
-            DrawText("[ P2 ]", (int)(spr2_p2.x + (spr2_p2.width - MeasureText("[ P2 ]",15))*0.5f), (int)(spr2_p2.y + spr2_p2.height + 4), 15, (Color){255,120,120,200});
 
             // 3) HUD superior (inalterado, protege o topo)
             DrawRectangle(0, 0, VIRT_W, 95, (Color){0,0,0,210});
@@ -1113,7 +1107,6 @@ int main(void)
     UnloadTexture(menuBg); UnloadTexture(gameBg); UnloadTexture(circuitBg);
     UnloadTexture(btnNovoJogo); UnloadTexture(btnFacil); UnloadTexture(btnDificil);
     UnloadTexture(btnStats); UnloadTexture(btnSair);
-    UnloadTexture(player1Tex); UnloadTexture(player2Tex);
     UnloadTexture(slimeTex); UnloadTexture(ogroTex); UnloadTexture(bossTex);
     UnloadTexture(mariTex); UnloadTexture(romaTex); UnloadTexture(luisTex);
     UnloadTexture(micaTex); UnloadTexture(ruanTex); UnloadTexture(lucasTex);
