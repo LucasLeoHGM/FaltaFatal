@@ -177,8 +177,9 @@ void AplicarFalaInimigo(int sala, int modoDificil, const char *gatilho) {
         else if(strcmp(gatilho,"CRITICAL")==0&&b->criticalCount>0) TriggerSpeech(b->critical[rand()%b->criticalCount]);
         else if(strcmp(gatilho,"DEATH")==0 && b->deathCount>0)   TriggerSpeech(b->death[rand()%b->deathCount]);
     } else {
+        // AJUSTADO: Sala 1 e 2 slime, Sala 3 e 4 ogro, Sala 5 boss ogro
         EasyEnemyData *e = (sala==1||sala==2)?&easySlime:((sala==3||sala==4)?&easyOgre:&easyBoss);
-        const char *nom = (sala==1||sala==2)?"Slime":((sala==3||sala==4)?"Ogro":"Rei Ogro");
+        const char *nom = (sala==1||sala==2)?"Slime":((sala==3||sala==4)?"Ogro":"Boss Ogro");
         if (strcmp(gatilho,"ENTRY")==0)    { if(e->entryCount>0)    TriggerSpeech(e->entry[rand()%e->entryCount]);    else TriggerSpeech(TextFormat("%s apareceu!", nom)); }
         else if(strcmp(gatilho,"IDLE")==0) { if(e->idleCount>0)     TriggerSpeech(e->idle[rand()%e->idleCount]);      else TriggerSpeech(TextFormat("%s observa...", nom)); }
         else if(strcmp(gatilho,"HIT")==0)  { if(e->hitCount>0)      TriggerSpeech(e->hit[rand()%e->hitCount]);        else TriggerSpeech(TextFormat("%s grunhiu!", nom)); }
@@ -210,11 +211,13 @@ static void CalcLetterbox(float *scale,float *offX,float *offY){
     *scale=(sx<sy)?sx:sy;
     *offX=(sw-VIRT_W*(*scale))*0.5f; *offY=(sh-VIRT_H*(*scale))*0.5f;
 }
+
 static Vector2 MouseVirtual(void){
     float scale,offX,offY; CalcLetterbox(&scale,&offX,&offY);
     Vector2 m=GetMousePosition();
-    return (Vector2){(m.x-offX)/scale,(m.y-offY)/scale};
+    return (Vector2){ (m.x-offX)/scale, (m.y-offY)/scale };
 }
+
 static int calcularDano(int dado,int alvo){
     int d=abs(dado-alvo);
     if(d==0) return 40; if(d<=2) return 25; if(d<=10) return 15;
@@ -237,12 +240,15 @@ static Texture2D* GetEnemyTexture(int sala,int modoDificil,
     Texture2D *slimeTex,Texture2D *ogroTex,Texture2D *bossTex,
     Texture2D *mariTex,Texture2D *romaTex,Texture2D *luisTex,
     Texture2D *micaTex,Texture2D *ruanTex,Texture2D *lucasTex,Texture2D *lucas2Tex){
-    if(!modoDificil){if(sala==1||sala==2)return slimeTex;if(sala==3||sala==4)return ogroTex;return bossTex;}
+    if(!modoDificil){
+        if(sala == 1 || sala == 2) return slimeTex;
+        if(sala == 3 || sala == 4) return ogroTex;
+        return bossTex; // Sala 5 usa a textura do bossTex
+    }
     switch(sala){case 1:return mariTex;case 2:return romaTex;case 3:return luisTex;
     case 4:return micaTex;case 5:return ruanTex;case 6:return lucasTex;default:return lucas2Tex;}
 }
 
-// Sorteia e aplica efeito do baú
 static void SortearEfeitoChest(void) {
     bool isBuff = (rand() % 2 == 0);
     chestIsBuff = isBuff;
@@ -295,15 +301,13 @@ int main(void) {
     Texture2D lucasTex  = LoadTexture("../assets/lucas.png");
     Texture2D lucas2Tex = LoadTexture("../assets/lucas2.png");
 
-    // Lore intro: 5 cenas (lore1..lore5)
     Texture2D lore1 = LoadTexture("../assets/lore1.png");
     Texture2D lore2 = LoadTexture("../assets/lore2.png");
     Texture2D lore3 = LoadTexture("../assets/lore3.png");
     Texture2D lore4 = LoadTexture("../assets/lore4.png");
     Texture2D lore5 = LoadTexture("../assets/lore5.png");
-    Texture2D lore6 = LoadTexture("../assets/lore6.png");  // 6ª cena da intro
+    Texture2D lore6 = LoadTexture("../assets/lore6.png");
 
-    // Lore final: 8 cenas (loreFinal1..loreFinal8)
     Texture2D loreFinal1 = LoadTexture("../assets/finaldif.png");
     Texture2D loreFinal2 = LoadTexture("../assets/finaldif2.png");
     Texture2D loreFinal3 = LoadTexture("../assets/finaldif3.png");
@@ -323,8 +327,6 @@ int main(void) {
 
     PlayMusicStream(menuMusic);
 
-    // Arrays de ponteiros para textures de lore
-    // Intro: até 6 imagens (lore1..lore6) mapeadas para as cenas em ordem
     Texture2D *loreTextures[]      = { &lore1, &lore2, &lore3, &lore4, &lore5, &lore6 };
     Texture2D *loreFinalTextures[] = { &loreFinal1,&loreFinal2,&loreFinal3,&loreFinal4,
                                        &loreFinal5,&loreFinal6,&loreFinal7,&loreFinal8 };
@@ -334,21 +336,21 @@ int main(void) {
     GameState state = MENU;
 
     int MNumber=0,rodada=0,minN=1,maxN=100,novaRodada=0;
-    int monsterHP=50,vidas=5,qntOpcoes=6,sala=1;
+    int monsterHP=50, monsterMaxHP=50, vidas=5,qntOpcoes=6,sala=1;
     int resultadoSalvo=0,modoDificil=0;
     int opcoesP1[10],opcoesP2[10];
     int idxEscolhaP1=-1,idxEscolhaP2=-1;
-    int escolhaPathP1=-1,escolhaPathP2=-1;
 
     char mensagem[200]        = "Escolham um numero";
     char mensagemMonstro[200] = "";
 
+    int ultimoDanoP1 = -1; 
+    int ultimoDanoP2 = -1;
+
     int pathEventIndex=0,bonusMonsterHP=0,bonusVidas=0,penalVidas=0,penalMonsterHP=0;
     char pathResultMsg[200] = "";
 
-    // Lore intro
     int loreScene=0,loreCharIndex=0,loreTimer=0;
-    // Lore final
     int finalLoreScene=0,finalLoreCharIndex=0,finalLoreTimer=0;
 
     int pathEscolhaP1=-1,pathEscolhaP2=-1;
@@ -356,8 +358,7 @@ int main(void) {
     int salaComPath=1;
     int deathTimer=0;
 
-    // Mostra efeito do baú por alguns frames antes de avançar
-    int chestShowTimer = 0;          // >0 enquanto exibe o resultado
+    int chestShowTimer = 0;
     bool chestAguardandoEfeito = false;
 
     char historicoFacil[50][100];
@@ -372,7 +373,6 @@ int main(void) {
     const Rectangle btnFacilRec  ={(VIRT_W-BTN_W)*0.5f,250,BTN_W,BTN_H};
     const Rectangle btnDificilRec={(VIRT_W-BTN_W)*0.5f,390,BTN_W,BTN_H};
 
-    const Rectangle spr_enemy={(VIRT_W-420)*0.5f,150,420,480};
     const Rectangle chestSim={(VIRT_W*0.5f)-160,430,130,55};
     const Rectangle chestNao={(VIRT_W*0.5f)+30, 430,130,55};
     const Rectangle goRec={(VIRT_W-260)*0.5f,380,260,55};
@@ -384,14 +384,12 @@ int main(void) {
 
     const int BTN6_W=65,BTN6_H=55,BTN6_GAP=10;
     const float PANEL_W=320,PANEL_H=190;
-    const float P1_PANEL_X=20,    P1_PANEL_Y=VIRT_H-PANEL_H-20;
+    const float P1_PANEL_X=20,        P1_PANEL_Y=VIRT_H-PANEL_H-20;
     const float P1_BTN_X=P1_PANEL_X+12, P1_BTN_TOP_Y=P1_PANEL_Y+55;
     const float P2_PANEL_X=VIRT_W-PANEL_W-20, P2_PANEL_Y=VIRT_H-PANEL_H-20;
     const float P2_BTN_X=P2_PANEL_X+12,       P2_BTN_TOP_Y=P2_PANEL_Y+55;
 
-    const Rectangle spr2_p1   ={340,260,170,330};
-    const Rectangle spr2_p2   ={540,260,170,330};
-    const Rectangle spr2_enemy={(VIRT_W-420)*0.5f,150,420,480};
+    const Rectangle spr2_enemy={(VIRT_W-260)*0.5f, (VIRT_H-300)*0.5f+15, 260, 300};
 
     while (!WindowShouldClose()) {
         if (IsKeyPressed(KEY_F11)) {
@@ -404,7 +402,6 @@ int main(void) {
 
         Vector2 mouse = MouseVirtual();
 
-        // Typewriter do bossBubble
         if (state==GAMEPLAY && bossBubble.active) {
             bossBubble.timer++;
             if (bossBubble.timer%2==0) {
@@ -435,7 +432,8 @@ int main(void) {
                     StopMusicStream(menuMusic); PlayMusicStream(gameMusic);
                     MNumber=(rand()%100)+1; printf("DEBUG: %d\n",MNumber);
                     rodada=0;minN=1;maxN=100;novaRodada=1;
-                    monsterHP=50;vidas=5;qntOpcoes=6;sala=1;
+                    monsterHP=50; monsterMaxHP=50; vidas=50;qntOpcoes=6;sala=1;
+                    ultimoDanoP1=-1; ultimoDanoP2=-1;
                     resultadoSalvo=0;bonusMonsterHP=0;bonusVidas=0;penalVidas=0;penalMonsterHP=0;
                     idxEscolhaP1=-1;idxEscolhaP2=-1;salaComPath=1;pathTimeLeft=0;deathTimer=0;
                     chestVidaDelta=0;chestHpDelta=0;chestMaxNDelta=0;chestMinNDelta=0;
@@ -494,32 +492,21 @@ int main(void) {
             if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) state=MENU;
         }
         else if (state==CHEST) {
-            // Timer exibindo resultado do sorteio antes de avançar
             if (chestAguardandoEfeito) {
                 chestShowTimer--;
                 if (chestShowTimer<=0) {
                     chestAguardandoEfeito=false;
-                    // Aplicar efeito acumulado
-                    // (já foi sorteado, será aplicado ao monsterHP/vidas na transição)
 
                     #define AVANCAR_SALA() do { \
-                        /* 1. Aplicar a alteração de vidas do baú imediatamente */ \
                         vidas += chestVidaDelta; \
                         if (vidas < 1) vidas = 1; \
-                        \
-                        /* 2. Calcular o range temporário SEMPRE a partir da base 1-100 */ \
                         int novoMaxN = 100 + chestMaxNDelta; \
                         int novoMinN = 1 + chestMinNDelta; \
-                        \
-                        /* Validações estritas de segurança para o range */ \
                         if (novoMaxN > 200) novoMaxN = 200; \
                         if (novoMinN < 1)   novoMinN = 1; \
                         if (novoMinN >= novoMaxN) { novoMinN = 1; novoMaxN = 100; } \
-                        \
-                        /* Guarda os novos limites modificados nas variáveis de jogo */ \
                         minN = novoMinN; \
                         maxN = novoMaxN; \
-                        \
                         salaComPath = !salaComPath; \
                         if (salaComPath) { \
                             pathEventIndex  = rand() % NUM_PATH_EVENTS; \
@@ -529,20 +516,15 @@ int main(void) {
                             state = PATH_CHOICE; \
                         } else { \
                             rodada = 0; \
-                            /* Gera o número secreto baseado no range temporário do baú */ \
                             MNumber = (rand() % (maxN - minN + 1)) + minN; \
-                            printf("DEBUG DADOS: Efeito %d: range: %d a %d|Numb: %d\n", sala, minN, maxN, MNumber); \
-                            \
-                            /* Calcula o HP do monstro com o modificador temporário */ \
                             monsterHP = 50 + (sala * 25) + chestHpDelta; \
                             if (monsterHP < 10) monsterHP = 10; \
-                            \
+                            monsterMaxHP = monsterHP; \
                             qntOpcoes = 6; novaRodada = 1; \
                             idxEscolhaP1 = -1; idxEscolhaP2 = -1; \
+                            ultimoDanoP1 = -1; ultimoDanoP2 = -1; \
                             mensagemMonstro[0] = '\0'; \
                             snprintf(mensagem, 200, "Escolham um numero"); \
-                            \
-                            /* Limpa os deltas para que não acumulem na próxima sala */ \
                             chestVidaDelta = 0; chestHpDelta = 0; chestMaxNDelta = 0; chestMinNDelta = 0; \
                             state = GAMEPLAY; \
                             AplicarFalaInimigo(sala, modoDificil, "ENTRY"); \
@@ -555,7 +537,6 @@ int main(void) {
             } else {
                 bool p1Sim=IsKeyDown(KEY_R), p2Sim=IsKeyDown(KEY_P);
                 bool p1Nao=IsKeyDown(KEY_F), p2Nao=IsKeyDown(KEY_L);
-
                 bool baixou = (p1Sim && p2Sim);
                 bool recusou= (p1Nao && p2Nao);
 
@@ -565,23 +546,21 @@ int main(void) {
                         SortearEfeitoChest();
                     } else {
                         PlaySound(closeSound);
-                        // Sem efeito, zera tudo
                         chestVidaDelta=0;chestHpDelta=0;chestMaxNDelta=0;chestMinNDelta=0;
                         snprintf(chestResultMsg,sizeof(chestResultMsg),"Dados ignorados. Sem efeito.");
-                        chestIsBuff=true; // cor neutra
+                        chestIsBuff=true;
                     }
 
-                    if ((!modoDificil&&sala>=6)||(modoDificil&&sala>=8)) {
+                    // AJUSTADO: No modo fácil o jogo acaba na sala 5. Se o baú for acessado de forma inconsistente, protege aqui também.
+                    if ((!modoDificil && sala >= 6) || (modoDificil && sala >= 8)) {
                         if (!resultadoSalvo){SalvarHistorico("VENCEU",sala,modoDificil);resultadoSalvo=1;}
                         if (modoDificil) {
-                            // Lore final antes do WIN
                             finalLoreScene=0;finalLoreCharIndex=0;finalLoreTimer=0;
                             state=FINAL_LORE;
                         } else {
                             state=WIN;
                         }
                     } else {
-                        // Exibir resultado do sorteio por ~3s antes de avançar
                         chestShowTimer=180;
                         chestAguardandoEfeito=true;
                     }
@@ -593,21 +572,14 @@ int main(void) {
                 vidas += bonusVidas; vidas -= penalVidas; \
                 if(vidas < 1) vidas = 1; \
                 rodada = 0; \
-                \
-                /* Gera o número secreto usando o range do baú (calculado na transição anterior) */ \
                 MNumber = (rand() % (maxN - minN + 1)) + minN; \
-                printf("[DEBUG Path] Entrada em Gameplay: range [%d a %d] | Alvo: %d\n", minN, maxN, MNumber); \
-                \
-                /* Aplica o modificador de HP do baú JUNTO com o bônus/penalidade do caminho */ \
                 monsterHP = 50 + (sala * 25) - bonusMonsterHP + penalMonsterHP + chestHpDelta; \
                 if(monsterHP < 10) monsterHP = 10; \
-                \
-                /* Reseta os bônus do caminho e os efeitos do baú para a próxima rodada/sala */ \
                 bonusMonsterHP = 0; bonusVidas = 0; penalVidas = 0; penalMonsterHP = 0; \
                 chestVidaDelta = 0; chestHpDelta = 0; chestMaxNDelta = 0; chestMinNDelta = 0; \
-                \
                 qntOpcoes = 6; novaRodada = 1; \
                 idxEscolhaP1 = -1; idxEscolhaP2 = -1; \
+                ultimoDanoP1 = -1; ultimoDanoP2 = -1; \
                 pathEscolhaP1 = -1; pathEscolhaP2 = -1; \
                 mensagemMonstro[0] = '\0'; \
                 snprintf(mensagem, 200, "Escolham um numero"); \
@@ -654,9 +626,16 @@ int main(void) {
             if (monsterHP<=0){
                 deathTimer--;
                 if (deathTimer<=0){
-                    sala++;
-                    minN = 1; maxN = 100; // Reseta o range de palpites para a base padrão
-                    state=((!modoDificil&&sala>=6)||(modoDificil&&sala>=8))?CHEST:CHEST;
+                    // AJUSTADO: Se o Boss Ogro (sala 5) morrer no fácil, o jogo acaba direto sem ir para o baú!
+                    if (!modoDificil && sala == 5) {
+                        sala++;
+                        if (!resultadoSalvo) { SalvarHistorico("VENCEU", sala, modoDificil); resultadoSalvo = 1; }
+                        state = WIN;
+                    } else {
+                        sala++;
+                        minN = 1; maxN = 100;
+                        state = CHEST;
+                    }
                 }
             } else {
                 if (novaRodada){
@@ -678,30 +657,62 @@ int main(void) {
 
                 if(confirmadoP1&&confirmadoP2){
                     int eP1=opcoesP1[idxEscolhaP1],eP2=opcoesP2[idxEscolhaP2];
-                    int dP1=calcularDano(eP1,MNumber),dP2=calcularDano(eP2,MNumber),dT=dP1+dP2;
+                    
+                    ultimoDanoP1=calcularDano(eP1,MNumber);
+                    ultimoDanoP2=calcularDano(eP2,MNumber);
+                    int dT=ultimoDanoP1+ultimoDanoP2;
+                    
                     monsterHP-=dT; if(monsterHP<0)monsterHP=0;
-                    mensagemMonstro[0]='\0';
+                    
+                    mensagemMonstro[0]='\0'; 
+                    
                     char dica[100]="";
-                    if(!modoDificil){int med=(eP1+eP2)/2;if(med<MNumber){minN=med+1;snprintf(dica,100,"Numero maior que %d",med);}else if(med>MNumber){maxN=med-1;snprintf(dica,100,"Numero menor que %d",med);}}
-                    if(modoDificil) snprintf(mensagem,200,"P1:%d dano | P2:%d dano | Total:%d",dP1,dP2,dT);
-                    else snprintf(mensagem,200,"P1:%d | P2:%d | Total:%d | %s",dP1,dP2,dT,dica);
-                    if(monsterHP>0){if(dP1==40||dP2==40)AplicarFalaInimigo(sala,modoDificil,"CRITICAL");else if(dT>10)AplicarFalaInimigo(sala,modoDificil,"HIT");else AplicarFalaInimigo(sala,modoDificil,"IDLE");}
+                    if(!modoDificil){
+                        int med=(eP1+eP2)/2;
+                        if(med<MNumber){minN=med+1;snprintf(dica,100,"Numero maior que %d",med);}
+                        else if(med>MNumber){maxN=med-1;snprintf(dica,100,"Numero menor que %d",med);}
+                    }
+                    
+                    if(modoDificil) 
+                        snprintf(mensagem,200,"Ataque Combinado! Total de dano: %d",dT);
+                    else 
+                        snprintf(mensagem,200,"Total: %d | %s",dT,dica);
+                        
+                    if(monsterHP>0){
+                        if(ultimoDanoP1==40||ultimoDanoP2==40)AplicarFalaInimigo(sala,modoDificil,"CRITICAL");
+                        else if(dT>10)AplicarFalaInimigo(sala,modoDificil,"HIT");
+                        else AplicarFalaInimigo(sala,modoDificil,"IDLE");
+                    }
                     else{AplicarFalaInimigo(sala,modoDificil,"DEATH");deathTimer=180;}
+                    
                     confirmadoP1=0;confirmadoP2=0;novaRodada=1;
                 }
-                if(rodada%5==0&&novaRodada==0){vidas--;rodada++;snprintf(mensagemMonstro,200,">>> O monstro atacou! -1 vida! <<<");}
+                
+                if(rodada%5==0&&novaRodada==0){
+                    vidas--;
+                    rodada++;
+                    snprintf(mensagemMonstro,200,">>> O monstro atacou! -1 vida! <<<");
+                }
                 if(vidas<=0){if(!resultadoSalvo){SalvarHistorico("MORREU",sala,modoDificil);resultadoSalvo=1;}state=GAMEOVER;}
             }
         }
         else if (state==GAMEOVER) {
             if(IsMouseButtonPressed(MOUSE_LEFT_BUTTON)){
-                if(CheckCollisionPointRec(mouse,goRec))state=MENU;
-                if(CheckCollisionPointRec(mouse,goExi))break;
+                if(CheckCollisionPointRec(mouse,goRec)){
+                    StopMusicStream(gameMusic);
+                    PlayMusicStream(menuMusic);
+                    state=MENU;
+                }
+                if(CheckCollisionPointRec(mouse,goExi)) break;
             }
         }
         else if (state==WIN) {
             if(!resultadoSalvo){SalvarHistorico("VENCEU",sala,modoDificil);resultadoSalvo=1;}
-            if(IsMouseButtonPressed(MOUSE_LEFT_BUTTON))state=MENU;
+            if(IsMouseButtonPressed(MOUSE_LEFT_BUTTON)){
+                StopMusicStream(gameMusic);
+                PlayMusicStream(menuMusic);
+                state=MENU;
+            }
         }
 
         // ── DRAW ───────────────────────────────────────────────────────────
@@ -727,7 +738,6 @@ int main(void) {
             DrawTexVirt(btnDificil,btnDificilRec,hD?LIGHTGRAY:WHITE);
         }
         else if (state==LORE) {
-            // Clamp para não estourar o array de texturas
             int texIdx = loreScene;
             if (texIdx >= NUM_INTRO_TEXTURES) texIdx = NUM_INTRO_TEXTURES - 1;
             Texture2D *bg = loreTextures[texIdx];
@@ -740,7 +750,6 @@ int main(void) {
             DrawText("ENTER ou clique para continuar",VIRT_W-420,VIRT_H-40,22,LIGHTGRAY);
         }
         else if (state==FINAL_LORE) {
-            // Lore final — igual ao LORE mas usa finalLore[] e loreFinalTextures[]
             int texIdx = finalLoreScene;
             if (texIdx >= NUM_FINAL_TEXTURES) texIdx = NUM_FINAL_TEXTURES - 1;
             Texture2D *bg = loreFinalTextures[texIdx];
@@ -773,14 +782,12 @@ int main(void) {
             DrawTexturePro(dropBg,(Rectangle){0,0,(float)dropBg.width,(float)dropBg.height},(Rectangle){0,0,VIRT_W,VIRT_H},(Vector2){0,0},0,WHITE);
 
             if (chestAguardandoEfeito) {
-                // Exibe resultado do sorteio
                 Color cor = chestIsBuff ? (Color){80,255,100,255} : (Color){255,80,80,255};
                 const char *prefixo = chestIsBuff ? "DADOS BAIXADOS!" : "DADOS CORROMPIDOS!";
                 DrawRectangle((VIRT_W-600)/2, VIRT_H/2-80, 600, 160, (Color){0,0,0,220});
                 DrawRectangleLinesEx((Rectangle){(float)(VIRT_W-600)/2,(float)(VIRT_H/2-80),600,160},3,cor);
                 DrawText(prefixo,(VIRT_W-MeasureText(prefixo,32))/2,VIRT_H/2-60,32,cor);
                 DrawText(chestResultMsg,(VIRT_W-MeasureText(chestResultMsg,26))/2,VIRT_H/2-10,26,WHITE);
-                // Barra de progresso do timer
                 float prog=(float)chestShowTimer/180.0f;
                 DrawRectangle((VIRT_W-400)/2,VIRT_H/2+58,400,10,(Color){40,40,40,200});
                 DrawRectangle((VIRT_W-400)/2,VIRT_H/2+58,(int)(400*prog),10,cor);
@@ -834,7 +841,6 @@ int main(void) {
             const char *inst="[ Analise os logs e escolha o caminho seguro ]";
             DrawText(inst,(VIRT_W-MeasureText(inst,16))/2,284,16,(Color){0,140,50,200});
 
-            // Timer — usa os mesmos valores de inicialização do pathTimeLeft
             {
                 int totalFrames = modoDificil ? 1500 : 4000;
                 int framesLeft  = (pathTimeLeft>0)?pathTimeLeft:0;
@@ -855,7 +861,6 @@ int main(void) {
                 else{int bw=MeasureText("P2: ???",18)+16;DrawRectangle(VIRT_W-30-bw,306,bw,26,(Color){0,0,0,100});DrawText("P2: ???",VIRT_W-30-bw+8,310,18,(Color){120,120,120,200});}
             }
 
-            // Painéis
             {Color bg=hR?(Color){255,110,110,255}:(Color){160,20,20,255};DrawRectangleRec(pathRed,bg);DrawRectangleLinesEx(pathRed,hR?4:2,hR?WHITE:(Color){255,120,120,255});DrawText("[PROC: 0x52]",(int)(pathRed.x+(pathRed.width-MeasureText("[PROC: 0x52]",14))*0.5f),(int)(pathRed.y+12),14,(Color){255,180,180,200});const char*lbl="VERMELHO";DrawText(lbl,(int)(pathRed.x+(pathRed.width-MeasureText(lbl,22))*0.5f),(int)(pathRed.y+pathRed.height*0.5f-10),22,WHITE);if(!modoDificil&&(pathEscolhaP1==0||pathEscolhaP2==0))DrawText("[SELECIONADO]",(int)(pathRed.x+(pathRed.width-MeasureText("[SELECIONADO]",15))*0.5f),(int)(pathRed.y+pathRed.height-28),15,(Color){255,220,220,255});}
             {Color bg=hG?(Color){80,255,100,255}:(Color){10,130,40,255};DrawRectangleRec(pathGreen,bg);DrawRectangleLinesEx(pathGreen,hG?4:2,hG?WHITE:(Color){80,200,100,255});DrawText("[PROC: 0x47]",(int)(pathGreen.x+(pathGreen.width-MeasureText("[PROC: 0x47]",14))*0.5f),(int)(pathGreen.y+12),14,(Color){180,255,190,200});const char*lbl="VERDE";DrawText(lbl,(int)(pathGreen.x+(pathGreen.width-MeasureText(lbl,22))*0.5f),(int)(pathGreen.y+pathGreen.height*0.5f-10),22,WHITE);if(!modoDificil&&(pathEscolhaP1==1||pathEscolhaP2==1))DrawText("[SELECIONADO]",(int)(pathGreen.x+(pathGreen.width-MeasureText("[SELECIONADO]",15))*0.5f),(int)(pathGreen.y+pathGreen.height-28),15,(Color){220,255,220,255});}
             {Color bg=hB?(Color){80,160,255,255}:(Color){15,40,160,255};DrawRectangleRec(pathBlue,bg);DrawRectangleLinesEx(pathBlue,hB?4:2,hB?WHITE:(Color){80,120,255,255});DrawText("[PROC: 0x42]",(int)(pathBlue.x+(pathBlue.width-MeasureText("[PROC: 0x42]",14))*0.5f),(int)(pathBlue.y+12),14,(Color){160,190,255,200});const char*lbl="AZUL";DrawText(lbl,(int)(pathBlue.x+(pathBlue.width-MeasureText(lbl,22))*0.5f),(int)(pathBlue.y+pathBlue.height*0.5f-10),22,WHITE);if(!modoDificil&&(pathEscolhaP1==2||pathEscolhaP2==2))DrawText("[SELECIONADO]",(int)(pathBlue.x+(pathBlue.width-MeasureText("[SELECIONADO]",15))*0.5f),(int)(pathBlue.y+pathBlue.height-28),15,(Color){200,210,255,255});}
@@ -887,7 +892,8 @@ int main(void) {
                 DrawText(bn,20,48,22,WHITE);
                 DrawText(bd,20+MeasureText(bn,22)+20,52,16,(Color){190,190,190,255});
             } else {
-                const char*ebn=(sala==5||sala==6)?"Boss Ogro":((sala%2==0)?"Ogro":"Slime");
+                // AJUSTADO: Nomes corretos para as salas (1 e 2 Slime, 3 e 4 Ogro, 5 Boss Ogro)
+                const char*ebn=(sala==5)?"Boss Ogro":((sala==3||sala==4)?"Ogro":"Slime");
                 DrawText(ebn,20,48,24,WHITE);
                 DrawText("Uma criatura bloqueia o caminho.",200,52,16,LIGHTGRAY);
             }
@@ -895,15 +901,32 @@ int main(void) {
             DrawText(modoTxt,VIRT_W-MeasureText(modoTxt,18)-14,10,18,modoDificil?RED:(Color){0,220,80,255});
             DrawText(TextFormat("VIDAS: %d",vidas),VIRT_W-MeasureText(TextFormat("VIDAS: %d",vidas),18)-14,36,18,RED);
             DrawText(TextFormat("HP: %d",monsterHP),VIRT_W-MeasureText(TextFormat("HP: %d",monsterHP),18)-14,58,18,GREEN);
-
+            // Barra de HP do monstro
+            {
+                float hpPct = (monsterMaxHP > 0) ? (float)monsterHP / monsterMaxHP : 0.0f;
+                if (hpPct < 0.0f) hpPct = 0.0f;
+                if (hpPct > 1.0f) hpPct = 1.0f;
+                
+                // Cor muda: verde > 60%, amarelo > 30%, vermelho <= 30%
+                Color hpColor = (hpPct > 0.6f) ? GREEN : (hpPct > 0.3f) ? ORANGE : RED;
+                
+                int barW = 200, barH = 14;
+                int barX = VIRT_W - barW - 14;
+                int barY = 78;
+                
+                DrawRectangle(barX, barY, barW, barH, (Color){40,40,40,220});             // fundo
+                DrawRectangle(barX, barY, (int)(barW * hpPct), barH, hpColor);           // preenchimento
+                DrawRectangleLinesEx((Rectangle){barX, barY, barW, barH}, 1, DARKGRAY);  // borda
+            }
             DrawRectangle(300,100,680,118,(Color){0,0,0,170});
             DrawText(mensagem,300+(680-MeasureText(mensagem,20))/2,115,20,SKYBLUE);
+            
             if(mensagemMonstro[0]!='\0') DrawText(mensagemMonstro,300+(680-MeasureText(mensagemMonstro,18))/2,150,18,RED);
 
             if(bossBubble.active){
                 DrawTexVirt(textboxTex,textboxRec,WHITE);
                 char tb[256]={0}; strncpy(tb,bossBubble.currentText,bossBubble.charIndex); tb[bossBubble.charIndex]='\0';
-                const char*en=modoDificil?((strlen(bosses[sala-1].name)>0)?bosses[sala-1].name:"Boss"):((sala==5||sala==6)?"Rei Ogro":((sala%2==0)?"Ogro":"Slime"));
+                const char*en=modoDificil?((strlen(bosses[sala-1].name)>0)?bosses[sala-1].name:"Boss"):((sala==5)?"Boss Ogro":((sala==3||sala==4)?"Ogro":"Slime"));
                 DrawText(en,textboxRec.x+25,textboxRec.y+18,18,GOLD);
                 DrawText(tb,textboxRec.x+25,textboxRec.y+50,18,WHITE);
             }
@@ -911,8 +934,15 @@ int main(void) {
             // Painel P1
             DrawRectangleRec((Rectangle){P1_PANEL_X,P1_PANEL_Y,PANEL_W,PANEL_H},(Color){0,0,0,180});
             DrawRectangleLinesEx((Rectangle){P1_PANEL_X,P1_PANEL_Y,PANEL_W,PANEL_H},2,(Color){100,180,255,120});
-            DrawText("PLAYER 1",P1_PANEL_X+(PANEL_W-MeasureText("PLAYER 1",18))*0.5f,P1_PANEL_Y+10,18,(Color){100,180,255,255});
-            DrawText("Teclas: QWER / ASDF",P1_PANEL_X+(PANEL_W-MeasureText("Teclas: QWER / ASDF",12))*0.5f,P1_PANEL_Y+32,12,(Color){160,160,160,200});
+            DrawText("PLAYER 1",P1_PANEL_X+(PANEL_W-MeasureText("PLAYER 1",18))*0.5f,P1_PANEL_Y+8,18,(Color){100,180,255,255});
+            
+            if (ultimoDanoP1 >= 0) {
+                const char* p1DanoTxt = TextFormat("Ultimo Dano: %d", ultimoDanoP1);
+                DrawText(p1DanoTxt, P1_PANEL_X+(PANEL_W-MeasureText(p1DanoTxt,12))*0.5f, P1_PANEL_Y+26, 12, ORANGE);
+            } else {
+                DrawText("Teclas: QWER / ASDF",P1_PANEL_X+(PANEL_W-MeasureText("Teclas: QWER / ASDF",12))*0.5f,P1_PANEL_Y+26,12,(Color){160,160,160,200});
+            }
+
             for(int i=0;i<8;i++){
                 int col=(i<=3)?i:i-4,row=(i<=3)?0:1;
                 Rectangle btn={P1_BTN_X+col*(BTN6_W+BTN6_GAP),P1_BTN_TOP_Y+row*(BTN6_H+BTN6_GAP),(float)BTN6_W,(float)BTN6_H};
@@ -928,8 +958,15 @@ int main(void) {
             // Painel P2
             DrawRectangleRec((Rectangle){P2_PANEL_X,P2_PANEL_Y,PANEL_W,PANEL_H},(Color){0,0,0,180});
             DrawRectangleLinesEx((Rectangle){P2_PANEL_X,P2_PANEL_Y,PANEL_W,PANEL_H},2,(Color){255,120,120,120});
-            DrawText("PLAYER 2",P2_PANEL_X+(PANEL_W-MeasureText("PLAYER 2",18))*0.5f,P2_PANEL_Y+10,18,(Color){255,120,120,255});
-            DrawText("Teclas: UIOP / HJKL",P2_PANEL_X+(PANEL_W-MeasureText("Teclas: UIOP / HJKL",12))*0.5f,P2_PANEL_Y+32,12,(Color){160,160,160,200});
+            DrawText("PLAYER 2",P2_PANEL_X+(PANEL_W-MeasureText("PLAYER 2",18))*0.5f,P2_PANEL_Y+8,18,(Color){255,120,120,255});
+            
+            if (ultimoDanoP2 >= 0) {
+                const char* p2DanoTxt = TextFormat("Ultimo Dano: %d", ultimoDanoP2);
+                DrawText(p2DanoTxt, P2_PANEL_X+(PANEL_W-MeasureText(p2DanoTxt,12))*0.5f, P2_PANEL_Y+26, 12, MAGENTA);
+            } else {
+                DrawText("Teclas: UIOP / HJKL",P2_PANEL_X+(PANEL_W-MeasureText("Teclas: UIOP / HJKL",12))*0.5f,P2_PANEL_Y+26,12,(Color){160,160,160,200});
+            }
+
             for(int i=0;i<8;i++){
                 int col=(i<=3)?i:i-4,row=(i<=3)?0:1;
                 Rectangle btn={P2_BTN_X+col*(BTN6_W+BTN6_GAP),P2_BTN_TOP_Y+row*(BTN6_H+BTN6_GAP),(float)BTN6_W,(float)BTN6_H};
@@ -953,7 +990,7 @@ int main(void) {
             DrawText(t2,(VIRT_W-MeasureText(t2,26))/2,260,26,WHITE);
             DrawText(t3,(VIRT_W-MeasureText(t3,26))/2,298,26,WHITE);
             DrawRectangleRec(goRec,hr?ORANGE:DARKGRAY);DrawRectangleRec(goExi,he?ORANGE:DARKGRAY);
-            const char*lr="JOGAR NOVAMENTE",*le="SAIR";
+            const char*lr="MENU",*le="SAIR";
             DrawText(lr,(int)(goRec.x+(goRec.width-MeasureText(lr,20))*0.5f),(int)(goRec.y+18),20,WHITE);
             DrawText(le,(int)(goExi.x+(goExi.width-MeasureText(le,20))*0.5f),(int)(goExi.y+18),20,WHITE);
         }
@@ -961,7 +998,7 @@ int main(void) {
             DrawTexVirt(gameBg,(Rectangle){0,0,VIRT_W,VIRT_H},WHITE);
             DrawRectangle(0,0,VIRT_W,VIRT_H,(Color){0,0,0,150});
             const char*t1="ACESSO AO LYCEUM CONCEDIDO",*t2="A falta foi removida.",*t3="STATUS: APROVADO";
-            const char*t4="Lucas observava tudo em silencio...",*t5="Clique para voltar ao menu";
+            const char*t4="Lucas observava tudo in silencio...",*t5="Clique para voltar ao menu";
             DrawText(t1,(VIRT_W-MeasureText(t1,44))/2,190,44,GREEN);
             DrawText(t2,(VIRT_W-MeasureText(t2,30))/2,264,30,WHITE);
             DrawText(t3,(VIRT_W-MeasureText(t3,38))/2,316,38,YELLOW);
