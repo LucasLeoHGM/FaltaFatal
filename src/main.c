@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
+#include <math.h>
 
 #define VIRT_W 1280
 #define VIRT_H 720
@@ -97,6 +98,57 @@ static int   chestMaxNDelta   = 0;
 static int   chestMinNDelta   = 0;
 static char  chestResultMsg[128] = "";
 static bool  chestIsBuff      = false;
+static int recSoma(int *v, int n)    { return n==0 ? 0 : v[0] + recSoma(v+1, n-1); }
+static int recMin(int *v, int n)     { return n==1 ? v[0] : (v[0]<recMin(v+1,n-1)?v[0]:recMin(v+1,n-1)); }
+static int recMax(int *v, int n)     { return n==1 ? v[0] : (v[0]>recMax(v+1,n-1)?v[0]:recMax(v+1,n-1)); }
+static long recSomaSq(int *v, int n) { return n==0 ? 0 : (long)v[0]*v[0] + recSomaSq(v+1, n-1); }
+
+static const char* GerarHeuristica(float media, int melhor, int pior, float desvio, int salaMax) {
+    if (melhor == salaMax)
+        return "COMPLETO! Tente o outro modo!";
+
+    if (desvio > 2.5f)
+        return "Inconsistente: combinem quem vai alto e quem vai baixo.";
+
+    if (media >= (float)salaMax * 0.5f && desvio <= 1.5f && melhor < salaMax)
+        return "Bau: indo bem? Recusem! Debuff pode estragar tudo.";
+
+    if (salaMax == 5) {
+        if (melhor <= 1)
+            return "Slime: P1 chuta ~25, P2 chuta ~75 no range.";
+        if (melhor == 2)
+            return "Use maior/menor para afunilar no 2o Slime.";
+        if (melhor <= 4 && media < 3.0f)
+            return "Ogro: dano 25+ significa que estao proximos!";
+        if (melhor == 4)
+            return "Quase no Boss! Cheguem com vidas sobrando.";
+        if (media >= 4.0f)
+            return "No Boss: um vai em 1/4, o outro em 3/4 do range.";
+        if (media >= 2.5f && desvio <= 1.2f)
+            return "Bau: consistentes? Recusem o risco!";
+        return "Dividam o range: P1 baixo, P2 alto. Sempre.";
+    }
+
+    if (salaMax == 7) {
+        if (melhor <= 1)
+            return "Dano 40=acerto, 25=perto, 15=quase. Memorizem!";
+        if (melhor <= 2)
+            return "Encruzilhada: acertar da bonus de HP no boss.";
+        if (melhor <= 4 && desvio > 1.5f)
+            return "Memorizem quais numeros deram mais dano antes.";
+        if (melhor <= 4)
+            return "Bau: buff de -HP no boss vale mais que +vidas.";
+        if (melhor <= 6 && media < 5.0f)
+            return "Encruzilhada certa = boss mais fraco. Pensem!";
+        if (media >= 5.0f)
+            return "Boss final: P1 em 1/3, P2 em 2/3 do range.";
+        if (media >= 3.0f && desvio <= 1.5f)
+            return "Indo bem? Recusem o bau, nao arrisquem!";
+        return "Dano 15+ = diferenca de ate 10. Ajustem dai.";
+    }
+
+    return "Jogue mais para receber analise personalizada!";
+}
 
 // ─────────────────────────────────────────────────────────────────────────
 
@@ -229,9 +281,28 @@ static void SalvarHistorico(const char *res,int sala,int modoDificil){
     if(strcmp(res,"VENCEU")==0) fprintf(f,"VENCEU\n"); else fprintf(f,"%s - Sala %d\n",res,sala);
     fclose(f);
 }
-static int LerHistorico(const char *arq,char linhas[][100],int max){
-    FILE *f=fopen(arq,"r"); if(!f) return 0;
-    int i=0; while(fgets(linhas[i],100,f)&&i<max-1) i++; fclose(f); return i;
+static int LerHistorico(const char *arq, char linhas[][100], int max) {
+    FILE *f = fopen(arq, "r"); if (!f) return 0;
+    int i = 0;
+    while (fgets(linhas[i], 100, f) && i < max-1) {
+        // Remove newline
+        int l = strlen(linhas[i]);
+        while (l>0 && (linhas[i][l-1]=='\n'||linhas[i][l-1]=='\r')) linhas[i][--l]='\0';
+        i++;
+    }
+    fclose(f); return i;
+}
+
+static int ExtrairSalas(char linhas[][100], int total, int *salas, int salaMax) {
+    int n = 0;
+    for (int i = 0; i < total; i++) {
+        if (strstr(linhas[i], "VENCEU")) { salas[n++] = salaMax; }
+        else {
+            int s = 0;
+            if (sscanf(linhas[i], "MORREU - Sala %d", &s) == 1) salas[n++] = s;
+        }
+    }
+    return n;
 }
 static void DrawTexVirt(Texture2D t,Rectangle dst,Color tint){
     DrawTexturePro(t,(Rectangle){0,0,(float)t.width,(float)t.height},dst,(Vector2){0,0},0.0f,tint);
@@ -365,6 +436,14 @@ int main(void) {
     char historicoDificil[50][100];
     int  totalFacil=0,totalDificil=0;
 
+    // -- stats 
+    int   salasFacil[50],   salasDificil[50];
+    int   nSalasFacil=0,    nSalasDificil=0;
+    float mediaFacil=0,     mediaDificil=0;
+    int   melhorFacil=0,    melhorDificil=0;
+    int   piorFacil=0,      piorDificil=0;
+    float desvioFacil=0,    desvioDificil=0;
+
     // ── Layout constants ───────────────────────────────────────────────────
     const float BTN_W=310,BTN_H=80;
     const Rectangle btnJogarRec={(VIRT_W-BTN_W)*0.0f,165,BTN_W,BTN_H};
@@ -414,8 +493,29 @@ int main(void) {
             if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
                 if (CheckCollisionPointRec(mouse,btnJogarRec)) state=MODE_SELECT;
                 if (CheckCollisionPointRec(mouse,btnStatsRec)){
-                    totalFacil  =LerHistorico("historico_facil.txt",  historicoFacil,  50);
-                    totalDificil=LerHistorico("historico_dificil.txt",historicoDificil,50);
+                    totalFacil   = LerHistorico("historico_facil.txt",   historicoFacil,   50);
+                    totalDificil = LerHistorico("historico_dificil.txt", historicoDificil, 50);
+
+                    // Fácil: sala máx = 5
+                    nSalasFacil = ExtrairSalas(historicoFacil, totalFacil, salasFacil, 5);
+                    if (nSalasFacil > 0) {
+                        mediaFacil  = (float)recSoma(salasFacil, nSalasFacil) / nSalasFacil;
+                        melhorFacil = recMax(salasFacil, nSalasFacil);
+                        piorFacil   = recMin(salasFacil, nSalasFacil);
+                        float variancia = (float)recSomaSq(salasFacil, nSalasFacil)/nSalasFacil - mediaFacil*mediaFacil;
+                        desvioFacil = (variancia > 0) ? sqrtf(variancia) : 0;
+                    }
+
+                    // Difícil: sala máx = 7
+                    nSalasDificil = ExtrairSalas(historicoDificil, totalDificil, salasDificil, 7);
+                    if (nSalasDificil > 0) {
+                        mediaDificil  = (float)recSoma(salasDificil, nSalasDificil) / nSalasDificil;
+                        melhorDificil = recMax(salasDificil, nSalasDificil);
+                        piorDificil   = recMin(salasDificil, nSalasDificil);
+                        float variancia = (float)recSomaSq(salasDificil, nSalasDificil)/nSalasDificil - mediaDificil*mediaDificil;
+                        desvioDificil = (variancia > 0) ? sqrtf(variancia) : 0;
+                    }
+
                     state=STATS;
                 }
                 if (CheckCollisionPointRec(mouse,btnSairRec)) break;
@@ -430,7 +530,7 @@ int main(void) {
                     StopMusicStream(menuMusic); PlayMusicStream(gameMusic);
                     MNumber=(rand()%100)+1; printf("DEBUG: %d\n",MNumber);
                     rodada=0;minN=1;maxN=100;novaRodada=1;
-                    monsterHP=50; monsterMaxHP=50; vidas=50;qntOpcoes=6;sala=1;
+                    monsterHP=50; monsterMaxHP=50; vidas=2;qntOpcoes=6;sala=1;
                     ultimoDanoP1=-1; ultimoDanoP2=-1;
                     resultadoSalvo=0;bonusMonsterHP=0;bonusVidas=0;penalVidas=0;penalMonsterHP=0;
                     idxEscolhaP1=-1;idxEscolhaP2=-1;salaComPath=1;pathTimeLeft=0;deathTimer=0;
@@ -731,7 +831,10 @@ int main(void) {
             bool hD=CheckCollisionPointRec(mouse,btnDificilRec);
             DrawTexVirt(menuBg,(Rectangle){0,0,VIRT_W,VIRT_H},WHITE);
             const char *titulo="ESCOLHA O MODO";
-            DrawText(titulo,(VIRT_W-MeasureText(titulo,46))/2,155,46,BLACK);
+            int tx = (VIRT_W - MeasureText(titulo,46)) / 2;
+            DrawRectangle(tx - 20, 163, MeasureText(titulo,46) + 40, 58, (Color){0,0,0,170}); // Barra de fundo
+            DrawText(titulo, tx+2, 172, 46, (Color){0,0,0,200});  // Sombra
+            DrawText(titulo, tx, 170, 46, WHITE);
             DrawTexVirt(btnFacil,btnFacilRec,hF?LIGHTGRAY:WHITE);
             DrawTexVirt(btnDificil,btnDificilRec,hD?LIGHTGRAY:WHITE);
         }
@@ -761,17 +864,65 @@ int main(void) {
         }
         else if (state==STATS) {
             DrawTexVirt(menuBg,(Rectangle){0,0,VIRT_W,VIRT_H},WHITE);
-            DrawRectangle(0,0,VIRT_W,VIRT_H,(Color){0,0,0,130});
-            const char *titulo="ESTATISTICAS";
-            DrawText(titulo,(VIRT_W-MeasureText(titulo,40))/2,30,40,WHITE);
-            float cx=VIRT_W*0.5f;
-            DrawLine((int)cx,90,(int)cx,680,WHITE);
-            DrawText("FACIL",(int)(cx-200-MeasureText("FACIL",30)),100,30,DARKGREEN);
-            DrawText("DIFICIL",(int)(cx+60),100,30,MAROON);
-            for(int i=0;i<totalFacil;i++)   DrawText(historicoFacil[i],(int)(cx-380),155+(i*24),20,DARKGREEN);
-            for(int i=0;i<totalDificil;i++) DrawText(historicoDificil[i],(int)(cx+40),155+(i*24),20,MAROON);
+            DrawRectangle(0,0,VIRT_W,VIRT_H,(Color){0,0,0,160});
+
+            const char *titulo="RELATORIO ANALITICO";
+            DrawText(titulo,(VIRT_W-MeasureText(titulo,36))/2,18,36,WHITE);
+            DrawLine(60,62,VIRT_W-60,62,GRAY);
+
+            float cx = VIRT_W * 0.5f;
+            DrawLine((int)cx, 70, (int)cx, 660, (Color){80,80,80,200});
+
+            // ── Cabeçalhos ──
+            DrawText("FACIL",   (int)(cx*0.5f - MeasureText("FACIL",  26)*0.5f), 72, 26, DARKGREEN);
+            DrawText("DIFICIL", (int)(cx+cx*0.5f - MeasureText("DIFICIL",26)*0.5f), 72, 26, MAROON);
+            DrawLine(60,104,VIRT_W-60,104,(Color){60,60,60,200});
+
+            // ── Estatísticas FÁCIL ──
+            int lx = 80, rx = (int)cx+30, ly = 115, ry = 115, gap = 28;
+            if (nSalasFacil > 0) {
+                DrawText(TextFormat("Partidas:  %d",   nSalasFacil),             lx, ly,      22, LIGHTGRAY); ly+=gap;
+                DrawText(TextFormat("Media:     %.2f", mediaFacil),              lx, ly,      22, WHITE);      ly+=gap;
+                DrawText(TextFormat("Melhor:    Sala %d", melhorFacil),          lx, ly,      22, GREEN);      ly+=gap;
+                DrawText(TextFormat("Pior:      Sala %d", piorFacil),            lx, ly,      22, RED);        ly+=gap;
+                DrawText(TextFormat("Desvio:    %.2f", desvioFacil),             lx, ly,      22, YELLOW);     ly+=gap+6;
+                DrawLine(lx, ly, (int)cx-30, ly, (Color){60,60,60,180}); ly+=10;
+                const char *hF = GerarHeuristica(mediaFacil,melhorFacil,piorFacil,desvioFacil,5);
+                DrawText("Analise:", lx, ly, 18, DARKGREEN); ly+=24;
+                DrawText(hF, lx, ly, 16, (Color){180,255,180,255}); ly+=28;
+                DrawLine(lx, ly, (int)cx-30, ly, (Color){60,60,60,180}); ly+=12;
+                DrawText("Historico:", lx, ly, 18, LIGHTGRAY); ly+=24;
+                for (int i=0; i<totalFacil && ly<660; i++) {
+                    Color c = strstr(historicoFacil[i],"VENCEU") ? GREEN : RED;
+                    DrawText(historicoFacil[i], lx, ly, 16, c); ly+=20;
+                }
+            } else {
+                DrawText("Sem partidas registradas.", lx, ly, 18, GRAY);
+            }
+
+            // ── Estatísticas DIFÍCIL ──
+            if (nSalasDificil > 0) {
+                DrawText(TextFormat("Partidas:  %d",   nSalasDificil),           rx, ry,      22, LIGHTGRAY); ry+=gap;
+                DrawText(TextFormat("Media:     %.2f", mediaDificil),            rx, ry,      22, WHITE);      ry+=gap;
+                DrawText(TextFormat("Melhor:    Sala %d", melhorDificil),        rx, ry,      22, GREEN);      ry+=gap;
+                DrawText(TextFormat("Pior:      Sala %d", piorDificil),          rx, ry,      22, RED);        ry+=gap;
+                DrawText(TextFormat("Desvio:    %.2f", desvioDificil),           rx, ry,      22, YELLOW);     ry+=gap+6;
+                DrawLine(rx, ry, VIRT_W-60, ry, (Color){60,60,60,180}); ry+=10;
+                const char *hD = GerarHeuristica(mediaDificil,melhorDificil,piorDificil,desvioDificil,7);
+                DrawText("Analise:", rx, ry, 18, MAROON); ry+=24;
+                DrawText(hD, rx, ry, 16, (Color){255,180,180,255}); ry+=28;
+                DrawLine(rx, ry, VIRT_W-60, ry, (Color){60,60,60,180}); ry+=12;
+                DrawText("Historico:", rx, ry, 18, LIGHTGRAY); ry+=24;
+                for (int i=0; i<totalDificil && ry<660; i++) {
+                    Color c = strstr(historicoDificil[i],"VENCEU") ? GREEN : RED;
+                    DrawText(historicoDificil[i], rx, ry, 16, c); ry+=20;
+                }
+            } else {
+                DrawText("Sem partidas registradas.", rx, ry, 18, GRAY);
+            }
+
             const char *v="Clique para voltar";
-            DrawText(v,(VIRT_W-MeasureText(v,22))/2,VIRT_H-45,22,LIGHTGRAY);
+            DrawText(v,(VIRT_W-MeasureText(v,20))/2,VIRT_H-36,20,GRAY);
         }
         else if (state==CHEST) {
             bool p1Sim=IsKeyDown(KEY_R),p2Sim=IsKeyDown(KEY_P);
