@@ -304,14 +304,14 @@ int main(void) {
     Texture2D lore6 = LoadTexture("../assets/lore6.png");  // 6ª cena da intro
 
     // Lore final: 8 cenas (loreFinal1..loreFinal8)
-    Texture2D loreFinal1 = LoadTexture("../assets/lorefinal1.png");
-    Texture2D loreFinal2 = LoadTexture("../assets/lorefinal2.png");
-    Texture2D loreFinal3 = LoadTexture("../assets/lorefinal3.png");
-    Texture2D loreFinal4 = LoadTexture("../assets/lorefinal4.png");
-    Texture2D loreFinal5 = LoadTexture("../assets/lorefinal5.png");
-    Texture2D loreFinal6 = LoadTexture("../assets/lorefinal6.png");
-    Texture2D loreFinal7 = LoadTexture("../assets/lorefinal7.png");
-    Texture2D loreFinal8 = LoadTexture("../assets/lorefinal8.png");
+    Texture2D loreFinal1 = LoadTexture("../assets/finaldif.png");
+    Texture2D loreFinal2 = LoadTexture("../assets/finaldif2.png");
+    Texture2D loreFinal3 = LoadTexture("../assets/finaldif3.png");
+    Texture2D loreFinal4 = LoadTexture("../assets/finaldif4.png");
+    Texture2D loreFinal5 = LoadTexture("../assets/finaldif5.png");
+    Texture2D loreFinal6 = LoadTexture("../assets/finaldif6.png");
+    Texture2D loreFinal7 = LoadTexture("../assets/finaldif7.png");
+    Texture2D loreFinal8 = LoadTexture("../assets/finaldif8.png");
 
     Texture2D dropBg    = LoadTexture("../assets/drop.png");
     Texture2D textboxTex= LoadTexture("../assets/textbox.png");
@@ -435,7 +435,7 @@ int main(void) {
                     StopMusicStream(menuMusic); PlayMusicStream(gameMusic);
                     MNumber=(rand()%100)+1; printf("DEBUG: %d\n",MNumber);
                     rodada=0;minN=1;maxN=100;novaRodada=1;
-                    monsterHP=50;vidas=5;qntOpcoes=6;sala=1;
+                    monsterHP=50;vidas=50;qntOpcoes=6;sala=1;
                     resultadoSalvo=0;bonusMonsterHP=0;bonusVidas=0;penalVidas=0;penalMonsterHP=0;
                     idxEscolhaP1=-1;idxEscolhaP2=-1;salaComPath=1;pathTimeLeft=0;deathTimer=0;
                     chestVidaDelta=0;chestHpDelta=0;chestMaxNDelta=0;chestMinNDelta=0;
