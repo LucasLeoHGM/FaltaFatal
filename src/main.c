@@ -389,8 +389,6 @@ int main(void) {
     const float P2_PANEL_X=VIRT_W-PANEL_W-20, P2_PANEL_Y=VIRT_H-PANEL_H-20;
     const float P2_BTN_X=P2_PANEL_X+12,       P2_BTN_TOP_Y=P2_PANEL_Y+55;
 
-    const Rectangle spr2_enemy={(VIRT_W-260)*0.5f, (VIRT_H-300)*0.5f+15, 260, 300};
-
     while (!WindowShouldClose()) {
         if (IsKeyPressed(KEY_F11)) {
             if (IsWindowFullscreen()){ToggleFullscreen();SetWindowSize(VIRT_W,VIRT_H);}
@@ -882,6 +880,18 @@ int main(void) {
             DrawTexVirt(gameBg,(Rectangle){0,0,VIRT_W,VIRT_H},WHITE);
 
             Texture2D *enemyTex=GetEnemyTexture(sala,modoDificil,&slimeTex,&ogroTex,&bossTex,&mariTex,&romaTex,&luisTex,&micaTex,&ruanTex,&lucasTex,&lucas2Tex);
+            // Calcula largura proporcional à textura, mantendo altura fixa
+            float sprH = 260.0f;
+            float sprW = (enemyTex->height > 0)
+                ? ((float)enemyTex->width / enemyTex->height) * sprH
+                : sprH;
+            Rectangle spr2_enemy = {
+                (VIRT_W - sprW) * 0.5f,
+                (VIRT_H - sprH) * 0.5f + 25,
+                sprW,
+                sprH
+            };
+
             DrawTexturePro(*enemyTex,(Rectangle){0,0,(float)enemyTex->width,(float)enemyTex->height},spr2_enemy,(Vector2){0,0},0,(monsterHP<=0)?RED:WHITE);
 
             DrawRectangle(0,0,VIRT_W,95,(Color){0,0,0,210});
