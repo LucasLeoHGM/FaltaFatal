@@ -365,10 +365,10 @@ int main(void) {
     int  totalFacil=0,totalDificil=0;
 
     // ── Layout constants ───────────────────────────────────────────────────
-    const float BTN_W=340,BTN_H=90;
-    const Rectangle btnJogarRec={(VIRT_W-BTN_W)*0.5f,190,BTN_W,BTN_H};
-    const Rectangle btnStatsRec={(VIRT_W-BTN_W)*0.5f,320,BTN_W,BTN_H};
-    const Rectangle btnSairRec ={(VIRT_W-BTN_W)*0.5f,450,BTN_W,BTN_H};
+    const float BTN_W=310,BTN_H=80;
+    const Rectangle btnJogarRec={(VIRT_W-BTN_W)*0.0f,165,BTN_W,BTN_H};
+    const Rectangle btnStatsRec={(VIRT_W-BTN_W)*0.0f,250,BTN_W,BTN_H};
+    const Rectangle btnSairRec ={(VIRT_W-BTN_W)*0.0f,335,BTN_W,BTN_H};
     const Rectangle btnFacilRec  ={(VIRT_W-BTN_W)*0.5f,250,BTN_W,BTN_H};
     const Rectangle btnDificilRec={(VIRT_W-BTN_W)*0.5f,390,BTN_W,BTN_H};
 
@@ -435,7 +435,7 @@ int main(void) {
                     StopMusicStream(menuMusic); PlayMusicStream(gameMusic);
                     MNumber=(rand()%100)+1; printf("DEBUG: %d\n",MNumber);
                     rodada=0;minN=1;maxN=100;novaRodada=1;
-                    monsterHP=50;vidas=50;qntOpcoes=6;sala=1;
+                    monsterHP=50;vidas=5;qntOpcoes=6;sala=1;
                     resultadoSalvo=0;bonusMonsterHP=0;bonusVidas=0;penalVidas=0;penalMonsterHP=0;
                     idxEscolhaP1=-1;idxEscolhaP2=-1;salaComPath=1;pathTimeLeft=0;deathTimer=0;
                     chestVidaDelta=0;chestHpDelta=0;chestMaxNDelta=0;chestMinNDelta=0;
@@ -948,7 +948,7 @@ int main(void) {
             DrawTexVirt(gameBg,(Rectangle){0,0,VIRT_W,VIRT_H},WHITE);
             DrawRectangle(0,0,VIRT_W,VIRT_H,(Color){0,0,0,160});
             bool hr=CheckCollisionPointRec(mouse,goRec),he=CheckCollisionPointRec(mouse,goExi);
-            const char*t1="O LYCEUM TE DERROTOU",*t2="Lucas bloqueou sua invasao.",*t3="Voce foi reprovado por falta.";
+            const char*t1="O LYCEUM TE DERROTOU",*t2="/?#@$ bloqueou sua invasao.",*t3="Voce foi reprovado por falta.";
             DrawText(t1,(VIRT_W-MeasureText(t1,44))/2,190,44,RED);
             DrawText(t2,(VIRT_W-MeasureText(t2,26))/2,260,26,WHITE);
             DrawText(t3,(VIRT_W-MeasureText(t3,26))/2,298,26,WHITE);
