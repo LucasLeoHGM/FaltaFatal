@@ -6,10 +6,10 @@
 
 [INTRO]
 
-Voce usou todas as faltas da cadeira de sexta-feira.
+Voces usaram todas as faltas da cadeira de sexta-feira.
 No ultimo dia, o professor marcou falta por engano.
 Depois de discutir no Slack sem sucesso..
-Voce decidiu invadir o sistema do Lyceum.
+Voces decidiram invadir o sistema do Lyceum.
 A chuva deixou o CESAR vazio...
 Essa era a chance perfeita.
 
@@ -542,7 +542,7 @@ O Lyceum finalmente foi invadido.
 As faltas desapareceram da chamada.
 Mas algo estranho apareceu na tela...
 "Parabens pelo teste."
-"Seu perfil foi aprovado."
+"Seus perfis foram aprovados."
 No dia seguinte...
-Voce recebeu um email do CESAR.
+Voces receberam um email do CESAR.
 "Tem interesse em trabalhar conosco?"
