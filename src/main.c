@@ -255,7 +255,7 @@ static PathEvent pathEvents[] = {
     {{"Exatamente um caminho esta sincronizado com o clock.","Se VERMELHO esta sincronizado, entao AZUL esta travado.","AZUL nao esta travado.","Se VERDE esta sincronizado, entao VERMELHO esta isolado.","VERMELHO nao esta isolado.",NULL},2,"Bonus: +2 vidas extras!","Penalidade: Monstro ganha +20 HP!"},
     {{"Um caminho e seguro somente se NAO esta corrompido","    E NAO esta travado.","O caminho VERDE esta corrompido.","O caminho AZUL esta travado in deadlock.","O caminho VERMELHO nao esta corrompido nem travado.",NULL},0,"Bonus: Monstro inicia com -30 HP!","Penalidade: Perde 1 vida!"},
     {{"Se VERMELHO esta acessivel, entao VERDE esta acessivel.","Se VERDE esta acessivel, entao AZUL esta isolado da rede.","AZUL nao esta isolado.","Pelo menos um caminho esta acessivel no barramento.",NULL,NULL},2,"Bonus: +2 vidas extras!","Penalidade: Perde 2 vidas!"},
-    {{"VERMELHO ou VERDE tem firewall ativo (ou ambos).","Se VERMELHO tem firewall, a porta de saida e bloqueada.","A porta de saida NAO esta bloqueada.","Se VERDE tem firewall, o processo entra in loop infinito.","O processo NAO esta in loop infinito.","Se nenhum tem firewall, VERDE e o gateway padrao."},1,"Bonus: Monstro inicia com -20 HP!","Penalidade: Perde 1 vida!"},
+    {{"VERMELHO ou VERDE tem firewall ativo (or ambos).","Se VERMELHO tem firewall, a porta de saida e bloqueada.","A porta de saida NAO esta bloqueada.","Se VERDE tem firewall, o processo entra in loop infinito.","O processo NAO esta in loop infinito.","Se nenhum tem firewall, VERDE e o gateway padrao."},1,"Bonus: Monstro inicia com -20 HP!","Penalidade: Perde 1 vida!"},
     {{"Tres processos disputam um unico bloco de memoria.","VERMELHO alocou o recurso primeiro (mutex adquirido).","O detentor do mutex nao pode ser corrompido.","VERDE e AZUL estao bloqueados aguardando o recurso.","Apenas o detentor do mutex pode ser atravessado.",NULL},0,"Bonus: +2 vidas extras!","Penalidade: Monstro ganha +15 HP!"},
     {{"Exatamente dois caminhos estao com checksum invalido.","O caminho VERMEDHO tem checksum invalido.","O caminho VERDE tem checksum invalido.","Apenas o caminho com checksum valido e seguro.",NULL,NULL},2,"Bonus: Monstro inicia com -25 HP!","Penalidade: Perde 2 vidas!"},
     {{"Se AZUL esta online, VERMELHO sofre buffer overflow.","Se VERMELHO sofre overflow, ele trava imediatamente.","VERMELHO nao esta travado.","Se VERDE esta online, AZUL e desativado.","Pelo menos um caminho esta online.",NULL},1,"Bonus: +2 vidas extras!","Penalidade: Perde 1 vida!"},
@@ -466,6 +466,9 @@ int main(void) {
     int   piorFacil=0,      piorDificil=0;
     float desvioFacil=0,    desvioDificil=0;
 
+    // Variável para controle da opção selecionada nos menus via teclado (Q/A)
+    int menuSelec = 0;
+
     // ── Layout constants ───────────────────────────────────────────────────
     const float BTN_W=310,BTN_H=80;
     const Rectangle btnJogarRec={(VIRT_W-BTN_W)*0.0f,165,BTN_W,BTN_H};
@@ -512,9 +515,21 @@ int main(void) {
         // ── LÓGICA ──────────────────────────────────────────────────────────
 
         if (state==MENU) {
-            if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
-                if (CheckCollisionPointRec(mouse,btnJogarRec)) state=MODE_SELECT;
-                if (CheckCollisionPointRec(mouse,btnStatsRec)){
+            if (IsKeyPressed(KEY_Q)) {
+                menuSelec--;
+                if (menuSelec < 0) menuSelec = 2;
+            }
+            if (IsKeyPressed(KEY_A)) {
+                menuSelec++;
+                if (menuSelec > 2) menuSelec = 0;
+            }
+
+            if (IsKeyPressed(KEY_R) || IsKeyPressed(KEY_P)) {
+                if (menuSelec == 0) {
+                    state = MODE_SELECT;
+                    menuSelec = 0; 
+                }
+                else if (menuSelec == 1) {
                     totalFacil   = LerHistorico("historico_facil.txt",   historicoFacil,   50);
                     totalDificil = LerHistorico("historico_dificil.txt", historicoDificil, 50);
 
@@ -538,29 +553,32 @@ int main(void) {
 
                     state=STATS;
                 }
-                if (CheckCollisionPointRec(mouse,btnSairRec)) break;
+                else if (menuSelec == 2) {
+                    break;
+                }
             }
         }
         else if (state==MODE_SELECT) {
-            if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
-                bool hF=CheckCollisionPointRec(mouse,btnFacilRec);
-                bool hD=CheckCollisionPointRec(mouse,btnDificilRec);
-                if (hF||hD) {
-                    modoDificil=hD?1:0;
-                    StopMusicStream(menuMusic); PlayMusicStream(gameMusic);
-                    MNumber=(rand()%100)+1; printf("[DEBUG SALA 1] MNumber sorteado: %d\n", MNumber);
-                    rodada=0;minN=1;maxN=100;novaRodada=1;
-                    monsterHP=50; monsterMaxHP=50; vidas=50;qntOpcoes=6;sala=1; 
-                    ultimoDanoP1=-1; ultimoDanoP2=-1;
-                    resultadoSalvo=0;bonusMonsterHP=0;bonusVidas=0;penalVidas=0;penalMonsterHP=0;
-                    idxEscolhaP1=-1;idxEscolhaP2=-1;salaComPath=1;pathTimeLeft=0;deathTimer=-1;
-                    chestVidaDelta=0;chestHpDelta=0;chestMaxNDelta=0;chestMinNDelta=0;
-                    chestResultMsg[0]='\0';chestShowTimer=0;chestAguardandoEfeito=false;
-                    mensagemMonstro[0]='\0';
-                    snprintf(mensagem,200,"Escolham um numero");
-                    loreScene=0;loreCharIndex=0;loreTimer=0;
-                    state=LORE;
-                }
+            if (IsKeyPressed(KEY_Q) || IsKeyPressed(KEY_A)) {
+                menuSelec = !menuSelec;
+            }
+
+            if (IsKeyPressed(KEY_R) || IsKeyPressed(KEY_P)) {
+                modoDificil=menuSelec?1:0;
+                StopMusicStream(menuMusic); PlayMusicStream(gameMusic);
+                MNumber=(rand()%100)+1; 
+                printf("[DEBUG SALA 1] MNumber sorteado: %d\n", MNumber);
+                rodada=0;minN=1;maxN=100;novaRodada=1;
+                monsterHP=50; monsterMaxHP=50; vidas=8;qntOpcoes=6;sala=1; // achar rapido
+                ultimoDanoP1=-1; ultimoDanoP2=-1;
+                resultadoSalvo=0;bonusMonsterHP=0;bonusVidas=0;penalVidas=0;penalMonsterHP=0;
+                idxEscolhaP1=-1;idxEscolhaP2=-1;salaComPath=1;pathTimeLeft=0;deathTimer=-1;
+                chestVidaDelta=0;chestHpDelta=0;chestMaxNDelta=0;chestMinNDelta=0;
+                chestResultMsg[0]='\0';chestShowTimer=0;chestAguardandoEfeito=false;
+                mensagemMonstro[0]='\0';
+                snprintf(mensagem,200,"Escolham um numero");
+                loreScene=0;loreCharIndex=0;loreTimer=0;
+                state=LORE;
             }
         }
         else if (state==LORE) {
@@ -572,7 +590,7 @@ int main(void) {
                     int tam=strlen(introLore[loreScene]);
                     if (loreCharIndex<tam) loreCharIndex++;
                 }
-                if (IsKeyPressed(KEY_ENTER)||IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
+                if (IsKeyPressed(KEY_R) || IsKeyPressed(KEY_P)) {
                     int tam=strlen(introLore[loreScene]);
                     if (loreCharIndex<tam) loreCharIndex=tam;
                     else {
@@ -606,7 +624,7 @@ int main(void) {
                     int tam = strlen(transformLore[transformLoreScene]);
                     if (transformLoreCharIndex < tam) transformLoreCharIndex++;
                 }
-                if (transformLoreTimer > 10 && (IsKeyPressed(KEY_ENTER) || IsMouseButtonPressed(MOUSE_LEFT_BUTTON))) {
+                if (transformLoreTimer > 10 && (IsKeyPressed(KEY_R) || IsKeyPressed(KEY_P))) {
                     int tam = strlen(transformLore[transformLoreScene]);
                     if (transformLoreCharIndex < tam) {
                         transformLoreCharIndex = tam;
@@ -642,7 +660,7 @@ int main(void) {
                     int tam=strlen(finalLore[finalLoreScene]);
                     if (finalLoreCharIndex<tam) finalLoreCharIndex++;
                 }
-                if (IsKeyPressed(KEY_ENTER)||IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
+                if (IsKeyPressed(KEY_R) || IsKeyPressed(KEY_P)) {
                     int tam=strlen(finalLore[finalLoreScene]);
                     if (finalLoreCharIndex<tam) finalLoreCharIndex=tam;
                     else {
@@ -655,7 +673,10 @@ int main(void) {
             }
         }
         else if (state==STATS) {
-            if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) state=MENU;
+            if (IsKeyPressed(KEY_R) || IsKeyPressed(KEY_P)) {
+                state=MENU;
+                menuSelec = 0;
+            }
         }
         else if (state==CHEST) {
             if (chestAguardandoEfeito) {
@@ -868,25 +889,31 @@ int main(void) {
                     rodada++;
                     snprintf(mensagemMonstro,200,">>> O monstro atacou! -1 vida! <<<");
                 }
-                if(vidas<=0){if(!resultadoSalvo){SalvarHistorico("MORREU",sala,modoDificil);resultadoSalvo=1;}state=GAMEOVER;}
+                if(vidas<=0){if(!resultadoSalvo){SalvarHistorico("MORREU",sala,modoDificil);resultadoSalvo=1;}state=GAMEOVER;menuSelec=0;}
             }
         }
         else if (state==GAMEOVER) {
-            if(IsMouseButtonPressed(MOUSE_LEFT_BUTTON)){
-                if(CheckCollisionPointRec(mouse,goRec)){
+            if (IsKeyPressed(KEY_Q) || IsKeyPressed(KEY_A)) {
+                menuSelec = !menuSelec;
+            }
+            if (IsKeyPressed(KEY_R) || IsKeyPressed(KEY_P)) {
+                if (menuSelec == 0) {
                     StopMusicStream(gameMusic);
                     PlayMusicStream(menuMusic);
-                    state=MENU;
+                    state = MENU;
+                    menuSelec = 0;
+                } else {
+                    break;
                 }
-                if(CheckCollisionPointRec(mouse,goExi)) break;
             }
         }
         else if (state==WIN) {
             if(!resultadoSalvo){SalvarHistorico("VENCEU",sala,modoDificil);resultadoSalvo=1;}
-            if(IsMouseButtonPressed(MOUSE_LEFT_BUTTON)){
+            if (IsKeyPressed(KEY_R) || IsKeyPressed(KEY_P)) {
                 StopMusicStream(gameMusic);
                 PlayMusicStream(menuMusic);
-                state=MENU;
+                state = MENU;
+                menuSelec = 0;
             }
         }
 
@@ -895,17 +922,17 @@ int main(void) {
         ClearBackground(BLACK);
 
         if (state==MENU) {
-            bool hJ=CheckCollisionPointRec(mouse,btnJogarRec);
-            bool hS=CheckCollisionPointRec(mouse,btnStatsRec);
-            bool hX=CheckCollisionPointRec(mouse,btnSairRec);
+            bool hJ = (menuSelec == 0);
+            bool hS = (menuSelec == 1);
+            bool hX = (menuSelec == 2);
             DrawTexVirt(menuBg,(Rectangle){0,0,VIRT_W,VIRT_H},WHITE);
             DrawTexVirt(btnNovoJogo,btnJogarRec,hJ?LIGHTGRAY:WHITE);
             DrawTexVirt(btnStats,btnStatsRec,hS?LIGHTGRAY:WHITE);
             DrawTexVirt(btnSair,btnSairRec,hX?LIGHTGRAY:WHITE);
         }
         else if (state==MODE_SELECT) {
-            bool hF=CheckCollisionPointRec(mouse,btnFacilRec);
-            bool hD=CheckCollisionPointRec(mouse,btnDificilRec);
+            bool hF = (menuSelec == 0);
+            bool hD = (menuSelec == 1);
             DrawTexVirt(menuBg,(Rectangle){0,0,VIRT_W,VIRT_H},WHITE);
             const char *titulo="ESCOLHA O MODO";
             int tx = (VIRT_W - MeasureText(titulo,46)) / 2;
@@ -925,7 +952,7 @@ int main(void) {
             if(loreScene<introLoreCount){strncpy(vis,introLore[loreScene],loreCharIndex);vis[loreCharIndex]='\0';}
             DrawText(vis,63,VIRT_H-127,30,BLACK);
             DrawText(vis,60,VIRT_H-130,30,WHITE);
-            DrawText("ENTER ou clique para continuar",VIRT_W-420,VIRT_H-40,22,LIGHTGRAY);
+            DrawText("Aperte R ou P para continuar",VIRT_W-420,VIRT_H-40,22,LIGHTGRAY);
         }
         else if (state==TRANSFORM_LORE) {
             int texIdx = transformLoreScene;
@@ -940,7 +967,7 @@ int main(void) {
             }
             DrawText(vis,63,VIRT_H-127,30,BLACK);
             DrawText(vis,60,VIRT_H-130,30,WHITE);
-            DrawText("ENTER ou clique para continuar",VIRT_W-420,VIRT_H-40,22,LIGHTGRAY);
+            DrawText("Aperte R ou P para continuar",VIRT_W-420,VIRT_H-40,22,LIGHTGRAY);
         }
         else if (state==FINAL_LORE) {
             int texIdx = finalLoreScene;
@@ -952,7 +979,7 @@ int main(void) {
             if(finalLoreScene<finalLoreCount){strncpy(vis,finalLore[finalLoreScene],finalLoreCharIndex);vis[finalLoreCharIndex]='\0';}
             DrawText(vis,63,VIRT_H-127,30,BLACK);
             DrawText(vis,60,VIRT_H-130,30,WHITE);
-            DrawText("ENTER ou clique para continuar",VIRT_W-420,VIRT_H-40,22,LIGHTGRAY);
+            DrawText("Aperte R ou P para continuar",VIRT_W-420,VIRT_H-40,22,LIGHTGRAY);
         }
         else if (state==STATS) {
             DrawTexVirt(menuBg,(Rectangle){0,0,VIRT_W,VIRT_H},WHITE);
@@ -1010,7 +1037,7 @@ int main(void) {
                 DrawText("Sem partidas registradas.", rx, ry, 18, GRAY);
             }
 
-            const char *v="Clique para voltar";
+            const char *v="Aperte R ou P para voltar";
             DrawText(v,(VIRT_W-MeasureText(v,20))/2,VIRT_H-36,20,GRAY);
         }
         else if (state==CHEST) {
@@ -1053,9 +1080,6 @@ int main(void) {
         else if (state==PATH_CHOICE) {
             PathEvent *ev=&pathEvents[pathEventIndex];
             bool canClick=(pathResultTimer==0);
-            bool hR=canClick&&CheckCollisionPointRec(mouse,pathRed);
-            bool hG=canClick&&CheckCollisionPointRec(mouse,pathGreen);
-            bool hB=canClick&&CheckCollisionPointRec(mouse,pathBlue);
 
             DrawTexturePro(circuitBg,(Rectangle){0,0,(float)circuitBg.width,(float)circuitBg.height},(Rectangle){0,0,VIRT_W,VIRT_H},(Vector2){0,0},0,WHITE);
             DrawRectangle(0,0,VIRT_W,VIRT_H,(Color){0,0,0,130});
@@ -1099,9 +1123,10 @@ int main(void) {
                 else{int bw=MeasureText("P2: ???",18)+16;DrawRectangle(VIRT_W-30-bw,306,bw,26,(Color){0,0,0,100});DrawText("P2: ???",VIRT_W-30-bw+8,310,18,(Color){120,120,120,200});}
             }
 
-            {Color bg=hR?(Color){255,110,110,255}:(Color){160,20,20,255};DrawRectangleRec(pathRed,bg);DrawRectangleLinesEx(pathRed,hR?4:2,hR?WHITE:(Color){255,120,120,255});DrawText("[PROC: 0x52]",(int)(pathRed.x+(pathRed.width-MeasureText("[PROC: 0x52]",14))*0.5f),(int)(pathRed.y+12),14,(Color){255,180,180,200});const char*lbl="VERMELHO";DrawText(lbl,(int)(pathRed.x+(pathRed.width-MeasureText(lbl,22))*0.5f),(int)(pathRed.y+pathRed.height*0.5f-10),22,WHITE);if(!modoDificil&&(pathEscolhaP1==0||pathEscolhaP2==0))DrawText("[SELECIONADO]",(int)(pathRed.x+(pathRed.width-MeasureText("[SELECIONADO]",15))*0.5f),(int)(pathRed.y+pathRed.height-28),15,(Color){255,220,220,255});}
-            {Color bg=hG?(Color){80,255,100,255}:(Color){10,130,40,255};DrawRectangleRec(pathGreen,bg);DrawRectangleLinesEx(pathGreen,hG?4:2,hG?WHITE:(Color){80,200,100,255});DrawText("[PROC: 0x47]",(int)(pathGreen.x+(pathGreen.width-MeasureText("[PROC: 0x47]",14))*0.5f),(int)(pathGreen.y+12),14,(Color){180,255,190,200});const char*lbl="VERDE";DrawText(lbl,(int)(pathGreen.x+(pathGreen.width-MeasureText(lbl,22))*0.5f),(int)(pathGreen.y+pathGreen.height*0.5f-10),22,WHITE);if(!modoDificil&&(pathEscolhaP1==1||pathEscolhaP2==1))DrawText("[SELECIONADO]",(int)(pathGreen.x+(pathGreen.width-MeasureText("[SELECIONADO]",15))*0.5f),(int)(pathGreen.y+pathGreen.height-28),15,(Color){220,255,220,255});}
-            {Color bg=hB?(Color){80,160,255,255}:(Color){15,40,160,255};DrawRectangleRec(pathBlue,bg);DrawRectangleLinesEx(pathBlue,hB?4:2,hB?WHITE:(Color){80,120,255,255});DrawText("[PROC: 0x42]",(int)(pathBlue.x+(pathBlue.width-MeasureText("[PROC: 0x42]",14))*0.5f),(int)(pathBlue.y+12),14,(Color){160,190,255,200});const char*lbl="AZUL";DrawText(lbl,(int)(pathBlue.x+(pathBlue.width-MeasureText(lbl,22))*0.5f),(int)(pathBlue.y+pathBlue.height*0.5f-10),22,WHITE);if(!modoDificil&&(pathEscolhaP1==2||pathEscolhaP2==2))DrawText("[SELECIONADO]",(int)(pathBlue.x+(pathBlue.width-MeasureText("[SELECIONADO]",15))*0.5f),(int)(pathBlue.y+pathBlue.height-28),15,(Color){200,210,255,255});}
+            // Removido hR, hG, hB do mouse. Usando apenas feedback visual estático ou de seleção se necessário.
+            {Color bg=(pathRed.width > 0)?(Color){160,20,20,255}:BLACK;DrawRectangleRec(pathRed,bg);DrawRectangleLinesEx(pathRed,2,(Color){255,120,120,255});DrawText("[PROC: 0x52]",(int)(pathRed.x+(pathRed.width-MeasureText("[PROC: 0x52]",14))*0.5f),(int)(pathRed.y+12),14,(Color){255,180,180,200});const char*lbl="VERMELHO";DrawText(lbl,(int)(pathRed.x+(pathRed.width-MeasureText(lbl,22))*0.5f),(int)(pathRed.y+pathRed.height*0.5f-10),22,WHITE);if(!modoDificil&&(pathEscolhaP1==0||pathEscolhaP2==0))DrawText("[SELECIONADO]",(int)(pathRed.x+(pathRed.width-MeasureText("[SELECIONADO]",15))*0.5f),(int)(pathRed.y+pathRed.height-28),15,(Color){255,220,220,255});}
+            {Color bg=(pathGreen.width > 0)?(Color){10,130,40,255}:BLACK;DrawRectangleRec(pathGreen,bg);DrawRectangleLinesEx(pathGreen,2,(Color){80,200,100,255});DrawText("[PROC: 0x47]",(int)(pathGreen.x+(pathGreen.width-MeasureText("[PROC: 0x47]",14))*0.5f),(int)(pathGreen.y+12),14,(Color){180,255,190,200});const char*lbl="VERDE";DrawText(lbl,(int)(pathGreen.x+(pathGreen.width-MeasureText(lbl,22))*0.5f),(int)(pathGreen.y+pathGreen.height*0.5f-10),22,WHITE);if(!modoDificil&&(pathEscolhaP1==1||pathEscolhaP2==1))DrawText("[SELECIONADO]",(int)(pathGreen.x+(pathGreen.width-MeasureText("[SELECIONADO]",15))*0.5f),(int)(pathGreen.y+pathGreen.height-28),15,(Color){220,255,220,255});}
+            {Color bg=(pathBlue.width > 0)?(Color){15,40,160,255}:BLACK;DrawRectangleRec(pathBlue,bg);DrawRectangleLinesEx(pathBlue,2,(Color){80,120,255,255});DrawText("[PROC: 0x42]",(int)(pathBlue.x+(pathBlue.width-MeasureText("[PROC: 0x42]",14))*0.5f),(int)(pathBlue.y+12),14,(Color){160,190,255,200});const char*lbl="AZUL";DrawText(lbl,(int)(pathBlue.x+(pathBlue.width-MeasureText(lbl,22))*0.5f),(int)(pathBlue.y+pathBlue.height*0.5f-10),22,WHITE);if(!modoDificil&&(pathEscolhaP1==2||pathEscolhaP2==2))DrawText("[SELECIONADO]",(int)(pathBlue.x+(pathBlue.width-MeasureText("[SELECIONADO]",15))*0.5f),(int)(pathBlue.y+pathBlue.height-28),15,(Color){200,210,255,255});}
 
             if(pathResultTimer>0){
                 DrawRectangle(60,560,VIRT_W-120,75,(Color){0,0,0,230});
@@ -1112,7 +1137,7 @@ int main(void) {
                 float pg=(float)pathResultTimer/180.0f;
                 DrawRectangle(62,622,(int)((VIRT_W-124)*pg),10,ac?(Color){0,200,60,255}:(Color){200,50,50,255});
             } else {
-                const char *h="[ Clique ou use teclas para prosseguir ]";
+                const char *h="[ Use as teclas de escolha P1: Q/W/E | P2: U/I/O ]";
                 DrawText(h,(VIRT_W-MeasureText(h,15))/2,648,15,(Color){0,100,40,180});
             }
         }
@@ -1216,7 +1241,8 @@ int main(void) {
         else if (state==GAMEOVER) {
             DrawTexVirt(gameBg,(Rectangle){0,0,VIRT_W,VIRT_H},WHITE);
             DrawRectangle(0,0,VIRT_W,VIRT_H,(Color){0,0,0,160});
-            bool hr=CheckCollisionPointRec(mouse,goRec),he=CheckCollisionPointRec(mouse,goExi);
+            bool hr = (menuSelec == 0);
+            bool he = (menuSelec == 1);
             const char*t1="O LYCEUM TE DERROTOU",*t2="/?#@$ bloqueou sua invasao.",*t3="Voce foi reprovado por falta.";
             DrawText(t1,(VIRT_W-MeasureText(t1,44))/2,190,44,RED);
             DrawText(t2,(VIRT_W-MeasureText(t2,26))/2,260,26,WHITE);
@@ -1230,7 +1256,7 @@ int main(void) {
             DrawTexVirt(gameBg,(Rectangle){0,0,VIRT_W,VIRT_H},WHITE);
             DrawRectangle(0,0,VIRT_W,VIRT_H,(Color){0,0,0,150});
             const char*t1="ACESSO AO LYCEUM CONCEDIDO",*t2="A falta foi removida.",*t3="STATUS: APROVADO";
-            const char*t4="Lucas observava tudo in silencio...",*t5="Clique para voltar ao menu";
+            const char*t4="Lucas observava tudo in silencio...",*t5="Aperte R ou P para voltar ao menu";
             DrawText(t1,(VIRT_W-MeasureText(t1,44))/2,190,44,GREEN);
             DrawText(t2,(VIRT_W-MeasureText(t2,30))/2,264,30,WHITE);
             DrawText(t3,(VIRT_W-MeasureText(t3,38))/2,316,38,YELLOW);
