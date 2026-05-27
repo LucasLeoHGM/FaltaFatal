@@ -12,6 +12,8 @@ Depois de discutir no Slack sem sucesso..
 Voces decidiram invadir o sistema do Lyceum.
 A chuva deixou o CESAR vazio...
 Essa era a chance perfeita.
+Cada defesa do Lyceum possui uma chave numerica oculta...
+Quanto mais perto da sequencia correta, mais dano o sistema sofre.
 
 # =========================================================
 
