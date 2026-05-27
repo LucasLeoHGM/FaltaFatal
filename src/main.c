@@ -378,6 +378,10 @@ int main(void) {
     Texture2D lore4 = LoadTexture("../assets/lore4.png");
     Texture2D lore5 = LoadTexture("../assets/lore5.png");
     Texture2D lore6 = LoadTexture("../assets/lore6.png");
+    Texture2D lore7 = LoadTexture("../assets/lore7.png");
+    Texture2D lore8 = LoadTexture("../assets/lore8.png");
+
+
 
     Texture2D loreFinal1 = LoadTexture("../assets/finaldif.png");
     Texture2D loreFinal2 = LoadTexture("../assets/finaldif2.png");
@@ -393,15 +397,15 @@ int main(void) {
 
     Music menuMusic = LoadMusicStream("../assets/menu.wav");
     Music gameMusic = LoadMusicStream("../assets/soundtrack.wav");
-    Sound openSound  = LoadSound("../assets/open.wav");
-    Sound closeSound = LoadSound("../assets/close.wav");
+    Sound buffSound  = LoadSound("../assets/downloadbuff.wav");
+    Sound debuffSound = LoadSound("../assets/downloaddebuff.wav");
 
     PlayMusicStream(menuMusic);
 
-    Texture2D *loreTextures[]      = { &lore1, &lore2, &lore3, &lore4, &lore5, &lore6 };
+    Texture2D *loreTextures[]      = { &lore1, &lore2, &lore3, &lore4, &lore5, &lore6, &lore7, &lore8};
     Texture2D *loreFinalTextures[] = { &loreFinal1,&loreFinal2,&loreFinal3,&loreFinal4,
                                        &loreFinal5,&loreFinal6,&loreFinal7,&loreFinal8 };
-    #define NUM_INTRO_TEXTURES 6
+    #define NUM_INTRO_TEXTURES 8
     #define NUM_FINAL_TEXTURES 8
 
     GameState state = MENU;
@@ -530,7 +534,7 @@ int main(void) {
                     StopMusicStream(menuMusic); PlayMusicStream(gameMusic);
                     MNumber=(rand()%100)+1; printf("DEBUG: %d\n",MNumber);
                     rodada=0;minN=1;maxN=100;novaRodada=1;
-                    monsterHP=50; monsterMaxHP=50; vidas=2;qntOpcoes=6;sala=1;
+                    monsterHP=50; monsterMaxHP=50; vidas=50;qntOpcoes=6;sala=1; //comentando so p achar mais rapido
                     ultimoDanoP1=-1; ultimoDanoP2=-1;
                     resultadoSalvo=0;bonusMonsterHP=0;bonusVidas=0;penalVidas=0;penalMonsterHP=0;
                     idxEscolhaP1=-1;idxEscolhaP2=-1;salaComPath=1;pathTimeLeft=0;deathTimer=0;
@@ -640,10 +644,10 @@ int main(void) {
 
                 if (baixou || recusou) {
                     if (baixou) {
-                        PlaySound(openSound);
                         SortearEfeitoChest();
-                    } else {
-                        PlaySound(closeSound);
+                        if (chestIsBuff) PlaySound (buffSound);
+                        else             PlaySound(debuffSound);
+                    } else {                        
                         chestVidaDelta=0;chestHpDelta=0;chestMaxNDelta=0;chestMinNDelta=0;
                         snprintf(chestResultMsg,sizeof(chestResultMsg),"Dados ignorados. Sem efeito.");
                         chestIsBuff=true;
@@ -1196,13 +1200,13 @@ int main(void) {
     UnloadTexture(slimeTex);UnloadTexture(ogroTex);UnloadTexture(bossTex);
     UnloadTexture(mariTex);UnloadTexture(romaTex);UnloadTexture(luisTex);
     UnloadTexture(micaTex);UnloadTexture(ruanTex);UnloadTexture(lucasTex);UnloadTexture(lucas2Tex);
-    UnloadTexture(lore1);UnloadTexture(lore2);UnloadTexture(lore3);
-    UnloadTexture(lore4);UnloadTexture(lore5);UnloadTexture(lore6);
+    UnloadTexture(lore1);UnloadTexture(lore2);UnloadTexture(lore3);UnloadTexture(lore4);
+    UnloadTexture(lore5);UnloadTexture(lore6);UnloadTexture(lore7);UnloadTexture(lore8);
     UnloadTexture(loreFinal1);UnloadTexture(loreFinal2);UnloadTexture(loreFinal3);UnloadTexture(loreFinal4);
     UnloadTexture(loreFinal5);UnloadTexture(loreFinal6);UnloadTexture(loreFinal7);UnloadTexture(loreFinal8);
     UnloadTexture(dropBg);UnloadTexture(textboxTex);
     UnloadMusicStream(menuMusic);UnloadMusicStream(gameMusic);
-    UnloadSound(openSound);UnloadSound(closeSound);
+    UnloadSound(buffSound); UnloadSound(debuffSound); 
     CloseAudioDevice();
     CloseWindow();
     return 0;
