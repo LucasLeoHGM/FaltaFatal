@@ -539,6 +539,16 @@ HAHAHAHA!
 VOLTE QUANDO FOR MAIS FORTE!
 OGROS DOMINAM O SERVIDOR!
 
+[TRANSFORM_LORE]
+Entao voce passou por todas as camadas...
+Eu tambem comecei exatamente assim.
+Desesperado. Cansado. Sem escolha.
+O sistema parecia invencivel naquela epoca.
+E eu consegui quebrar a criptografia.
+Porem eles nao me puniram.
+Eles me contrataram.
+Agora eu protejo o sistema que invadi.
+
 [FINAL_WIN]
 O Lyceum finalmente foi invadido.
 As faltas desapareceram da chamada.
