@@ -569,7 +569,7 @@ int main(void) {
                 MNumber=(rand()%100)+1; 
                 printf("[DEBUG SALA 1] MNumber sorteado: %d\n", MNumber);
                 rodada=0;minN=1;maxN=100;novaRodada=1;
-                monsterHP=50; monsterMaxHP=50; vidas=50;qntOpcoes=6;sala=1; 
+                monsterHP=50; monsterMaxHP=50; vidas=8;qntOpcoes=6;sala=1; // achar rapido
                 ultimoDanoP1=-1; ultimoDanoP2=-1;
                 resultadoSalvo=0;bonusMonsterHP=0;bonusVidas=0;penalVidas=0;penalMonsterHP=0;
                 idxEscolhaP1=-1;idxEscolhaP2=-1;salaComPath=1;pathTimeLeft=0;deathTimer=-1;
