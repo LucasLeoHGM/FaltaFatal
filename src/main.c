@@ -16,6 +16,7 @@ typedef enum {
     GAMEOVER,
     WIN,
     FINAL_LORE,
+    TRANSFORM_LORE,
     STATS,
     CHEST,
     PATH_CHOICE
@@ -27,6 +28,9 @@ typedef enum {
 
 char* introLore[MAX_LORE_LINES];
 int   introLoreCount = 0;
+
+char* transformLore[MAX_LORE_LINES];
+int   transformLoreCount = 0;
 
 char* finalLore[MAX_LORE_LINES];
 int   finalLoreCount = 0;
@@ -161,6 +165,7 @@ void TrimLine(char *line) {
 
 void CarregarLore(const char *filename) {
     introLoreCount = 0;
+    transformLoreCount = 0;
     finalLoreCount = 0;
     for (int i = 0; i < MAX_BOSSES; i++) {
         strcpy(bosses[i].name, ""); strcpy(bosses[i].desc, "");
@@ -183,6 +188,9 @@ void CarregarLore(const char *filename) {
         if (strcmp(currentTag,"[INTRO]")==0 && introLoreCount<MAX_LORE_LINES)
             introLore[introLoreCount++] = strdup(line);
 
+        if (strcmp(currentTag,"[TRANSFORM_LORE]")==0 && transformLoreCount<MAX_LORE_LINES)
+        transformLore[transformLoreCount++] = strdup(line);
+
         if (strcmp(currentTag,"[FINAL_WIN]")==0 && finalLoreCount<MAX_LORE_LINES)
             finalLore[finalLoreCount++] = strdup(line);
 
@@ -198,7 +206,7 @@ void CarregarLore(const char *filename) {
         }
         #define EASY_LOAD(TAG,DST,FIELD) if(strcmp(currentTag,TAG)==0&&DST.FIELD##Count<MAX_FRASES) DST.FIELD[DST.FIELD##Count++]=strdup(line);
         EASY_LOAD("[EASY_SLIME_ENTRY]",   easySlime, entry)   EASY_LOAD("[EASY_SLIME_IDLE]",    easySlime, idle)
-        EASY_LOAD("[EASY_SLIME_HIT]",     easySlime, hit)     EASY_LOAD("[EASY_SLIME_CRITICAL]",easySlime, critical)
+        EASY_LOAD("[EASY_SLIME_HIT]",      easySlime, hit)     EASY_LOAD("[EASY_SLIME_CRITICAL]",easySlime, critical)
         EASY_LOAD("[EASY_SLIME_DEATH]",   easySlime, death)
         EASY_LOAD("[EASY_OGRE_ENTRY]",    easyOgre,  entry)   EASY_LOAD("[EASY_OGRE_IDLE]",     easyOgre,  idle)
         EASY_LOAD("[EASY_OGRE_HIT]",      easyOgre,  hit)     EASY_LOAD("[EASY_OGRE_CRITICAL]", easyOgre,  critical)
@@ -229,7 +237,6 @@ void AplicarFalaInimigo(int sala, int modoDificil, const char *gatilho) {
         else if(strcmp(gatilho,"CRITICAL")==0&&b->criticalCount>0) TriggerSpeech(b->critical[rand()%b->criticalCount]);
         else if(strcmp(gatilho,"DEATH")==0 && b->deathCount>0)   TriggerSpeech(b->death[rand()%b->deathCount]);
     } else {
-        // AJUSTADO: Sala 1 e 2 slime, Sala 3 e 4 ogro, Sala 5 boss ogro
         EasyEnemyData *e = (sala==1||sala==2)?&easySlime:((sala==3||sala==4)?&easyOgre:&easyBoss);
         const char *nom = (sala==1||sala==2)?"Slime":((sala==3||sala==4)?"Ogro":"Boss Ogro");
         if (strcmp(gatilho,"ENTRY")==0)    { if(e->entryCount>0)    TriggerSpeech(e->entry[rand()%e->entryCount]);    else TriggerSpeech(TextFormat("%s apareceu!", nom)); }
@@ -250,7 +257,7 @@ static PathEvent pathEvents[] = {
     {{"Se VERMELHO esta acessivel, entao VERDE esta acessivel.","Se VERDE esta acessivel, entao AZUL esta isolado da rede.","AZUL nao esta isolado.","Pelo menos um caminho esta acessivel no barramento.",NULL,NULL},2,"Bonus: +2 vidas extras!","Penalidade: Perde 2 vidas!"},
     {{"VERMELHO ou VERDE tem firewall ativo (ou ambos).","Se VERMELHO tem firewall, a porta de saida e bloqueada.","A porta de saida NAO esta bloqueada.","Se VERDE tem firewall, o processo entra in loop infinito.","O processo NAO esta in loop infinito.","Se nenhum tem firewall, VERDE e o gateway padrao."},1,"Bonus: Monstro inicia com -20 HP!","Penalidade: Perde 1 vida!"},
     {{"Tres processos disputam um unico bloco de memoria.","VERMELHO alocou o recurso primeiro (mutex adquirido).","O detentor do mutex nao pode ser corrompido.","VERDE e AZUL estao bloqueados aguardando o recurso.","Apenas o detentor do mutex pode ser atravessado.",NULL},0,"Bonus: +2 vidas extras!","Penalidade: Monstro ganha +15 HP!"},
-    {{"Exatamente dois caminhos estao com checksum invalido.","O caminho VERMELHO tem checksum invalido.","O caminho VERDE tem checksum invalido.","Apenas o caminho com checksum valido e seguro.",NULL,NULL},2,"Bonus: Monstro inicia com -25 HP!","Penalidade: Perde 2 vidas!"},
+    {{"Exatamente dois caminhos estao com checksum invalido.","O caminho VERMEDHO tem checksum invalido.","O caminho VERDE tem checksum invalido.","Apenas o caminho com checksum valido e seguro.",NULL,NULL},2,"Bonus: Monstro inicia com -25 HP!","Penalidade: Perde 2 vidas!"},
     {{"Se AZUL esta online, VERMELHO sofre buffer overflow.","Se VERMELHO sofre overflow, ele trava imediatamente.","VERMELHO nao esta travado.","Se VERDE esta online, AZUL e desativado.","Pelo menos um caminho esta online.",NULL},1,"Bonus: +2 vidas extras!","Penalidade: Perde 1 vida!"},
     {{"VERMELHO ou VERDE esta seguro, mas nao os dois.","Se VERDE esta seguro, entao AZUL esta corrompido.","AZUL nao esta corrompido.","Apenas o caminho seguro pode ser transitado.",NULL,NULL},0,"Bonus: Monstro inicia com -30 HP!","Penalidade: Monstro ganha +20 HP!"},
     {{"Sistema usa round-robin: um caminho ativo por vez.","VERMELHO esgotou seu quantum de CPU e foi bloqueado.","VERDE e AZUL ainda nao receberam quantum.","O escalonador prioriza o processo de menor PID.","VERDE tem PID menor que AZUL.",NULL},1,"Bonus: Monstro inicia com -20 HP!","Penalidade: Perde 2 vidas!"},
@@ -285,7 +292,6 @@ static int LerHistorico(const char *arq, char linhas[][100], int max) {
     FILE *f = fopen(arq, "r"); if (!f) return 0;
     int i = 0;
     while (fgets(linhas[i], 100, f) && i < max-1) {
-        // Remove newline
         int l = strlen(linhas[i]);
         while (l>0 && (linhas[i][l-1]=='\n'||linhas[i][l-1]=='\r')) linhas[i][--l]='\0';
         i++;
@@ -314,7 +320,7 @@ static Texture2D* GetEnemyTexture(int sala,int modoDificil,
     if(!modoDificil){
         if(sala == 1 || sala == 2) return slimeTex;
         if(sala == 3 || sala == 4) return ogroTex;
-        return bossTex; // Sala 5 usa a textura do bossTex
+        return bossTex;
     }
     switch(sala){case 1:return mariTex;case 2:return romaTex;case 3:return luisTex;
     case 4:return micaTex;case 5:return ruanTex;case 6:return lucasTex;default:return lucas2Tex;}
@@ -381,9 +387,16 @@ int main(void) {
     Texture2D lore7 = LoadTexture("../assets/lore7.png");
     Texture2D lore8 = LoadTexture("../assets/lore8.png");
 
+    Texture2D transformLore1 = LoadTexture("../assets/transformlore1.png");
+    Texture2D transformLore2 = LoadTexture("../assets/transformlore2.png");
+    Texture2D transformLore3 = LoadTexture("../assets/transformlore3.png");
+    Texture2D transformLore4 = LoadTexture("../assets/transformlore4.png");
+    Texture2D transformLore5 = LoadTexture("../assets/transformlore5.png");
+    Texture2D transformLore6 = LoadTexture("../assets/transformlore6.png");
+    Texture2D transformLore7 = LoadTexture("../assets/transformlore7.png");
+    Texture2D transformLore8 = LoadTexture("../assets/transformlore8.png");
 
-
-    Texture2D loreFinal1 = LoadTexture("../assets/finaldif.png");
+    Texture2D loreFinal1 = LoadTexture("../assets/finaldif1.png");
     Texture2D loreFinal2 = LoadTexture("../assets/finaldif2.png");
     Texture2D loreFinal3 = LoadTexture("../assets/finaldif3.png");
     Texture2D loreFinal4 = LoadTexture("../assets/finaldif4.png");
@@ -402,9 +415,14 @@ int main(void) {
 
     PlayMusicStream(menuMusic);
 
-    Texture2D *loreTextures[]      = { &lore1, &lore2, &lore3, &lore4, &lore5, &lore6, &lore7, &lore8};
+    Texture2D *loreTextures[]          = { &lore1, &lore2, &lore3, &lore4, &lore5, &lore6, &lore7, &lore8};
+    Texture2D *transformLoreTextures[] = {
+        &transformLore1, &transformLore2, &transformLore3, &transformLore4,
+        &transformLore5, &transformLore6, &transformLore7, &transformLore8
+    };
     Texture2D *loreFinalTextures[] = { &loreFinal1,&loreFinal2,&loreFinal3,&loreFinal4,
                                        &loreFinal5,&loreFinal6,&loreFinal7,&loreFinal8 };
+    #define NUM_TRANSFORM_TEXTURES 8
     #define NUM_INTRO_TEXTURES 8
     #define NUM_FINAL_TEXTURES 8
 
@@ -426,12 +444,13 @@ int main(void) {
     char pathResultMsg[200] = "";
 
     int loreScene=0,loreCharIndex=0,loreTimer=0;
+    int transformLoreScene=0, transformLoreCharIndex=0, transformLoreTimer=0;
     int finalLoreScene=0,finalLoreCharIndex=0,finalLoreTimer=0;
 
     int pathEscolhaP1=-1,pathEscolhaP2=-1;
     int pathResultTimer=0,pathTimeLeft=0;
     int salaComPath=1;
-    int deathTimer=0;
+    int deathTimer=-1;
 
     int chestShowTimer = 0;
     bool chestAguardandoEfeito = false;
@@ -440,10 +459,9 @@ int main(void) {
     char historicoDificil[50][100];
     int  totalFacil=0,totalDificil=0;
 
-    // -- stats 
     int   salasFacil[50],   salasDificil[50];
     int   nSalasFacil=0,    nSalasDificil=0;
-    float mediaFacil=0,     mediaDificil=0;
+    float mediaFacil=0,      mediaDificil=0;
     int   melhorFacil=0,    melhorDificil=0;
     int   piorFacil=0,      piorDificil=0;
     float desvioFacil=0,    desvioDificil=0;
@@ -467,7 +485,7 @@ int main(void) {
 
     const int BTN6_W=65,BTN6_H=55,BTN6_GAP=10;
     const float PANEL_W=320,PANEL_H=190;
-    const float P1_PANEL_X=20,        P1_PANEL_Y=VIRT_H-PANEL_H-20;
+    const float P1_PANEL_X=20,         P1_PANEL_Y=VIRT_H-PANEL_H-20;
     const float P1_BTN_X=P1_PANEL_X+12, P1_BTN_TOP_Y=P1_PANEL_Y+55;
     const float P2_PANEL_X=VIRT_W-PANEL_W-20, P2_PANEL_Y=VIRT_H-PANEL_H-20;
     const float P2_BTN_X=P2_PANEL_X+12,       P2_BTN_TOP_Y=P2_PANEL_Y+55;
@@ -500,7 +518,6 @@ int main(void) {
                     totalFacil   = LerHistorico("historico_facil.txt",   historicoFacil,   50);
                     totalDificil = LerHistorico("historico_dificil.txt", historicoDificil, 50);
 
-                    // Fácil: sala máx = 5
                     nSalasFacil = ExtrairSalas(historicoFacil, totalFacil, salasFacil, 5);
                     if (nSalasFacil > 0) {
                         mediaFacil  = (float)recSoma(salasFacil, nSalasFacil) / nSalasFacil;
@@ -510,7 +527,6 @@ int main(void) {
                         desvioFacil = (variancia > 0) ? sqrtf(variancia) : 0;
                     }
 
-                    // Difícil: sala máx = 7
                     nSalasDificil = ExtrairSalas(historicoDificil, totalDificil, salasDificil, 7);
                     if (nSalasDificil > 0) {
                         mediaDificil  = (float)recSoma(salasDificil, nSalasDificil) / nSalasDificil;
@@ -532,12 +548,12 @@ int main(void) {
                 if (hF||hD) {
                     modoDificil=hD?1:0;
                     StopMusicStream(menuMusic); PlayMusicStream(gameMusic);
-                    MNumber=(rand()%100)+1; printf("DEBUG: %d\n",MNumber);
+                    MNumber=(rand()%100)+1; printf("[DEBUG SALA 1] MNumber sorteado: %d\n", MNumber);
                     rodada=0;minN=1;maxN=100;novaRodada=1;
-                    monsterHP=50; monsterMaxHP=50; vidas=50;qntOpcoes=6;sala=1; //comentando so p achar mais rapido
+                    monsterHP=50; monsterMaxHP=50; vidas=50;qntOpcoes=6;sala=1; 
                     ultimoDanoP1=-1; ultimoDanoP2=-1;
                     resultadoSalvo=0;bonusMonsterHP=0;bonusVidas=0;penalVidas=0;penalMonsterHP=0;
-                    idxEscolhaP1=-1;idxEscolhaP2=-1;salaComPath=1;pathTimeLeft=0;deathTimer=0;
+                    idxEscolhaP1=-1;idxEscolhaP2=-1;salaComPath=1;pathTimeLeft=0;deathTimer=-1;
                     chestVidaDelta=0;chestHpDelta=0;chestMaxNDelta=0;chestMinNDelta=0;
                     chestResultMsg[0]='\0';chestShowTimer=0;chestAguardandoEfeito=false;
                     mensagemMonstro[0]='\0';
@@ -565,6 +581,54 @@ int main(void) {
                             state=GAMEPLAY; bossBubble.active=false;
                             AplicarFalaInimigo(sala,modoDificil,"ENTRY");
                         } else { loreCharIndex=0;loreTimer=0; }
+                    }
+                }
+            }
+        }
+        else if (state == TRANSFORM_LORE) {
+            transformLoreTimer++;
+            if (transformLoreCount == 0) {
+                sala++; 
+                minN = 1; maxN = 100; rodada = 0;
+                monsterHP = 50 + (sala * 25); 
+                monsterMaxHP = monsterHP;
+                MNumber = (rand() % (maxN - minN + 1)) + minN;
+                printf("[DEBUG SALA 7 - LUCAS 2] MNumber sorteado: %d\n", MNumber);
+                qntOpcoes = 6; novaRodada = 1;
+                idxEscolhaP1 = -1; idxEscolhaP2 = -1;
+                ultimoDanoP1 = -1; ultimoDanoP2 = -1;
+                mensagemMonstro[0] = '\0';
+                snprintf(mensagem, 200, "Escolham um numero");
+                state = GAMEPLAY;
+                AplicarFalaInimigo(sala, modoDificil, "ENTRY");
+            } else {
+                if (transformLoreTimer % 2 == 0) {
+                    int tam = strlen(transformLore[transformLoreScene]);
+                    if (transformLoreCharIndex < tam) transformLoreCharIndex++;
+                }
+                if (transformLoreTimer > 10 && (IsKeyPressed(KEY_ENTER) || IsMouseButtonPressed(MOUSE_LEFT_BUTTON))) {
+                    int tam = strlen(transformLore[transformLoreScene]);
+                    if (transformLoreCharIndex < tam) {
+                        transformLoreCharIndex = tam;
+                    } else {
+                        transformLoreScene++;
+                        if (transformLoreScene >= transformLoreCount) {
+                            sala++; 
+                            minN = 1; maxN = 100; rodada = 0;
+                            monsterHP = 50 + (sala * 25); 
+                            monsterMaxHP = monsterHP;
+                            MNumber = (rand() % (maxN - minN + 1)) + minN;
+                            printf("[DEBUG SALA 7 - LUCAS 2] MNumber sorteado: %d\n", MNumber);
+                            qntOpcoes = 6; novaRodada = 1;
+                            idxEscolhaP1 = -1; idxEscolhaP2 = -1;
+                            ultimoDanoP1 = -1; ultimoDanoP2 = -1;
+                            mensagemMonstro[0] = '\0';
+                            snprintf(mensagem, 200, "Escolham um numero");
+                            state = GAMEPLAY; 
+                            AplicarFalaInimigo(sala, modoDificil, "ENTRY");
+                        } else {
+                            transformLoreCharIndex = 0; transformLoreTimer = 0;
+                        }
                     }
                 }
             }
@@ -610,8 +674,10 @@ int main(void) {
                         minN = novoMinN; \
                         maxN = novoMaxN; \
                         salaComPath = !salaComPath; \
-                        if (salaComPath) { \
+                        if (salaComPath) {\
                             pathEventIndex  = rand() % NUM_PATH_EVENTS; \
+                            const char* caminhosNomes[] = {"VERMELHO", "VERDE", "AZUL"}; \
+                            printf("[DEBUG ENCRUZILHADA] Caminho Certo: %d (%s)\n", pathEvents[pathEventIndex].caminhoCerto, caminhosNomes[pathEvents[pathEventIndex].caminhoCerto]); \
                             pathResultTimer = 0; pathResultMsg[0] = '\0'; \
                             pathEscolhaP1 = -1; pathEscolhaP2 = -1; \
                             pathTimeLeft = modoDificil ? 1500 : 4000; \
@@ -619,6 +685,7 @@ int main(void) {
                         } else { \
                             rodada = 0; \
                             MNumber = (rand() % (maxN - minN + 1)) + minN; \
+                            printf("[DEBUG SALA %d] MNumber sorteado: %d\n", sala, MNumber); \
                             monsterHP = 50 + (sala * 25) + chestHpDelta; \
                             if (monsterHP < 10) monsterHP = 10; \
                             monsterMaxHP = monsterHP; \
@@ -653,15 +720,9 @@ int main(void) {
                         chestIsBuff=true;
                     }
 
-                    // AJUSTADO: No modo fácil o jogo acaba na sala 5. Se o baú for acessado de forma inconsistente, protege aqui também.
-                    if ((!modoDificil && sala >= 6) || (modoDificil && sala >= 8)) {
+                    if (!modoDificil && sala >= 6) {
                         if (!resultadoSalvo){SalvarHistorico("VENCEU",sala,modoDificil);resultadoSalvo=1;}
-                        if (modoDificil) {
-                            finalLoreScene=0;finalLoreCharIndex=0;finalLoreTimer=0;
-                            state=FINAL_LORE;
-                        } else {
-                            state=WIN;
-                        }
+                        state=WIN;
                     } else {
                         chestShowTimer=180;
                         chestAguardandoEfeito=true;
@@ -675,6 +736,7 @@ int main(void) {
                 if(vidas < 1) vidas = 1; \
                 rodada = 0; \
                 MNumber = (rand() % (maxN - minN + 1)) + minN; \
+                printf("[DEBUG SALA %d] MNumber sorteado: %d\n", sala, MNumber); \
                 monsterHP = 50 + (sala * 25) - bonusMonsterHP + penalMonsterHP + chestHpDelta; \
                 if(monsterHP < 10) monsterHP = 10; \
                 bonusMonsterHP = 0; bonusVidas = 0; penalVidas = 0; penalMonsterHP = 0; \
@@ -725,15 +787,26 @@ int main(void) {
             #undef ENTRAR_GAMEPLAY
         }
         else if (state==GAMEPLAY) {
-            if (monsterHP<=0){
-                deathTimer--;
-                if (deathTimer<=0){
-                    // AJUSTADO: Se o Boss Ogro (sala 5) morrer no fácil, o jogo acaba direto sem ir para o baú!
+            if (monsterHP <= 0) {
+                if (deathTimer > 0) deathTimer--;
+                if (deathTimer == 0) {
                     if (!modoDificil && sala == 5) {
                         sala++;
                         if (!resultadoSalvo) { SalvarHistorico("VENCEU", sala, modoDificil); resultadoSalvo = 1; }
                         state = WIN;
-                    } else {
+                    }  
+                    else if (modoDificil && sala == 6) {
+                        transformLoreScene = 0; transformLoreCharIndex = 0; transformLoreTimer = 0;
+                        bossBubble.active = false;
+                        state = TRANSFORM_LORE;
+                    }  
+                    else if (modoDificil && sala == 7) {
+                        if (!resultadoSalvo) { SalvarHistorico("VENCEU", sala, modoDificil); resultadoSalvo = 1; }
+                        finalLoreScene = 0; finalLoreCharIndex = 0; finalLoreTimer = 0;
+                        bossBubble.active = false;
+                        state = FINAL_LORE; 
+                    }  
+                    else {
                         sala++;
                         minN = 1; maxN = 100;
                         state = CHEST;
@@ -836,8 +909,8 @@ int main(void) {
             DrawTexVirt(menuBg,(Rectangle){0,0,VIRT_W,VIRT_H},WHITE);
             const char *titulo="ESCOLHA O MODO";
             int tx = (VIRT_W - MeasureText(titulo,46)) / 2;
-            DrawRectangle(tx - 20, 163, MeasureText(titulo,46) + 40, 58, (Color){0,0,0,170}); // Barra de fundo
-            DrawText(titulo, tx+2, 172, 46, (Color){0,0,0,200});  // Sombra
+            DrawRectangle(tx - 20, 163, MeasureText(titulo,46) + 40, 58, (Color){0,0,0,170}); 
+            DrawText(titulo, tx+2, 172, 46, (Color){0,0,0,200});  
             DrawText(titulo, tx, 170, 46, WHITE);
             DrawTexVirt(btnFacil,btnFacilRec,hF?LIGHTGRAY:WHITE);
             DrawTexVirt(btnDificil,btnDificilRec,hD?LIGHTGRAY:WHITE);
@@ -850,6 +923,21 @@ int main(void) {
             DrawRectangle(0,VIRT_H-170,VIRT_W,170,(Color){0,0,0,180});
             char vis[512]={0};
             if(loreScene<introLoreCount){strncpy(vis,introLore[loreScene],loreCharIndex);vis[loreCharIndex]='\0';}
+            DrawText(vis,63,VIRT_H-127,30,BLACK);
+            DrawText(vis,60,VIRT_H-130,30,WHITE);
+            DrawText("ENTER ou clique para continuar",VIRT_W-420,VIRT_H-40,22,LIGHTGRAY);
+        }
+        else if (state==TRANSFORM_LORE) {
+            int texIdx = transformLoreScene;
+            if (texIdx >= NUM_TRANSFORM_TEXTURES) texIdx = NUM_TRANSFORM_TEXTURES-1;
+            Texture2D *bg = transformLoreTextures[texIdx];
+            DrawTexturePro(*bg,(Rectangle){0,0,(float)bg->width,(float)bg->height},(Rectangle){0,0,VIRT_W,VIRT_H},(Vector2){0,0},0,WHITE);
+            DrawRectangle(0,VIRT_H-170,VIRT_W,170,(Color){0,0,0,180});
+            char vis[512]={0};
+            if(transformLoreScene<transformLoreCount){
+                strncpy(vis,transformLore[transformLoreScene],transformLoreCharIndex);
+                vis[transformLoreCharIndex]='\0';
+            }
             DrawText(vis,63,VIRT_H-127,30,BLACK);
             DrawText(vis,60,VIRT_H-130,30,WHITE);
             DrawText("ENTER ou clique para continuar",VIRT_W-420,VIRT_H-40,22,LIGHTGRAY);
@@ -877,12 +965,10 @@ int main(void) {
             float cx = VIRT_W * 0.5f;
             DrawLine((int)cx, 70, (int)cx, 660, (Color){80,80,80,200});
 
-            // ── Cabeçalhos ──
             DrawText("FACIL",   (int)(cx*0.5f - MeasureText("FACIL",  26)*0.5f), 72, 26, DARKGREEN);
             DrawText("DIFICIL", (int)(cx+cx*0.5f - MeasureText("DIFICIL",26)*0.5f), 72, 26, MAROON);
             DrawLine(60,104,VIRT_W-60,104,(Color){60,60,60,200});
 
-            // ── Estatísticas FÁCIL ──
             int lx = 80, rx = (int)cx+30, ly = 115, ry = 115, gap = 28;
             if (nSalasFacil > 0) {
                 DrawText(TextFormat("Partidas:  %d",   nSalasFacil),             lx, ly,      22, LIGHTGRAY); ly+=gap;
@@ -904,7 +990,6 @@ int main(void) {
                 DrawText("Sem partidas registradas.", lx, ly, 18, GRAY);
             }
 
-            // ── Estatísticas DIFÍCIL ──
             if (nSalasDificil > 0) {
                 DrawText(TextFormat("Partidas:  %d",   nSalasDificil),           rx, ry,      22, LIGHTGRAY); ry+=gap;
                 DrawText(TextFormat("Media:     %.2f", mediaDificil),            rx, ry,      22, WHITE);      ry+=gap;
@@ -1035,17 +1120,9 @@ int main(void) {
             DrawTexVirt(gameBg,(Rectangle){0,0,VIRT_W,VIRT_H},WHITE);
 
             Texture2D *enemyTex=GetEnemyTexture(sala,modoDificil,&slimeTex,&ogroTex,&bossTex,&mariTex,&romaTex,&luisTex,&micaTex,&ruanTex,&lucasTex,&lucas2Tex);
-            // Calcula largura proporcional à textura, mantendo altura fixa
             float sprH = 260.0f;
-            float sprW = (enemyTex->height > 0)
-                ? ((float)enemyTex->width / enemyTex->height) * sprH
-                : sprH;
-            Rectangle spr2_enemy = {
-                (VIRT_W - sprW) * 0.5f,
-                (VIRT_H - sprH) * 0.5f + 25,
-                sprW,
-                sprH
-            };
+            float sprW = (enemyTex->height > 0) ? ((float)enemyTex->width / enemyTex->height) * sprH : sprH;
+            Rectangle spr2_enemy = { (VIRT_W - sprW) * 0.5f, (VIRT_H - sprH) * 0.5f + 25, sprW, sprH };
 
             DrawTexturePro(*enemyTex,(Rectangle){0,0,(float)enemyTex->width,(float)enemyTex->height},spr2_enemy,(Vector2){0,0},0,(monsterHP<=0)?RED:WHITE);
 
@@ -1057,7 +1134,6 @@ int main(void) {
                 DrawText(bn,20,48,22,WHITE);
                 DrawText(bd,20+MeasureText(bn,22)+20,52,16,(Color){190,190,190,255});
             } else {
-                // AJUSTADO: Nomes corretos para as salas (1 e 2 Slime, 3 e 4 Ogro, 5 Boss Ogro)
                 const char*ebn=(sala==5)?"Boss Ogro":((sala==3||sala==4)?"Ogro":"Slime");
                 DrawText(ebn,20,48,24,WHITE);
                 DrawText("Uma criatura bloqueia o caminho.",200,52,16,LIGHTGRAY);
@@ -1066,22 +1142,17 @@ int main(void) {
             DrawText(modoTxt,VIRT_W-MeasureText(modoTxt,18)-14,10,18,modoDificil?RED:(Color){0,220,80,255});
             DrawText(TextFormat("VIDAS: %d",vidas),VIRT_W-MeasureText(TextFormat("VIDAS: %d",vidas),18)-14,36,18,RED);
             DrawText(TextFormat("HP: %d",monsterHP),VIRT_W-MeasureText(TextFormat("HP: %d",monsterHP),18)-14,58,18,GREEN);
-            // Barra de HP do monstro
             {
                 float hpPct = (monsterMaxHP > 0) ? (float)monsterHP / monsterMaxHP : 0.0f;
                 if (hpPct < 0.0f) hpPct = 0.0f;
                 if (hpPct > 1.0f) hpPct = 1.0f;
-                
-                // Cor muda: verde > 60%, amarelo > 30%, vermelho <= 30%
                 Color hpColor = (hpPct > 0.6f) ? GREEN : (hpPct > 0.3f) ? ORANGE : RED;
-                
                 int barW = 200, barH = 14;
                 int barX = VIRT_W - barW - 14;
                 int barY = 78;
-                
-                DrawRectangle(barX, barY, barW, barH, (Color){40,40,40,220});             // fundo
-                DrawRectangle(barX, barY, (int)(barW * hpPct), barH, hpColor);           // preenchimento
-                DrawRectangleLinesEx((Rectangle){barX, barY, barW, barH}, 1, DARKGRAY);  // borda
+                DrawRectangle(barX, barY, barW, barH, (Color){40,40,40,220});  
+                DrawRectangle(barX, barY, (int)(barW * hpPct), barH, hpColor);          
+                DrawRectangleLinesEx((Rectangle){(float)barX, (float)barY, (float)barW, (float)barH}, 1, DARKGRAY); 
             }
             DrawRectangle(300,100,680,118,(Color){0,0,0,170});
             DrawText(mensagem,300+(680-MeasureText(mensagem,20))/2,115,20,SKYBLUE);
@@ -1100,14 +1171,12 @@ int main(void) {
             DrawRectangleRec((Rectangle){P1_PANEL_X,P1_PANEL_Y,PANEL_W,PANEL_H},(Color){0,0,0,180});
             DrawRectangleLinesEx((Rectangle){P1_PANEL_X,P1_PANEL_Y,PANEL_W,PANEL_H},2,(Color){100,180,255,120});
             DrawText("PLAYER 1",P1_PANEL_X+(PANEL_W-MeasureText("PLAYER 1",18))*0.5f,P1_PANEL_Y+8,18,(Color){100,180,255,255});
-            
             if (ultimoDanoP1 >= 0) {
                 const char* p1DanoTxt = TextFormat("Ultimo Dano: %d", ultimoDanoP1);
                 DrawText(p1DanoTxt, P1_PANEL_X+(PANEL_W-MeasureText(p1DanoTxt,12))*0.5f, P1_PANEL_Y+26, 12, ORANGE);
             } else {
                 DrawText("Teclas: QWER / ASDF",P1_PANEL_X+(PANEL_W-MeasureText("Teclas: QWER / ASDF",12))*0.5f,P1_PANEL_Y+26,12,(Color){160,160,160,200});
             }
-
             for(int i=0;i<8;i++){
                 int col=(i<=3)?i:i-4,row=(i<=3)?0:1;
                 Rectangle btn={P1_BTN_X+col*(BTN6_W+BTN6_GAP),P1_BTN_TOP_Y+row*(BTN6_H+BTN6_GAP),(float)BTN6_W,(float)BTN6_H};
@@ -1124,14 +1193,12 @@ int main(void) {
             DrawRectangleRec((Rectangle){P2_PANEL_X,P2_PANEL_Y,PANEL_W,PANEL_H},(Color){0,0,0,180});
             DrawRectangleLinesEx((Rectangle){P2_PANEL_X,P2_PANEL_Y,PANEL_W,PANEL_H},2,(Color){255,120,120,120});
             DrawText("PLAYER 2",P2_PANEL_X+(PANEL_W-MeasureText("PLAYER 2",18))*0.5f,P2_PANEL_Y+8,18,(Color){255,120,120,255});
-            
             if (ultimoDanoP2 >= 0) {
                 const char* p2DanoTxt = TextFormat("Ultimo Dano: %d", ultimoDanoP2);
                 DrawText(p2DanoTxt, P2_PANEL_X+(PANEL_W-MeasureText(p2DanoTxt,12))*0.5f, P2_PANEL_Y+26, 12, MAGENTA);
             } else {
                 DrawText("Teclas: UIOP / HJKL",P2_PANEL_X+(PANEL_W-MeasureText("Teclas: UIOP / HJKL",12))*0.5f,P2_PANEL_Y+26,12,(Color){160,160,160,200});
             }
-
             for(int i=0;i<8;i++){
                 int col=(i<=3)?i:i-4,row=(i<=3)?0:1;
                 Rectangle btn={P2_BTN_X+col*(BTN6_W+BTN6_GAP),P2_BTN_TOP_Y+row*(BTN6_H+BTN6_GAP),(float)BTN6_W,(float)BTN6_H};
@@ -1180,14 +1247,14 @@ int main(void) {
     }
 
     // Cleanup lore
-    for(int i=0;i<introLoreCount;i++) free(introLore[i]);
-    for(int i=0;i<finalLoreCount;i++) free(finalLore[i]);
-    for(int b=0;b<MAX_BOSSES;b++){
-        for(int i=0;i<bosses[b].entryCount;i++) free(bosses[b].entry[i]);
-        for(int i=0;i<bosses[b].idleCount;i++) free(bosses[b].idle[i]);
-        for(int i=0;i<bosses[b].hitCount;i++) free(bosses[b].hit[i]);
-        for(int i=0;i<bosses[b].criticalCount;i++) free(bosses[b].critical[i]);
-        for(int i=0;i<bosses[b].deathCount;i++) free(bosses[b].death[i]);
+    for(int i=0; i<introLoreCount; i++) free(introLore[i]);
+    for(int i=0; i<finalLoreCount; i++) free(finalLore[i]);
+    for(int b=0; b<MAX_BOSSES; b++){
+        for(int i=0; i<bosses[b].entryCount; i++) free(bosses[b].entry[i]);
+        for(int i=0; i<bosses[b].idleCount; i++) free(bosses[b].idle[i]);
+        for(int i=0; i<bosses[b].hitCount; i++) free(bosses[b].hit[i]);
+        for(int i=0; i<bosses[b].criticalCount; i++) free(bosses[b].critical[i]);
+        for(int i=0; i<bosses[b].deathCount; i++) free(bosses[b].death[i]);
     }
     #define FREE_EASY(E) do{for(int i=0;i<E.entryCount;i++)free(E.entry[i]);for(int i=0;i<E.idleCount;i++)free(E.idle[i]);for(int i=0;i<E.hitCount;i++)free(E.hit[i]);for(int i=0;i<E.criticalCount;i++)free(E.critical[i]);for(int i=0;i<E.deathCount;i++)free(E.death[i]);}while(0)
     FREE_EASY(easySlime); FREE_EASY(easyOgre); FREE_EASY(easyBoss);
@@ -1202,6 +1269,9 @@ int main(void) {
     UnloadTexture(micaTex);UnloadTexture(ruanTex);UnloadTexture(lucasTex);UnloadTexture(lucas2Tex);
     UnloadTexture(lore1);UnloadTexture(lore2);UnloadTexture(lore3);UnloadTexture(lore4);
     UnloadTexture(lore5);UnloadTexture(lore6);UnloadTexture(lore7);UnloadTexture(lore8);
+    for(int i=0; i<transformLoreCount; i++) free(transformLore[i]);
+    UnloadTexture(transformLore1); UnloadTexture(transformLore2); UnloadTexture(transformLore3); UnloadTexture(transformLore4);
+    UnloadTexture(transformLore5); UnloadTexture(transformLore6); UnloadTexture(transformLore7); UnloadTexture(transformLore8);
     UnloadTexture(loreFinal1);UnloadTexture(loreFinal2);UnloadTexture(loreFinal3);UnloadTexture(loreFinal4);
     UnloadTexture(loreFinal5);UnloadTexture(loreFinal6);UnloadTexture(loreFinal7);UnloadTexture(loreFinal8);
     UnloadTexture(dropBg);UnloadTexture(textboxTex);
