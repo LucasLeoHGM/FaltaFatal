@@ -12,17 +12,17 @@ https://github.com/user-attachments/assets/9d174c95-ddf4-4402-9696-1552f0e9d751
 
 
 ## 📌 Descrição
-O projeto consiste em um jogo de adivinhação de números desenvolvido em linguagem C. O objetivo do jogador é descobrir um número aleatório gerado pelo sistema dentro de um intervalo definido, recebendo dicas a cada tentativa que indicam se o valor correto é maior ou menor.
+O projeto consiste em um jogo de adivinhação de números desenvolvido em linguagem C. O objetivo do jogador é descobrir um número aleatório gerado pelo sistema dentro de um intervalo definido, recebendo dicas a cada tentativa.
 
 Além do tradicional, este jogo incorpora funcionalidades de análise de desempenho, registrando cada sessão em arquivo e permitindo o cálculo de estatísticas como média de tentativas, melhor e pior desempenho e desvio padrão. Com base nesses dados, o sistema fornece sugestões de estratégia, incentivando o jogador a melhorar sua forma de jogar.
 
-Como diferencial, o jogo incorpora uma identidade inspirada em elementos de RPG. Em vez de simplesmente inserir números manualmente, o jogador interage com um sistema de “rolagem de dados”, onde diferentes valores são apresentados como opções. A cada rodada, o jogador escolhe um dos valores disponíveis tentando acertar o número correto. Ao acertar, o jogador causa dano em um inimigo e avança de fase, criando uma progressão semelhante a combates em jogos de RPG.
+Como diferencial, o jogo incorpora uma jogabilidade inspirada em elementos de RPG. A cada rodada, o jogador escolhe um dos valores disponíveis tentando acertar o número correto. Ao acertar, o jogador causa dano em um inimigo e avança de fase, criando uma progressão semelhante a combates em jogos de RPG. Tudo isso somado a identidade visual cyberpunk/matrix/hacker por conta da sua lore, sobre dois estudantes de cybersegurança que querem hackear o sistema da escola para passar de ano.
 
-Além do aspecto lúdico, o projeto possui um forte caráter educacional, explorando conceitos fundamentais da programação em C, como geração de números aleatórios, manipulação de arquivos, validação de entrada e uso de recursão para cálculos estatísticos. Dessa forma, o jogo funciona tanto como entretenimento quanto como ferramenta de aprendizado prático.
+Além do aspecto lúdico, o projeto possui um forte caráter educacional, explorando conceitos fundamentais da programação em C, como geração de números aleatórios, manipulação de arquivos, validação de entrada e uso de recursão para cálculos estatísticos. Além de uma navegação pelas fases dos chefes através de uma série de charadas em proposições lógicas Dessa forma, o jogo funciona tanto como entretenimento quanto como ferramenta de aprendizado prático.
 
 
 ## 🎯 Objetivo
-O objetivo do jogador é derrotar inimigos ao longo de diferentes fases, acertando o número secreto gerado pelo sistema. A cada rodada, o jogador escolhe entre valores apresentados (simulando a rolagem de dados) e recebe dicas que indicam se o número correto é maior ou menor, utilizando essas informações para tomar decisões mais estratégicas.
+O objetivo do jogador é derrotar inimigos ao longo de diferentes fases, acertando o número secreto gerado pelo sistema. A cada rodada, o jogador escolhe entre valores apresentados e recebe dicas que indicam se o número correto está perto ou longe baseado no dano dos inimigos, utilizando essas informações para tomar decisões mais estratégicas.
 
 Ao acertar o número, o jogador causa dano ao inimigo e avança no jogo. Durante essa progressão, suas tentativas são registradas, permitindo acompanhar seu desempenho por meio de estatísticas e melhorar sua estratégia ao longo das partidas.
 
@@ -70,7 +70,7 @@ Responsável pelos cálculos estatísticos e análise de desempenho do jogador.
 💻 Linguagem principal
 C - Utilizada para implementação da lógica do jogo, incluindo geração de números aleatórios, controle de fluxo, manipulação de arquivos e cálculos estatísticos.  
 🖥️ Interface Visual
-???
+Raylib - Criar a interface visual 2d do jogo
 
 ---
 
