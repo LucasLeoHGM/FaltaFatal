@@ -1,7 +1,7 @@
 <h1 align="center">📊 Diagramas</h1>
 
 <p align="center">
-  <img src="assets/dicewarrior.png" width="750">
+  <img src="assets/menuScreenshot.jpeg" width="750">
 </p>
 
 ---
