@@ -186,3 +186,64 @@ Para o desenvolvimento do projeto utilizamos
   <img src="assets/diagrama.jpeg" width="700">
 </p>
 
+## 👥 Relato de Programação em Pares
+
+Durante o desenvolvimento do projeto, a equipe experimentou a prática de programação em pares em diferentes etapas da construção do jogo. A atividade foi utilizada como forma de melhorar a revisão do código, dividir o raciocínio sobre as funcionalidades e facilitar a integração entre as partes desenvolvidas por cada integrante.
+
+O projeto foi desenvolvido em linguagem C, com uso da biblioteca Raylib para a interface visual. Como o jogo possui diferentes áreas de funcionamento — lógica principal, combate, estatísticas, manipulação de arquivos, interface e documentação — a programação em pares foi aplicada principalmente nos pontos em que havia necessidade de integração entre funcionalidades.
+
+### Organização dos pares e funcionalidades trabalhadas
+
+**Lucas Henrique e Victor Barros Roma**
+Atuaram na lógica principal do jogo, incluindo a estrutura da partida, funcionamento das tentativas, validação dos valores escolhidos pelo jogador e comportamento geral do sistema de adivinhação. Também participaram da integração da lógica com a progressão de fases e o combate contra inimigos.
+
+Funcionalidades relacionadas:
+
+* funcionamento principal da partida;
+* escolha de valores pelo jogador;
+* feedback das tentativas;
+* progressão do jogo;
+* integração da lógica de acerto com o dano causado aos inimigos.
+
+**Ruan Carlos e Micaella Cabral**
+Trabalharam nas funcionalidades ligadas ao registro de dados e análise de desempenho do jogador. O foco foi a manipulação de arquivos, leitura do histórico de partidas e cálculo das estatísticas utilizadas pelo sistema.
+
+Funcionalidades relacionadas:
+
+* registro de tentativas em arquivo;
+* leitura do histórico de partidas;
+* cálculo da média de tentativas;
+* identificação da melhor e pior partida;
+* cálculo do desvio padrão;
+* sugestões de estratégia com base no desempenho do jogador.
+
+**Luis Fim e Mariana Xavier**
+Atuaram na organização da experiência do usuário, na validação do fluxo do jogo, na interface e na documentação das entregas. O trabalho em par foi importante para revisar se as funcionalidades implementadas estavam compreensíveis para o jogador e se a apresentação do projeto estava adequada às exigências da disciplina.
+
+Funcionalidades e atividades relacionadas:
+
+* revisão do fluxo do usuário;
+* apoio à organização das telas e feedbacks visuais/sonoros;
+* validação da experiência de jogo;
+* organização do README;
+* atualização das histórias de usuário;
+* acompanhamento do board, backlog, sprints e issues no GitHub;
+* preparação das evidências da entrega, como prints e screencasts.
+
+### Atualização para a Entrega 4
+
+Na Entrega 4, a prática foi incrementada com foco na revisão das novas funcionalidades, nos testes de sistema e na organização das evidências do projeto. A equipe revisou as histórias de usuário implementadas, registrou bugs e melhorias no GitHub Issues e atualizou o quadro do projeto para refletir o andamento das sprints.
+
+Também foram analisados bugs identificados durante o uso do jogo, como:
+
+* a música do menu que não voltava a tocar após o fim de uma partida;
+* inconsistências na barra de HP dos monstros por não considerar corretamente buffs e debuffs.
+
+Esses problemas foram registrados como issues no GitHub, permitindo que a equipe acompanhasse as correções e mantivesse um histórico mais claro do desenvolvimento.
+
+### Avaliação da experiência
+
+A programação em pares ajudou a equipe a revisar decisões de implementação, encontrar erros com mais facilidade e melhorar a comunicação entre os integrantes. A prática também contribuiu para que mais de uma pessoa compreendesse partes importantes do código, reduzindo a dependência de apenas um integrante para determinadas funcionalidades.
+
+Além disso, o trabalho em pares facilitou a integração entre áreas diferentes do projeto, como lógica do jogo, estatísticas, interface e documentação. Com isso, a equipe conseguiu alinhar melhor as funcionalidades implementadas com as histórias de usuário planejadas no backlog.
+
