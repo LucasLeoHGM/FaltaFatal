@@ -36,15 +36,15 @@ Responsável pela organização do projeto, gerenciamento do quadro e remoção 
 
 ---
 
-### 🎨 Designer (UX/UI) & Sound Designer
+### 🎨 Artist & Sound Designer
 - **[Mariana Xavier](https://github.com/marixb)**  
-Responsável pelo protótipo, fluxo do usuário, experiência visual do sistema e criação/definição de elementos sonoros (feedbacks, acertos, erros, etc.).
+Responsável pela criação/definição de elementos sonoros (feedbacks, acertos, erros, etc.) e por todos os sprites e backgrounds do game.
 
 ---
 
-### 💻 Desenvolvedor Backend
+### 🕹️ UX/UI designer
 - **[Victor Barros Roma](https://github.com/RomaNFS21)**  
-Responsável pela lógica principal do jogo, incluindo geração de números e interação com o usuário.
+Responsável pelo protótipo, experiência do usuário e interação com o sistema.
 
 ---
 
