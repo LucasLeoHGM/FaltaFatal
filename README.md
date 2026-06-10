@@ -234,16 +234,3 @@ Funcionalidades e atividades relacionadas:
 
 Na Entrega 4, a prática foi incrementada com foco na revisão das novas funcionalidades, nos testes de sistema e na organização das evidências do projeto. A equipe revisou as histórias de usuário implementadas, registrou bugs e melhorias no GitHub Issues e atualizou o quadro do projeto para refletir o andamento das sprints.
 
-Também foram analisados bugs identificados durante o uso do jogo, como:
-
-* a música do menu que não voltava a tocar após o fim de uma partida;
-* inconsistências na barra de HP dos monstros por não considerar corretamente buffs e debuffs.
-
-Esses problemas foram registrados como issues no GitHub, permitindo que a equipe acompanhasse as correções e mantivesse um histórico mais claro do desenvolvimento.
-
-### Avaliação da experiência
-
-A programação em pares ajudou a equipe a revisar decisões de implementação, encontrar erros com mais facilidade e melhorar a comunicação entre os integrantes. A prática também contribuiu para que mais de uma pessoa compreendesse partes importantes do código, reduzindo a dependência de apenas um integrante para determinadas funcionalidades.
-
-Além disso, o trabalho em pares facilitou a integração entre áreas diferentes do projeto, como lógica do jogo, estatísticas, interface e documentação. Com isso, a equipe conseguiu alinhar melhor as funcionalidades implementadas com as histórias de usuário planejadas no backlog.
-
