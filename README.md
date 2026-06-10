@@ -1,4 +1,3 @@
-<h1 align="center">📊 Diagramas</h1>
 
 <p align="center">
   <img src="assets/menuScreenshot.jpeg" width="750">
