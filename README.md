@@ -209,7 +209,7 @@ O projeto foi desenvolvido em linguagem C, com uso da biblioteca Raylib para a i
 ### Organização dos pares e funcionalidades trabalhadas
 
 **Lucas Henrique e Victor Barros Roma**
-Atuaram na lógica principal do jogo, incluindo a estrutura da partida, funcionamento das tentativas, validação dos valores escolhidos pelo jogador e comportamento geral do sistema de adivinhação. Também participaram da integração da lógica com a progressão de fases e o combate contra inimigos.
+Atuaram no comportamento geral do sistema de adivinhação. Também participaram da integração dos botões físicos de arcade com os botões de usuário.
 
 Funcionalidades relacionadas:
 
