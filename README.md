@@ -140,6 +140,12 @@ pacman -S mingw-w64-x86_64-raylib</code></pre>
     <li>Execute o <code>.exe</code> dentro da pasta do projeto</li>
 </ul>
 
+## 🚀 Deploy
+
+O projeto está disponível em:
+
+- [Link do deploy](https://github.com/LucasLeoHGM/Projeto-C)
+
 ## 🎥 Screencast
 - **[Youtube](https://youtu.be/DD_T3tZea4c): Link do vídeo no Youtube das fases iniciais de desenvolvimento.**  
 - **[Youtube](https://youtu.be/gWsgtCcy6-g): Link do vídeo no Youtube da primeira versão de desenvolvimento.**  
@@ -183,6 +189,14 @@ Para o desenvolvimento do projeto utilizamos
 
 <p align="center">
   <img src="assets/diagrama.jpeg" width="700">
+</p>
+
+## 🐞 Issue/Bug Tracker
+
+O controle de histórias, bugs e melhorias foi realizado pelo GitHub Issues.
+
+<p align="center">
+  <img src="assets/bugs.jpg" width="700">
 </p>
 
 ## 👥 Relato de Programação em Pares
