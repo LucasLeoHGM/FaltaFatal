@@ -313,17 +313,31 @@ static int ExtrairSalas(char linhas[][100], int total, int *salas, int salaMax) 
 static void DrawTexVirt(Texture2D t,Rectangle dst,Color tint){
     DrawTexturePro(t,(Rectangle){0,0,(float)t.width,(float)t.height},dst,(Vector2){0,0},0.0f,tint);
 }
-static Texture2D* GetEnemyTexture(int sala,int modoDificil,
-    Texture2D *slimeTex,Texture2D *ogroTex,Texture2D *bossTex,
-    Texture2D *mariTex,Texture2D *romaTex,Texture2D *luisTex,
-    Texture2D *micaTex,Texture2D *ruanTex,Texture2D *lucasTex,Texture2D *lucas2Tex){
+static Texture2D* GetEnemyTexture(int sala,int modoDificil,int frame,
+    Texture2D *slimeTex, Texture2D *slimeTex2,
+    Texture2D *ogroTex,  Texture2D *ogroTex2,
+    Texture2D *bossTex,  Texture2D *bossTex2,
+    Texture2D *mariTex,  Texture2D *mariTex2,
+    Texture2D *romaTex,  Texture2D *romaTex2,
+    Texture2D *luisTex,  Texture2D *luisTex2,
+    Texture2D *micaTex,  Texture2D *micaTex2,
+    Texture2D *ruanTex,  Texture2D *ruanTex2,
+    Texture2D *lucasTex, Texture2D *lucasTex2,
+    Texture2D *lucas2Tex,Texture2D *lucas2Tex2){
     if(!modoDificil){
-        if(sala == 1 || sala == 2) return slimeTex;
-        if(sala == 3 || sala == 4) return ogroTex;
-        return bossTex;
+        if(sala == 1 || sala == 2) return frame ? slimeTex2 : slimeTex;
+        if(sala == 3 || sala == 4) return frame ? ogroTex2  : ogroTex;
+        return frame ? bossTex2 : bossTex;
     }
-    switch(sala){case 1:return mariTex;case 2:return romaTex;case 3:return luisTex;
-    case 4:return micaTex;case 5:return ruanTex;case 6:return lucasTex;default:return lucas2Tex;}
+    switch(sala){
+        case 1: return frame ? mariTex2  : mariTex;
+        case 2: return frame ? romaTex2  : romaTex;
+        case 3: return frame ? luisTex2  : luisTex;
+        case 4: return frame ? micaTex2  : micaTex;
+        case 5: return frame ? ruanTex2  : ruanTex;
+        case 6: return frame ? lucasTex2 : lucasTex;
+        default:return frame ? lucas2Tex2: lucas2Tex;
+    }
 }
 
 static void SortearEfeitoChest(void) {
@@ -377,6 +391,16 @@ int main(void) {
     Texture2D ruanTex   = LoadTexture("../assets/ruan.png");
     Texture2D lucasTex  = LoadTexture("../assets/lucas.png");
     Texture2D lucas2Tex = LoadTexture("../assets/lucas2.png");
+    Texture2D slimeTex2  = LoadTexture("../assets/slime2.png");
+    Texture2D ogroTex2   = LoadTexture("../assets/ogro2.png");
+    Texture2D bossTex2   = LoadTexture("../assets/boss2.png");
+    Texture2D mariTex2   = LoadTexture("../assets/mari2.png");
+    Texture2D romaTex2   = LoadTexture("../assets/roma2.png");
+    Texture2D luisTex2   = LoadTexture("../assets/luis2.png");
+    Texture2D micaTex2   = LoadTexture("../assets/mica2.png");
+    Texture2D ruanTex2   = LoadTexture("../assets/ruan2.png");
+    Texture2D lucasTex2  = LoadTexture("../assets/lucas2_b.png"); 
+    Texture2D lucas2Tex2 = LoadTexture("../assets/lucas3.png");  
 
     Texture2D lore1 = LoadTexture("../assets/lore1.png");
     Texture2D lore2 = LoadTexture("../assets/lore2.png");
@@ -492,6 +516,8 @@ int main(void) {
     const float P1_BTN_X=P1_PANEL_X+12, P1_BTN_TOP_Y=P1_PANEL_Y+55;
     const float P2_PANEL_X=VIRT_W-PANEL_W-20, P2_PANEL_Y=VIRT_H-PANEL_H-20;
     const float P2_BTN_X=P2_PANEL_X+12,       P2_BTN_TOP_Y=P2_PANEL_Y+55;
+    int enemyAnimTimer = 0;
+    int enemyAnimFrame = 0; 
 
     while (!WindowShouldClose()) {
         if (IsKeyPressed(KEY_F11)) {
@@ -505,6 +531,11 @@ int main(void) {
         Vector2 mouse = MouseVirtual();
 
         if (state==GAMEPLAY && bossBubble.active) {
+            enemyAnimTimer++;
+            if (enemyAnimTimer >= 45) { 
+                enemyAnimTimer = 0;
+                enemyAnimFrame = !enemyAnimFrame;
+            }
             bossBubble.timer++;
             if (bossBubble.timer%2==0) {
                 int len=strlen(bossBubble.currentText);
@@ -515,11 +546,11 @@ int main(void) {
         // ── LÓGICA ──────────────────────────────────────────────────────────
 
         if (state==MENU) {
-            if (IsKeyPressed(KEY_Q)) {
+            if (IsKeyPressed(KEY_Z)) {
                 menuSelec--;
                 if (menuSelec < 0) menuSelec = 2;
             }
-            if (IsKeyPressed(KEY_A)) {
+            if (IsKeyPressed(KEY_X)) {
                 menuSelec++;
                 if (menuSelec > 2) menuSelec = 0;
             }
@@ -559,7 +590,7 @@ int main(void) {
             }
         }
         else if (state==MODE_SELECT) {
-            if (IsKeyPressed(KEY_Q) || IsKeyPressed(KEY_A)) {
+            if (IsKeyPressed(KEY_Z) || IsKeyPressed(KEY_X)) {
                 menuSelec = !menuSelec;
             }
 
@@ -569,7 +600,7 @@ int main(void) {
                 MNumber=(rand()%100)+1; 
                 printf("[DEBUG SALA 1] MNumber sorteado: %d\n", MNumber);
                 rodada=0;minN=1;maxN=100;novaRodada=1;
-                monsterHP=50; monsterMaxHP=50; vidas=8;qntOpcoes=6;sala=1; // achar rapido
+                monsterHP=50; monsterMaxHP=50; vidas=5;qntOpcoes=6;sala=1; // achar rapido
                 ultimoDanoP1=-1; ultimoDanoP2=-1;
                 resultadoSalvo=0;bonusMonsterHP=0;bonusVidas=0;penalVidas=0;penalMonsterHP=0;
                 idxEscolhaP1=-1;idxEscolhaP2=-1;salaComPath=1;pathTimeLeft=0;deathTimer=-1;
@@ -608,7 +639,7 @@ int main(void) {
             if (transformLoreCount == 0) {
                 sala++; 
                 minN = 1; maxN = 100; rodada = 0;
-                monsterHP = 50 + (sala * 25); 
+                monsterHP = 50 + (sala * 20); 
                 monsterMaxHP = monsterHP;
                 MNumber = (rand() % (maxN - minN + 1)) + minN;
                 printf("[DEBUG SALA 7 - LUCAS 2] MNumber sorteado: %d\n", MNumber);
@@ -1144,7 +1175,17 @@ int main(void) {
         else if (state==GAMEPLAY) {
             DrawTexVirt(gameBg,(Rectangle){0,0,VIRT_W,VIRT_H},WHITE);
 
-            Texture2D *enemyTex=GetEnemyTexture(sala,modoDificil,&slimeTex,&ogroTex,&bossTex,&mariTex,&romaTex,&luisTex,&micaTex,&ruanTex,&lucasTex,&lucas2Tex);
+            Texture2D *enemyTex = GetEnemyTexture(sala, modoDificil, enemyAnimFrame,
+            &slimeTex, &slimeTex2,
+            &ogroTex,  &ogroTex2,
+            &bossTex,  &bossTex2,
+            &mariTex,  &mariTex2,
+            &romaTex,  &romaTex2,
+            &luisTex,  &luisTex2,
+            &micaTex,  &micaTex2,
+            &ruanTex,  &ruanTex2,
+            &lucasTex, &lucasTex2,
+            &lucas2Tex,&lucas2Tex2);
             float sprH = 260.0f;
             float sprW = (enemyTex->height > 0) ? ((float)enemyTex->width / enemyTex->height) * sprH : sprH;
             Rectangle spr2_enemy = { (VIRT_W - sprW) * 0.5f, (VIRT_H - sprH) * 0.5f + 25, sprW, sprH };
@@ -1293,6 +1334,10 @@ int main(void) {
     UnloadTexture(slimeTex);UnloadTexture(ogroTex);UnloadTexture(bossTex);
     UnloadTexture(mariTex);UnloadTexture(romaTex);UnloadTexture(luisTex);
     UnloadTexture(micaTex);UnloadTexture(ruanTex);UnloadTexture(lucasTex);UnloadTexture(lucas2Tex);
+    UnloadTexture(slimeTex2); UnloadTexture(ogroTex2); UnloadTexture(bossTex2);
+    UnloadTexture(mariTex2);  UnloadTexture(romaTex2); UnloadTexture(luisTex2);
+    UnloadTexture(micaTex2);  UnloadTexture(ruanTex2); UnloadTexture(lucasTex2);
+    UnloadTexture(lucas2Tex2);
     UnloadTexture(lore1);UnloadTexture(lore2);UnloadTexture(lore3);UnloadTexture(lore4);
     UnloadTexture(lore5);UnloadTexture(lore6);UnloadTexture(lore7);UnloadTexture(lore8);
     for(int i=0; i<transformLoreCount; i++) free(transformLore[i]);
