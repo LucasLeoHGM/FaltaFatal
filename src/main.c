@@ -431,6 +431,7 @@ int main(void) {
 
     Texture2D dropBg    = LoadTexture("../assets/drop.png");
     Texture2D textboxTex= LoadTexture("../assets/textbox.png");
+    Texture2D cpuTex = LoadTexture("../assets/cpu.png");
 
     Music menuMusic = LoadMusicStream("../assets/menu.wav");
     Music gameMusic = LoadMusicStream("../assets/soundtrack.wav");
@@ -1154,10 +1155,36 @@ int main(void) {
                 else{int bw=MeasureText("P2: ???",18)+16;DrawRectangle(VIRT_W-30-bw,306,bw,26,(Color){0,0,0,100});DrawText("P2: ???",VIRT_W-30-bw+8,310,18,(Color){120,120,120,200});}
             }
 
-            // Removido hR, hG, hB do mouse. Usando apenas feedback visual estático ou de seleção se necessário.
-            {Color bg=(pathRed.width > 0)?(Color){160,20,20,255}:BLACK;DrawRectangleRec(pathRed,bg);DrawRectangleLinesEx(pathRed,2,(Color){255,120,120,255});DrawText("[PROC: 0x52]",(int)(pathRed.x+(pathRed.width-MeasureText("[PROC: 0x52]",14))*0.5f),(int)(pathRed.y+12),14,(Color){255,180,180,200});const char*lbl="VERMELHO";DrawText(lbl,(int)(pathRed.x+(pathRed.width-MeasureText(lbl,22))*0.5f),(int)(pathRed.y+pathRed.height*0.5f-10),22,WHITE);if(!modoDificil&&(pathEscolhaP1==0||pathEscolhaP2==0))DrawText("[SELECIONADO]",(int)(pathRed.x+(pathRed.width-MeasureText("[SELECIONADO]",15))*0.5f),(int)(pathRed.y+pathRed.height-28),15,(Color){255,220,220,255});}
-            {Color bg=(pathGreen.width > 0)?(Color){10,130,40,255}:BLACK;DrawRectangleRec(pathGreen,bg);DrawRectangleLinesEx(pathGreen,2,(Color){80,200,100,255});DrawText("[PROC: 0x47]",(int)(pathGreen.x+(pathGreen.width-MeasureText("[PROC: 0x47]",14))*0.5f),(int)(pathGreen.y+12),14,(Color){180,255,190,200});const char*lbl="VERDE";DrawText(lbl,(int)(pathGreen.x+(pathGreen.width-MeasureText(lbl,22))*0.5f),(int)(pathGreen.y+pathGreen.height*0.5f-10),22,WHITE);if(!modoDificil&&(pathEscolhaP1==1||pathEscolhaP2==1))DrawText("[SELECIONADO]",(int)(pathGreen.x+(pathGreen.width-MeasureText("[SELECIONADO]",15))*0.5f),(int)(pathGreen.y+pathGreen.height-28),15,(Color){220,255,220,255});}
-            {Color bg=(pathBlue.width > 0)?(Color){15,40,160,255}:BLACK;DrawRectangleRec(pathBlue,bg);DrawRectangleLinesEx(pathBlue,2,(Color){80,120,255,255});DrawText("[PROC: 0x42]",(int)(pathBlue.x+(pathBlue.width-MeasureText("[PROC: 0x42]",14))*0.5f),(int)(pathBlue.y+12),14,(Color){160,190,255,200});const char*lbl="AZUL";DrawText(lbl,(int)(pathBlue.x+(pathBlue.width-MeasureText(lbl,22))*0.5f),(int)(pathBlue.y+pathBlue.height*0.5f-10),22,WHITE);if(!modoDificil&&(pathEscolhaP1==2||pathEscolhaP2==2))DrawText("[SELECIONADO]",(int)(pathBlue.x+(pathBlue.width-MeasureText("[SELECIONADO]",15))*0.5f),(int)(pathBlue.y+pathBlue.height-28),15,(Color){200,210,255,255});}
+            {
+                Color tint=(Color){255,90,90,255};
+                DrawTexturePro(cpuTex,(Rectangle){0,0,(float)cpuTex.width,(float)cpuTex.height},pathRed,(Vector2){0,0},0,tint);
+                DrawRectangleLinesEx(pathRed,2,(Color){255,120,120,255});
+                DrawText("[PROC: 0x52]",(int)(pathRed.x+(pathRed.width-MeasureText("[PROC: 0x52]",14))*0.5f),(int)(pathRed.y+12),14,(Color){255,180,180,200});
+                const char*lbl="VERMELHO";
+                DrawText(lbl,(int)(pathRed.x+(pathRed.width-MeasureText(lbl,22))*0.5f),(int)(pathRed.y+pathRed.height*0.5f-10),22,WHITE);
+                if(!modoDificil&&(pathEscolhaP1==0||pathEscolhaP2==0))
+                    DrawText("[SELECIONADO]",(int)(pathRed.x+(pathRed.width-MeasureText("[SELECIONADO]",15))*0.5f),(int)(pathRed.y+pathRed.height-28),15,(Color){255,220,220,255});
+            }
+            {
+                Color tint=(Color){90,255,120,255};
+                DrawTexturePro(cpuTex,(Rectangle){0,0,(float)cpuTex.width,(float)cpuTex.height},pathGreen,(Vector2){0,0},0,tint);
+                DrawRectangleLinesEx(pathGreen,2,(Color){80,200,100,255});
+                DrawText("[PROC: 0x47]",(int)(pathGreen.x+(pathGreen.width-MeasureText("[PROC: 0x47]",14))*0.5f),(int)(pathGreen.y+12),14,(Color){180,255,190,200});
+                const char*lbl="VERDE";
+                DrawText(lbl,(int)(pathGreen.x+(pathGreen.width-MeasureText(lbl,22))*0.5f),(int)(pathGreen.y+pathGreen.height*0.5f-10),22,WHITE);
+                if(!modoDificil&&(pathEscolhaP1==1||pathEscolhaP2==1))
+                    DrawText("[SELECIONADO]",(int)(pathGreen.x+(pathGreen.width-MeasureText("[SELECIONADO]",15))*0.5f),(int)(pathGreen.y+pathGreen.height-28),15,(Color){220,255,220,255});
+            }
+            {
+                Color tint=(Color){90,140,255,255};
+                DrawTexturePro(cpuTex,(Rectangle){0,0,(float)cpuTex.width,(float)cpuTex.height},pathBlue,(Vector2){0,0},0,tint);
+                DrawRectangleLinesEx(pathBlue,2,(Color){80,120,255,255});
+                DrawText("[PROC: 0x42]",(int)(pathBlue.x+(pathBlue.width-MeasureText("[PROC: 0x42]",14))*0.5f),(int)(pathBlue.y+12),14,(Color){160,190,255,200});
+                const char*lbl="AZUL";
+                DrawText(lbl,(int)(pathBlue.x+(pathBlue.width-MeasureText(lbl,22))*0.5f),(int)(pathBlue.y+pathBlue.height*0.5f-10),22,WHITE);
+                if(!modoDificil&&(pathEscolhaP1==2||pathEscolhaP2==2))
+                    DrawText("[SELECIONADO]",(int)(pathBlue.x+(pathBlue.width-MeasureText("[SELECIONADO]",15))*0.5f),(int)(pathBlue.y+pathBlue.height-28),15,(Color){200,210,255,255});
+            }
 
             if(pathResultTimer>0){
                 DrawRectangle(60,560,VIRT_W-120,75,(Color){0,0,0,230});
@@ -1340,6 +1367,7 @@ int main(void) {
     UnloadTexture(lucas2Tex2);
     UnloadTexture(lore1);UnloadTexture(lore2);UnloadTexture(lore3);UnloadTexture(lore4);
     UnloadTexture(lore5);UnloadTexture(lore6);UnloadTexture(lore7);UnloadTexture(lore8);
+    UnloadTexture(cpuTex);
     for(int i=0; i<transformLoreCount; i++) free(transformLore[i]);
     UnloadTexture(transformLore1); UnloadTexture(transformLore2); UnloadTexture(transformLore3); UnloadTexture(transformLore4);
     UnloadTexture(transformLore5); UnloadTexture(transformLore6); UnloadTexture(transformLore7); UnloadTexture(transformLore8);
